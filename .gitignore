@@ -1,0 +1,15 @@
+# Ignore large binary files
+*.dll
+*.exe
+*.pdb
+*.bin
+
+# Ignore OS junk
+Thumbs.db
+.DS_Store
+
+# Ignore build folders (common in dev)
+bin/
+obj/
+dist/
+node_modules/
