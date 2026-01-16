@@ -53,51 +53,62 @@ dotnet add package Newtonsoft.Json
 
 ---
 
-## Phase 2: The Body (UI Architecture)
-**Objective:** Setup the WPF Window for MVVM and Navigation.
+## Phase 2: The Body (UI Architecture & Shell) - **COMPLETED**
+**Objective:** Create the visual container and navigation structure.
 
-### 2.1 Shell Structure
-**Files:** `MainWindow.xaml`, `ViewModels/MainViewModel.cs`
-*   **Regions:**
-    *   `PlayerControllerRegion` (Top)
-    *   `MainContentRegion` (Center - Navigable)
-    *   `StickyToolbarRegion` (Overlay)
-*   **Engine Handling:**
-    *   The `MainWindow` code-behind stays as the "Traffic Cop" for Engine Visibility (WebView vs MPV vs CefSharp).
-    *   The `ViewModel` exposes a generic `CurrentEngineState` enum that the View binds to.
+### 2.1 MVVM Setup - **DONE**
+*   **Tooling:** `CommunityToolkit.Mvvm` installed.
+*   **Architecture:** `MainViewModel` controls state. `Views` folder populated.
 
-### 2.2 Navigation System
-**Files:** `Services/NavigationService.cs`
-*   Instead of React Router, we use a `CurrentView` property in the ViewModel associated with `DataTemplates`.
-*   **Views:** `PlaylistsView`, `VideosView`, `HistoryView`.
+### 2.2 The "Layout Shell" - **DONE**
+*   **Structure:** 3-Column Grid (`Sidebar`, `PlayerPane`, `ContentPane`).
+*   **Components:**
+    *   **Sidebar:** MVVM Command Bindings to switching views.
+    *   **Player Pane:** Hosts `WebView2` (YouTube) and `LocalVideoPlayer` (MPV).
+    *   **Content Pane:** Hosts `BrowserView` (Persistent Layer) and `ContentControl` (Library Layer).
+*   **Persistence:** `BrowserView` uses Visibility toggling to maintain session state.
 
 ---
 
-## Phase 3: The Brain (Player Controller)
-**Objective:** Port the React `PlayerController.jsx` to WPF.
+## Phase 3: The Brain (Player Controller & Logic)
+**Objective:** Port the complex "Orb" and interactions.
 
-### 3.1 The "Orb" Control (`Controls/PlayerOrb.xaml`)
-*   **Visuals:** Use a `Border` with `CornerRadius="100"` and `ImageBrush`.
-*   **Spill Effect:** This is hard in WPF. We will likely use a `Canvas` with the image scaled larger than the container and `ClipToBounds="False"`.
-*   **Audio Visualizer:** We will likely need a new `NAudio` or `Bass.Net` implementation to drive the visualizer ring, as the Rust `cpal` implementation cannot be copy-pasted. **(Deferred to Phase 6)**.
+### 3.1 The "Orb" (PlayerController)
+*   **Source:** `PlayerController.jsx`
+*   **Destination:** `Controls/PlayerOrb.xaml` (or `PlayerController.xaml`)
+*   **Location:** Moves to the `PlayerPane` (Left Col) or stays as an overlay? *Decision: Likely an overlay on the PlayerPane or bottom of ContentPane.*
+*   **Key Features:**
+    *   **State:** Bind to `StoreService` (Active Context).
+    *   **Interactions:** Long Press (Pin), Right Click (Shuffle).
 
-### 3.2 The Menus (`Controls/PlayerMenu.xaml`)
-*   **Video Menu:** Contains `Pin`, `Like`, `Shuffle` buttons.
-*   **Playlist Menu:** Contains Title and Navigation Chevrons.
-*   **Logic:** These controls directly bind to `StoreService.ActiveContext`.
+### 3.2 Engine Integration Logic
+*   **Task:** Connect `MainViewModel` commands to the `PlayerPane` controls.
+*   **Logic:**
+    *   `PlayVideo(url)` -> Updates `ActiveContext` -> `PlayerWebView` navigates.
+    *   `PlayLocal(file)` -> Updates `ActiveContext` -> `PlayerMpv` visible / Play.
 
 ---
 
-## Phase 4: Features & Interactions
-**Objective:** The specific complex UI interactions.
+## Phase 4: The Features (Pages & Cards)
+**Objective:** Build specific views (Playlists, Videos).
 
-### 4.1 "Sticky" Toolbar
-*   Use a `Grid` overlay in `MainWindow` with a high Z-Index.
-*   Bind its `Visibility` and `Opacity` to a `ScrollChanged` event from the generic content scroller.
+### 4.1 Playlists Grid (`Views/PlaylistsView.xaml`)
+*   **Source:** `PlaylistsPage.jsx` (React)
+*   **Destination:** `PlaylistsView.xaml`
+*   **Components:** `PlaylistCard.xaml` (replaces `PlaylistCard.jsx`)
+*   **Interactions:**
+    *   Click: Navigates to `VideosView` for that playlist.
+    *   Drag & Drop: Reorder playlists.
+    *   Context Menu: Rename, Delete, Export.
 
-### 4.2 Drag & Drop / Context Menus
-*   WPF has native Drag & Drop. Use this for reordering Playlists/Videos.
-*   **Context Menus:** Use `ContextMenu` on the `ListViewItem` styles for "Move to Folder" and "Delete".
+### 4.2 Videos Grid (`Views/VideosView.xaml`)
+*   **Source:** `VideosPage.jsx` (React)
+*   **Destination:** `VideosView.xaml`
+*   **Components:** `VideoCard.xaml` (replaces `VideoCard.jsx`)
+*   **Interactions:**
+    *   Click: Plays video in `PlayerPane`.
+    *   Drag & Drop: Reorder videos within a playlist.
+    *   Context Menu: Move to another playlist, Delete, Tag.
 
 ### 4.3 Skeleton Loading
 *   WPF doesn't do "Suspense" like React.

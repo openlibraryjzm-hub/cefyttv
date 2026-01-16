@@ -18,39 +18,58 @@ namespace ccc.ViewModels
         [ObservableProperty]
         private object? _currentView;
 
+        // Visibility State
+        [ObservableProperty]
+        private bool _isBrowserVisible;
+
+        public bool IsLibraryVisible => !IsBrowserVisible;
+
         // View Cache
         private object? _playlistsView;
         private object? _videosView;
-        private object? _engineTestView;
+        private object? _historyView;
+        private object? _pinsView;
+        private object? _settingsView;
+        private object? _supportView;
 
         public MainViewModel()
         {
-            // Initial View
             NavigateToPlaylists();
         }
 
-        [RelayCommand]
-        public void NavigateToPlaylists()
+        private void SwitchToLibrary(string title, ref object? viewCache, Func<object> createView)
         {
-            PageTitle = "Playlists";
-            _playlistsView ??= new Views.PlaylistsView();
-            CurrentView = _playlistsView;
+            PageTitle = title;
+            viewCache ??= createView();
+            CurrentView = viewCache;
+            IsBrowserVisible = false;
+            OnPropertyChanged(nameof(IsLibraryVisible));
         }
 
         [RelayCommand]
-        public void NavigateToVideos()
-        {
-            PageTitle = "Videos";
-            _videosView ??= new Views.VideosView();
-            CurrentView = _videosView;
-        }
+        public void NavigateToPlaylists() => SwitchToLibrary("Playlists", ref _playlistsView, () => new Views.PlaylistsView());
 
         [RelayCommand]
-        public void NavigateToEngineTest()
+        public void NavigateToVideos() => SwitchToLibrary("Videos", ref _videosView, () => new Views.VideosView());
+
+        [RelayCommand]
+        public void NavigateToHistory() => SwitchToLibrary("History", ref _historyView, () => new Views.HistoryView());
+
+        [RelayCommand]
+        public void NavigateToPins() => SwitchToLibrary("Pins", ref _pinsView, () => new Views.PinsView());
+
+        [RelayCommand]
+        public void NavigateToSettings() => SwitchToLibrary("Settings", ref _settingsView, () => new Views.SettingsView());
+
+        [RelayCommand]
+        public void NavigateToSupport() => SwitchToLibrary("Support", ref _supportView, () => new Views.SupportView());
+
+        [RelayCommand]
+        public void NavigateToBrowser()
         {
-            PageTitle = "Triple Engine Test";
-            _engineTestView ??= new Views.TripleEngineTestView();
-            CurrentView = _engineTestView;
+            PageTitle = "Web Browser";
+            IsBrowserVisible = true;
+            OnPropertyChanged(nameof(IsLibraryVisible));
         }
     }
 }

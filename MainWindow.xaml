@@ -5,52 +5,109 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ccc"
         xmlns:vm="clr-namespace:ccc.ViewModels"
+        xmlns:views="clr-namespace:ccc.Views"
+        xmlns:ctrl="clr-namespace:ccc.Controls"
+        xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
         mc:Ignorable="d"
         Title="Atlas 2.0" Height="720" Width="1280"
-        Background="#121212"> <!-- Atlas Dark Theme -->
+        Background="#121212"> 
 
     <Window.DataContext>
         <vm:MainViewModel/>
     </Window.DataContext>
 
-    <!-- Main Shell Grid -->
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+        
+        <Style x:Key="NavButton" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#CCC"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="Padding" Value="10,8"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter HorizontalAlignment="Left" VerticalAlignment="Center" Margin="{TemplateBinding Padding}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Foreground" Value="White"/>
+                                <Setter Property="Background" Value="#11FFFFFF"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
     <Grid>
         <Grid.ColumnDefinitions>
             <!-- Sidebar -->
-            <ColumnDefinition Width="260"/>
-            <!-- Main Content -->
+            <ColumnDefinition Width="200"/>
+            <!-- Left Pane (Player) -->
+            <ColumnDefinition Width="*"/>
+            <!-- Right Pane (Content) -->
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <!-- Sidebar Placeholder -->
+        <!-- Sidebar -->
         <Border Grid.Column="0" Background="#1E1E1E" BorderBrush="#333" BorderThickness="0,0,1,0">
             <StackPanel Margin="10">
-                <TextBlock Text="ATLAS" Foreground="White" FontSize="24" FontWeight="Bold" Margin="0,10,0,20" HorizontalAlignment="Center"/>
+                <TextBlock Text="ATLAS" Foreground="White" FontSize="20" FontWeight="Bold" Margin="0,10,0,20" HorizontalAlignment="Center"/>
                 
-                <!-- Nav Items (Placeholder) -->
-                <Button Command="{Binding NavigateToPlaylistsCommand}" Content="Playlists" Background="Transparent" Foreground="#DDD" BorderThickness="0" HorizontalContentAlignment="Left" Padding="10" Margin="0,2"/>
-                <Button Command="{Binding NavigateToVideosCommand}" Content="Videos" Background="Transparent" Foreground="#DDD" BorderThickness="0" HorizontalContentAlignment="Left" Padding="10" Margin="0,2"/>
-                <Button Command="{Binding NavigateToEngineTestCommand}" Content="Engine Test" Background="#33FFFFFF" Foreground="White" BorderThickness="0" HorizontalContentAlignment="Left" Padding="10" Margin="0,2"/>
+                <TextBlock Text="LIBRARY" Foreground="#555" FontSize="12" Margin="5,10,0,5" FontWeight="Bold"/>
+                <Button Command="{Binding NavigateToPlaylistsCommand}" Content="Playlists" Style="{StaticResource NavButton}"/>
+                <Button Command="{Binding NavigateToVideosCommand}" Content="Videos" Style="{StaticResource NavButton}"/>
+                
+                <TextBlock Text="EXPLORE" Foreground="#555" FontSize="12" Margin="5,15,0,5" FontWeight="Bold"/>
+                <Button Command="{Binding NavigateToBrowserCommand}" Content="Browser" Style="{StaticResource NavButton}"/>
+                
+                <TextBlock Text="USER" Foreground="#555" FontSize="12" Margin="5,15,0,5" FontWeight="Bold"/>
+                <Button Command="{Binding NavigateToHistoryCommand}" Content="History" Style="{StaticResource NavButton}"/>
+                <Button Command="{Binding NavigateToPinsCommand}" Content="Pins" Style="{StaticResource NavButton}"/>
+                
+                <Separator Background="#333" Margin="0,20"/>
+                
+                <Button Command="{Binding NavigateToSettingsCommand}" Content="Settings" Style="{StaticResource NavButton}"/>
+                <Button Command="{Binding NavigateToSupportCommand}" Content="Support" Style="{StaticResource NavButton}"/>
             </StackPanel>
         </Border>
 
-        <!-- Main Content Area -->
-        <Grid Grid.Column="1">
+        <!-- Left Pane (Player Engine) -->
+        <Grid Grid.Column="1" Background="Black">
+            <!-- YouTube (WebView2) -> Always loaded, usually visible -->
+            <wv2:WebView2 x:Name="PlayerWebView" Source="https://www.youtube.com"/>
+            
+            <!-- Local MPV -> Overlay when playing local -->
+            <ctrl:LocalVideoPlayer x:Name="PlayerMpv" Visibility="Collapsed"/>
+        </Grid>
+
+        <!-- Right Pane (Dynamic Content) -->
+        <Grid Grid.Column="2" Background="#121212">
             <Grid.RowDefinitions>
-                 <!-- Sticky Top Bar (Overlay) -->
-                <RowDefinition Height="Auto"/>
-                 <!-- View Content -->
-                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/> <!-- Sticky Top Bar -->
+                <RowDefinition Height="*"/>    <!-- Content -->
             </Grid.RowDefinitions>
 
-            <!-- Top Bar Placeholder -->
-            <Border Grid.Row="0" Height="60" Background="#121212" BorderBrush="#333" BorderThickness="0,0,0,1" Padding="20,0">
-                <TextBlock Text="{Binding PageTitle}" Foreground="White" VerticalAlignment="Center" FontSize="18"/>
+            <!-- Sticky Top Bar (Shared) -->
+            <Border Grid.Row="0" Height="50" BorderBrush="#333" BorderThickness="0,0,0,1" Padding="20,0">
+                <Grid>
+                    <TextBlock Text="{Binding PageTitle}" Foreground="White" VerticalAlignment="Center" FontSize="16" FontWeight="SemiBold"/>
+                    <!-- Placeholder for Search/User/Notifications -->
+                </Grid>
             </Border>
 
-            <!-- Active View Content -->
-            <ContentControl Grid.Row="1" Content="{Binding CurrentView}"/>
-            
+            <!-- Layer 1: The Browser (Persistent) -->
+            <views:BrowserView Grid.Row="1" Visibility="{Binding IsBrowserVisible, Converter={StaticResource BoolToVis}}"/>
+
+            <!-- Layer 2: The Library (Swappable) -->
+            <ContentControl Grid.Row="1" Content="{Binding CurrentView}" Visibility="{Binding IsLibraryVisible, Converter={StaticResource BoolToVis}}"/>
         </Grid>
     </Grid>
+    
+
 </Window>

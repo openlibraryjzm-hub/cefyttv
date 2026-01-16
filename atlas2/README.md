@@ -20,28 +20,33 @@ The app uses **WPF** as the host container to manage the windowing, layout, and 
 - **WPF** - UI Framework
 - **C# 13** - Language
 
-### Engines
-- **Microsoft.Web.WebView2** - `WebView2` Control
-- **CefSharp.Wpf.NETCore** - `ChromiumWebBrowser` Control
-- **libmpv (v2)** - Accessed via manual P/Invoke (`MpvNative.cs`)
+### User Interface (WPF + XAML)
+*   **Shell Architecture**: 3-Column Layout:
+    *   **Sidebar**: MVVM-driven navigation commands.
+    *   **Player Pane (Left)**: Hosts `WebView2` (YouTube) and `LocalVideoPlayer` (MPV).
+    *   **Content Pane (Right)**: Hosts the Library (Playlists/Videos) and a persistent `BrowserView` (CefSharp).
+*   **Navigation**: `MainViewModel` manages view switching efficiently, keeping the Browser strictly separated from the lightweight UI.
 
-### Development Tools
-- **Dotnet Watch** - Hot Reload workflow
-- **Visual Studio Code** - Primary Editor
+### Project Structure (`ccc/`)
+*   `Services/`
+    *   `Database/`: Entity Framework Core `AppDbContext` and Entities (`Playlist`, `VideoProgress`, etc.).
+    *   `PlaylistService.cs`: Business logic for DB operations.
+*   `ViewModels/`
+    *   `MainViewModel.cs`: The core state machine handling Navigation and Engine Visibility.
+*   `Views/`
+    *   `PlaylistsView.xaml`, `VideosView.xaml`: Partial implementation of Library pages.
+    *   `BrowserView.xaml`: Persistent CefSharp browser instance.
+    *   `TripleEngineTestView.xaml`: (Legacy/Reference) The original test bed.
+*   `MainWindow.xaml`: The main application shell.
 
----
-
-## Project Structure
-
-```
-ccc/
-├── Controls/
-│   ├── LocalVideoPlayer.xaml     # MPV Container (WinFormsHost)
-│   ├── MpvNative.cs              # Manual P/Invoke Driver for mpv-2.dll
-│   └── ...
-├── Handlers/
-│   ├── CustomLifeSpanHandler.cs  # CEF Popup Management
-│   └── CustomRequestHandler.cs   # CEF Traffic Control/AdBlock
+## Status Checklist
+*   [x] **Triple Engine Setup** (WebView2 + CefSharp + MPV)
+*   [x] **Database Layer** (EF Core Sqlite + Entities)
+*   [x] **UI Shell** (Sidebar + Player + Content Split)
+*   [x] **Navigation System** (MVVM Commands)
+*   [ ] **Player Controller** ("The Orb")
+*   [ ] **Library Logic** (Tagging, Importing)
+*   [ ] **Data Migration** (Import from Atlas 1)
 ├── atlas2/                       # Documentation (You are here)
 │   ├── architecture.md           # System design & Engine details
 │   ├── ui-ux.md                  # Layouts, Controls, & Interaction
