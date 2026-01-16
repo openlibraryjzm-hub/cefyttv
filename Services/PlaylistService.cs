@@ -176,8 +176,38 @@ namespace ccc.Services
                     }
                 };
 
-                context.Playlists.AddRange(p1, p2);
                 context.SaveChanges();
+            }
+        }
+
+        /// <summary>
+        /// Adds a video to a playlist.
+        /// </summary>
+        public PlaylistItem AddVideoToPlaylist(long playlistId, string videoUrl, string videoId, string title, string thumbnail, string author, string? viewCount, string? publishedAt)
+        {
+            using (var context = new AppDbContext())
+            {
+                // Verify playlist exists
+                var playlist = context.Playlists.Find(playlistId);
+                if (playlist == null) throw new ArgumentException("Playlist not found");
+
+                var newItem = new PlaylistItem
+                {
+                    PlaylistId = playlistId,
+                    VideoUrl = videoUrl,
+                    VideoId = videoId,
+                    Title = title,
+                    ThumbnailUrl = thumbnail,
+                    Author = author,
+                    ViewCount = viewCount,
+                    PublishedAt = publishedAt ?? DateTime.UtcNow.ToString("o"),
+                    AddedAt = DateTime.UtcNow.ToString("o"),
+                    Position = context.PlaylistItems.Where(i => i.PlaylistId == playlistId).Count()
+                };
+
+                context.PlaylistItems.Add(newItem);
+                context.SaveChanges();
+                return newItem;
             }
         }
     }

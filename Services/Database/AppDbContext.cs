@@ -9,8 +9,6 @@ namespace ccc.Services.Database
     {
         public DbSet<Playlist> Playlists { get; set; }
         public DbSet<PlaylistItem> PlaylistItems { get; set; }
-        public DbSet<VideoFolderAssignment> VideoFolderAssignments { get; set; }
-        public DbSet<StuckFolder> StuckFolders { get; set; }
         public DbSet<VideoProgress> VideoProgress { get; set; }
         public DbSet<WatchHistory> WatchHistory { get; set; }
 
@@ -31,16 +29,6 @@ namespace ccc.Services.Database
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // Configure composite keys or unique indexes if needed to match Rust schema
-
-            // UNIQUE(playlist_id, item_id, folder_color)
-            modelBuilder.Entity<VideoFolderAssignment>()
-                .HasIndex(v => new { v.PlaylistId, v.ItemId, v.FolderColor })
-                .IsUnique();
-
-            // UNIQUE(playlist_id, folder_color) for StuckFolders
-            modelBuilder.Entity<StuckFolder>()
-                .HasIndex(s => new { s.PlaylistId, s.FolderColor })
-                .IsUnique();
 
             // UNIQUE(video_id) for VideoProgress
             modelBuilder.Entity<VideoProgress>()

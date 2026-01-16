@@ -1,0 +1,28 @@
+{
+  "Tabs": [
+    {
+      "Id": "all",
+      "Name": "All",
+      "PlaylistIds": []
+    },
+    {
+      "Id": "tab-1768557443837",
+      "Name": "yes",
+      "PlaylistIds": []
+    },
+    {
+      "Id": "tab-1768557658492",
+      "Name": "sss",
+      "PlaylistIds": []
+    }
+  ],
+  "Presets": [
+    {
+      "Id": "all",
+      "Name": "All",
+      "TabIds": []
+    }
+  ],
+  "ActiveTabId": "all",
+  "ActivePresetId": "all"
+}

@@ -20,42 +20,45 @@ The app uses **WPF** as the host container to manage the windowing, layout, and 
 - **WPF** - UI Framework
 - **C# 13** - Language
 
-### User Interface (WPF + XAML)
-*   **Shell Architecture**: 3-Column Layout:
-    *   **Sidebar**: MVVM-driven navigation commands.
-    *   **Player Pane (Left)**: Hosts `WebView2` (YouTube) and `LocalVideoPlayer` (MPV).
-    *   **Content Pane (Right)**: Hosts the Library (Playlists/Videos) and a persistent `BrowserView` (CefSharp).
-*   **Navigation**: `MainViewModel` manages view switching efficiently, keeping the Browser strictly separated from the lightweight UI.
+### Engines
+- **Microsoft.Web.WebView2** - `WebView2` Control
+- **CefSharp.Wpf.NETCore** - `ChromiumWebBrowser` Control
+- **libmpv (v2)** - Accessed via manual P/Invoke (`MpvNative.cs`)
 
-### Project Structure (`ccc/`)
-*   `Services/`
-    *   `Database/`: Entity Framework Core `AppDbContext` and Entities (`Playlist`, `VideoProgress`, etc.).
-    *   `PlaylistService.cs`: Business logic for DB operations.
-*   `ViewModels/`
-    *   `MainViewModel.cs`: The core state machine handling Navigation and Engine Visibility.
-*   `Views/`
-    *   `PlaylistsView.xaml`, `VideosView.xaml`: Partial implementation of Library pages.
-    *   `BrowserView.xaml`: Persistent CefSharp browser instance.
-    *   `TripleEngineTestView.xaml`: (Legacy/Reference) The original test bed.
-*   `MainWindow.xaml`: The main application shell.
+### Development Tools
+- **Dotnet Watch** - Hot Reload workflow
+- **Visual Studio Code** - Primary Editor
 
-## Status Checklist
-*   [x] **Triple Engine Setup** (WebView2 + CefSharp + MPV)
-*   [x] **Database Layer** (EF Core Sqlite + Entities)
-*   [x] **UI Shell** (Sidebar + Player + Content Split)
-*   [x] **Navigation System** (MVVM Commands)
-*   [ ] **Player Controller** ("The Orb")
-*   [ ] **Library Logic** (Tagging, Importing)
-*   [ ] **Data Migration** (Import from Atlas 1)
+---
+
+## Project Structure
+
+```
+ccc/
+├── Controls/
+│   ├── LocalVideoPlayer.xaml     # MPV Container (WinFormsHost)
+│   ├── MpvNative.cs              # Manual P/Invoke Driver for mpv-2.dll
+│   └── ...
+├── Handlers/
+│   ├── CustomLifeSpanHandler.cs  # CEF Popup Management
+│   └── CustomRequestHandler.cs   # CEF Traffic Control/AdBlock
+├── Views/
+│   ├── TripleEngineTestView.xaml # The Main Layout Grid (Current Shell)
+│   └── BrowserView.xaml          # (Optional) Standalone Browser wrapper
 ├── atlas2/                       # Documentation (You are here)
 │   ├── architecture.md           # System design & Engine details
 │   ├── ui-ux.md                  # Layouts, Controls, & Interaction
 │   ├── setup.md                  # Build requirements (DLLs, Runtimes)
 │   └── session-updates.md        # Change logs & "Wins"
-├── MainWindow.xaml               # The Triple-Engine Layout Grid
+├── MainWindow.xaml               # Host Window
 ├── App.xaml.cs                   # CefSharp Initialization logic
 └── ccc.csproj                    # Build Config (Win-x64 targeting)
 ```
+
+## Status Checklist
+*   [x] **Triple Engine Setup** (WebView2 + CefSharp + MPV)
+*   [x] **Database Layer** (AppDbContext exists, though UI currently disconnected)
+*   [x] **Basic Shell** (TripleEngineTestView)
 
 ## Documentation Index
 
@@ -71,5 +74,5 @@ The app uses **WPF** as the host container to manage the windowing, layout, and 
 ## Usage Tips for AI Agents
 
 1.  **Context is King:** Before modifying the rendering engines, read `architecture.md` to understand why we aren't using standard NuGet packages for MPV.
-2.  **Layout Logic:** `MainWindow.xaml.cs` controls the visibility toggles between engines. Read `ui-ux.md` for the state machine logic.
+2.  **Layout Logic:** `MainWindow.xaml.cs` or `TripleEngineTestView.xaml.cs` controls the visibility toggles between engines. Read `ui-ux.md`.
 3.  **DLLs matter:** This project relies on unmanaged binaries (`mpv-2.dll`, `libcef.dll`). Always check `setup.md` if "Module Not Found" errors occur.

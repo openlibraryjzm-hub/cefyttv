@@ -1,7 +1,30 @@
-# Session Update: Embedded Player Breakthrough & Data Layer
+# Session Updates
+
+## [Clean Slate] Return to Foundation - 2026-01-17
+We have successfully **wiped the slate clean** of the initial refactoring attempts (partial Library views, Services, and interim ViewModels) to return to the core, stable "Triple Engine" architecture.
+
+### Why the Reset?
+The initial refactor (porting React concepts like Stores directly to C# Services) introduced compilation complexity and drift from the primary goal: a solid Hybrid Host. We are returning to the bare metal to ensure the "Triple Engine" (WebView2, CefSharp, MPV) works flawlessly before layering complex business logic on top.
+
+### ✅ Current State (The "Blank Slate")
+1.  **Shell**: `MainWindow` hosting `TripleEngineTestView`.
+2.  **Engines**:
+    *   **WebView2**: Loads YouTube (`www.youtube.com`) successfully.
+    *   **CefSharp**: Loads Browsing Tabs (`www.google.com`) with popup handling.
+    *   **MPV**: Loads Local Files via P/Invoke (`MpvNative.cs`).
+3.  **Layout**: Split Pane (Player Left, Browser Right) with Fullscreen toggles.
+4.  **Database**: `AppDbContext` remains in `Services/Database` (Schema preserved) but is currently disconnected from the UI.
+
+### 🗑️ Cleanup
+*   Deleted: `Views/PlaylistsView`, `Views/VideosView`, `Controls/Cards/*`, `Services/PlaylistService` (logic layer).
+*   Preserved: `Core Engines`, `Handlers`, `Database Entities`.
+
+---
+
+## [Previous] Embedded Player Breakthrough & Data Layer - 2026-01-16
 **Timestamp**: 2026-01-16
 
-## 🚀 Architectural Breakthrough: WebView2 Embedded Player
+### 🚀 Architectural Breakthrough: WebView2 Embedded Player
 We have successfully implemented a robust **YouTube Embedded Player** that bypasses "Error 153" (Restricted/Bot) issues.
 
 ### The Solution: Virtual Host Mapping
@@ -17,7 +40,7 @@ Instead of using `NavigateToString` (which has no Origin) or raw `file://` URLs,
 3.  **Origin**: This provides a valid `Origin: https://app.local` header to YouTube, satisfying their embed requirements.
 4.  **Playback**: The app successfully loads and plays valid video IDs (e.g., Lofi Girl).
 
-## ✅ Features Implemented
+### ✅ Features Implemented
 1.  **Data Persistence**:
     *   Implemented `PlaylistService` seeding logic.
     *   App now auto-seeds "Music Mix" and "Tech Talks" playlists if DB is empty.
@@ -27,11 +50,7 @@ Instead of using `NavigateToString` (which has no Origin) or raw `file://` URLs,
     *   Created `PlaylistsViewModel` and `VideosViewModel` with ObservableCollections.
     *   Wired `PlaylistsView` and `VideosView` to display real data.
 
-## ⚠️ Current Limitations (To Be Addressed)
+### ⚠️ Current Limitations (To Be Addressed)
 1.  **UI Fidelity**: The current cards are "primitive" WPF implementations and do not yet match the rich aesthetics of the original React app (documented in `imported-project`).
 2.  **Navigation Logic**: The `VideosView` currently shows *all* videos from the DB, rather than filtering by the selected playlist from `PlaylistsView`.
 3.  **Autoplay**: The embedded player loads but may require a user click to start depending on policy (minor issue).
-
-## Next Steps
-*   **Rapid Frontend Mockup**: Rigorous translation of `imported-project` React components to WPF XAML to match the original design.
-*   **Navigation Logic**: Implement "Select Playlist -> Show Videos" flow.
