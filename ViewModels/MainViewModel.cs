@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
 using System.Windows.Controls;
 using ccc.Services;
+using ccc.Views;
 
 namespace ccc.ViewModels
 {
@@ -47,22 +48,22 @@ namespace ccc.ViewModels
         }
 
         [RelayCommand]
-        public void NavigateToPlaylists() => SwitchToLibrary("Playlists", ref _playlistsView, () => new Views.PlaylistsView());
+        public void NavigateToPlaylists() => SwitchToLibrary("Playlists", ref _playlistsView, () => new ccc.Views.PlaylistsView());
 
         [RelayCommand]
-        public void NavigateToVideos() => SwitchToLibrary("Videos", ref _videosView, () => new Views.VideosView());
+        public void NavigateToVideos() => SwitchToLibrary("Videos", ref _videosView, () => new ccc.Views.VideosView());
 
         [RelayCommand]
-        public void NavigateToHistory() => SwitchToLibrary("History", ref _historyView, () => new Views.HistoryView());
+        public void NavigateToHistory() => SwitchToLibrary("History", ref _historyView, () => new ccc.Views.HistoryView());
 
         [RelayCommand]
-        public void NavigateToPins() => SwitchToLibrary("Pins", ref _pinsView, () => new Views.PinsView());
+        public void NavigateToPins() => SwitchToLibrary("Pins", ref _pinsView, () => new ccc.Views.PinsView());
 
         [RelayCommand]
-        public void NavigateToSettings() => SwitchToLibrary("Settings", ref _settingsView, () => new Views.SettingsView());
+        public void NavigateToSettings() => SwitchToLibrary("Settings", ref _settingsView, () => new ccc.Views.SettingsView());
 
         [RelayCommand]
-        public void NavigateToSupport() => SwitchToLibrary("Support", ref _supportView, () => new Views.SupportView());
+        public void NavigateToSupport() => SwitchToLibrary("Support", ref _supportView, () => new ccc.Views.SupportView());
 
         [RelayCommand]
         public void NavigateToBrowser()

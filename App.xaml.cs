@@ -37,5 +37,6 @@ public partial class App : System.Windows.Application
 
         // Initialize Database (Creates tables if missing)
         Services.PlaylistService.Instance.InitializeDatabase();
+        Services.PlaylistService.Instance.SeedDebugData();
     }
 }

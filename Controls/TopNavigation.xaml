@@ -76,6 +76,13 @@
             </StackPanel>
         </Button>
 
+        <Button Command="{Binding NavigateToBrowserCommand}" Style="{StaticResource NavPill}">
+             <StackPanel Orientation="Horizontal">
+                <TextBlock Text="&#xE774;" FontFamily="Segoe MDL2 Assets" Margin="0,0,8,0"/>
+                <TextBlock Text="Browser" FontWeight="SemiBold"/>
+            </StackPanel>
+        </Button>
+
         <Border Width="1" Height="24" Background="#333" Margin="10,0"/>
 
         <!-- Icons (Circles) -->

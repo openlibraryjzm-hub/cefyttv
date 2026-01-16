@@ -106,5 +106,79 @@ namespace ccc.Services
                 return true;
             }
         }
+        /// <summary>
+        /// Gets all playlists with their tokens eagerly loaded.
+        /// </summary>
+        public List<Playlist> GetAllPlaylistsWithItems()
+        {
+            using (var context = new AppDbContext())
+            {
+                return context.Playlists
+                    .Include(p => p.Items)
+                    .AsNoTracking()
+                    .OrderBy(p => p.Id)
+                    .ToList();
+            }
+        }
+
+        /// <summary>
+        /// Seeds the database with debug data if empty.
+        /// </summary>
+        public void SeedDebugData()
+        {
+            using (var context = new AppDbContext())
+            {
+                if (context.Playlists.Any()) return; // Already data
+
+                var p1 = new Playlist
+                {
+                    Name = "Music Mix",
+                    Description = "Best songs for coding",
+                    CreatedAt = DateTime.UtcNow.ToString("o"),
+                    UpdatedAt = DateTime.UtcNow.ToString("o"),
+                    Items = new List<PlaylistItem>
+                    {
+                        new PlaylistItem { 
+                            VideoId="jfKfPfyJRdk", 
+                            Title="lofi hip hop radio - beats to relax/study to", 
+                            ThumbnailUrl="https://img.youtube.com/vi/jfKfPfyJRdk/maxresdefault.jpg",
+                            Author="Lofi Girl",
+                            VideoUrl="https://www.youtube.com/watch?v=jfKfPfyJRdk",
+                            Position = 0
+                        },
+                         new PlaylistItem { 
+                            VideoId="5qap5aO4i9A", 
+                            Title="lofi hip hop radio - beats to sleep/chill to", 
+                            ThumbnailUrl="https://img.youtube.com/vi/5qap5aO4i9A/maxresdefault.jpg",
+                            Author="Lofi Girl",
+                            VideoUrl="https://www.youtube.com/watch?v=5qap5aO4i9A",
+                            Position = 1
+                        }
+                    }
+                };
+
+                var p2 = new Playlist
+                {
+                    Name = "Tech Talks",
+                    Description = "Interesting conferences",
+                    CreatedAt = DateTime.UtcNow.ToString("o"),
+                    UpdatedAt = DateTime.UtcNow.ToString("o"),
+                    Items = new List<PlaylistItem>
+                    {
+                        new PlaylistItem { 
+                            VideoId="M7lc1UVf-VE", 
+                            Title="YouTube Developers Live", 
+                            ThumbnailUrl="https://img.youtube.com/vi/M7lc1UVf-VE/maxresdefault.jpg",
+                            Author="Google Developers",
+                            VideoUrl="https://www.youtube.com/watch?v=M7lc1UVf-VE",
+                            Position = 0
+                        }
+                    }
+                };
+
+                context.Playlists.AddRange(p1, p2);
+                context.SaveChanges();
+            }
+        }
     }
 }
