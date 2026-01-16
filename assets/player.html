@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #000; }
+        iframe { width: 100%; height: 100%; border: none; }
+    </style>
+</head>
+<body>
+    <div id="player"></div>
+
+    <script>
+        // Parse video ID from URL query param ?v=ID
+        const urlParams = new URLSearchParams(window.location.search);
+        const videoId = urlParams.get('v') || 'QiemgC39tA0'; // Default if missing
+
+        // Create Iframe using YouTube IFrame API or just raw HTML
+        // Raw HTML is simpler and often more robust against 153 for valid origins
+        const iframe = document.createElement('iframe');
+        iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&controls=1&rel=0&modestbranding=1&origin=https://app.local`;
+        iframe.allow = "autoplay; encrypted-media; picture-in-picture";
+        iframe.allowFullscreen = true;
+        document.body.appendChild(iframe);
+    </script>
+</body>
+</html>
