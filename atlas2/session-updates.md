@@ -1,64 +1,37 @@
-# Session Updates
+# Session Update: Embedded Player Breakthrough & Data Layer
+**Timestamp**: 2026-01-16
 
-## Session: Jan 16, 2026 - Phase 1 & 2 Complete (The Backbone & The Body)
+## 🚀 Architectural Breakthrough: WebView2 Embedded Player
+We have successfully implemented a robust **YouTube Embedded Player** that bypasses "Error 153" (Restricted/Bot) issues.
 
-### Major Achievements
-1.  **Database Layer (Phase 1)**
-    *   Implemented `AppDbContext` using Entity Framework Core Sqlite.
-    *   Mapped all Rust `models.rs` structs to C# `Entities` (`Playlist`, `PlaylistItem`, `VideoFolderAssignment`, etc.).
-    *   Created `PlaylistService` to handle `InitializeDatabase()` and schema generation.
-    *   Verified creation of `playlists.db` (52kb initialized).
+### The Solution: Virtual Host Mapping
+Instead of using `NavigateToString` (which has no Origin) or raw `file://` URLs, we implemented a **Virtual Host** strategy:
+1.  **Assets**: Created `assets/player.html` containing a properly configured `<iframe>`.
+2.  **Mapping**: In `MainWindow.xaml.cs`, we mapped `https://app.local` to the physical `assets` directory.
+   ```csharp
+   PlayerWebView.CoreWebView2.SetVirtualHostNameToFolderMapping(
+       "app.local", 
+       assetsPath, 
+       CoreWebView2HostResourceAccessKind.Allow);
+   ```
+3.  **Origin**: This provides a valid `Origin: https://app.local` header to YouTube, satisfying their embed requirements.
+4.  **Playback**: The app successfully loads and plays valid video IDs (e.g., Lofi Girl).
 
-2.  **UI Architecture (Phase 2)**
-    *   **Shell Refactor**: Moved from a "Triple Engine Test" grid to a robust **3-Column Split App Shell**:
-        *   **Sidebar**: Persistent navigation.
-        *   **Player Pane (Left)**: Always-available Engine (WebView2 for YouTube vs MPV for Local).
-        *   **Content Pane (Right)**: Swappable content area.
-    *   **Persistent Browser**: Implemented a "Layered" approach in the Content Pane. The `BrowserView` (CefSharp) sits permanently in the visual tree (Z-Index) to preserve tabs/session, while the lightweight WPF Library Views (`PlaylistsView`, `VideosView`) are toggled on top.
+## ✅ Features Implemented
+1.  **Data Persistence**:
+    *   Implemented `PlaylistService` seeding logic.
+    *   App now auto-seeds "Music Mix" and "Tech Talks" playlists if DB is empty.
+    *   Verified Entity Framework SQLite connection.
+2.  **Primitive UI Views**:
+    *   Created `PlaylistCard` and `VideoCard` WPF controls.
+    *   Created `PlaylistsViewModel` and `VideosViewModel` with ObservableCollections.
+    *   Wired `PlaylistsView` and `VideosView` to display real data.
 
-3.  **MVVM Foundation**
-    *   Implemented `MainViewModel` using `CommunityToolkit.Mvvm`.
-    *   Established Command-based navigation (`NavigateToPlaylists`, `NavigateToBrowser`).
-    *   Created Placeholder Views for all future sections (`History`, `Pins`, `Settings`, `Support`).
+## ⚠️ Current Limitations (To Be Addressed)
+1.  **UI Fidelity**: The current cards are "primitive" WPF implementations and do not yet match the rich aesthetics of the original React app (documented in `imported-project`).
+2.  **Navigation Logic**: The `VideosView` currently shows *all* videos from the DB, rather than filtering by the selected playlist from `PlaylistsView`.
+3.  **Autoplay**: The embedded player loads but may require a user click to start depending on policy (minor issue).
 
-### Technical Decisions
-3.  **Advanced Player Controller (Phase 3 UI)**
-    *   **Structure**: Created `Controls/AdvancedPlayerController/` containing:
-        *   `MainController.xaml`: The Grid layout managing the Menu-Orb-Menu composition.
-        *   `PlaylistMenu.xaml`: Left pane with Title, Folder Badge, and Playlist Navigation.
-        *   `VideoMenu.xaml`: Right pane with Video Title and Action Controls (Star, Shuffle, Pin, etc.).
-        *   `PlayerOrb.xaml`: Central visual element (placeholder 154px circle).
-    *   **Top Navigation**: Implemented `Controls/TopNavigation.xaml` as the global navigation bar below the controller.
-    *   **Integration**: Refactored `MainWindow.xaml` to a Global Vertical Layout (Controller -> Nav -> Content Split), effectively placing the Controller across the full window width.
-
-### Technical Decisions
-*   **Split Layout**: Confirmed the user preference for "Left Half = Player, Right Half = Library/Browser".
-*   **Browser Persistence**: Decided against destroying the CefSharp instance on navigation to ensure zero-latency browsing resumption.
-*   **Design-First**: Implemented the full component hierarchy for the Player Controller before wiring the complex logic (Phase 3).
-
-### Next Steps (Phase 3 - Logic)
-*   **Wire ViewModel**: Create `PlayerControllerViewModel` and bind the buttons (Play, Next, Shuffle) to the `StoreService`.
-*   **Implement Orb Logic**: Add the image spill and hover interactions.
-*   **Engine Switching**: Connect the Controller playback commands to the specific rendering engine (WebView2 vs MPV).
-*   Begin implementing the actual `PlaylistsView` DataTemplates.
-
----
-
-## Session: Jan 15, 2026 - The "Triple Engine" Victory
-
-### Key Achievements
-1.  **Integrated MPV Player (Native):**
-    *   Successfully embedded `libmpv` into the WPF application alongside WebView2 and CefSharp.
-    *   **Architecture Win:** Bypassed the need for electron/tauri "hole punching". WPF handles the layering perfectly.
-    *   **Soloved "DLL Hell":**
-    *   abandoned the broken `Mpv.NET` NuGet package (incompatible with modern `mpv-2.dll`).
-    *   Implemented `Controls/MpvNative.cs`: A custom, lightweight P/Invoke driver that talks directly to the DLL.
-2.  **UI Integration:**
-    *   Added **"Open File"** button to load local videos.
-    *   Added **Status Text** overlay (outside the WinFormsHost airspace) to debug playback state.
-    *   Implemented automatic swapping: Loading a file hides the WebView2 (YouTube) and reveals the MPV Player.
-
-### Technical Learnings
-*   **Airspace Issues:** `WindowsFormsHost` always paints on top of WPF content in the same window region. Overlays must work *around* it, not *over* it.
-*   **Path Sanitization:** `libmpv` prefers forward slashes (`/`). Windows file paths (`\`) must be sanitized before passing to `mpv_command`.
-*   **Async Void:** `dotnet watch` / Hot Reload can get confused if you change a method signature to `async void` without a full restart.
+## Next Steps
+*   **Rapid Frontend Mockup**: Rigorous translation of `imported-project` React components to WPF XAML to match the original design.
+*   **Navigation Logic**: Implement "Select Playlist -> Show Videos" flow.

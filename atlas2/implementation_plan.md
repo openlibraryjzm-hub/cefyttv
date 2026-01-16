@@ -81,23 +81,27 @@ dotnet add package Newtonsoft.Json
     *   **State:** Bind to `StoreService` (Active Context).
     *   **Interactions:** Long Press (Pin), Right Click (Shuffle).
 
-### 3.2 Engine Integration Logic
-*   **Task:** Connect `MainViewModel` commands to the `PlayerPane` controls.
+### 3.2 Engine Integration Logic - **DONE**
+*   **WebView2:** Implemented "Virtual Host" mapping (`app.local` -> `assets/`) to allow YouTube Embeds to play without "Error 153".
+*   **MPV:** Implemented P/Invoke driver for local playback.
 *   **Logic:**
-    *   `PlayVideo(url)` -> Updates `ActiveContext` -> `PlayerWebView` navigates.
-    *   `PlayLocal(file)` -> Updates `ActiveContext` -> `PlayerMpv` visible / Play.
+    *   `PlayVideo(url)` -> `MainWindow` handles WebView2 navigation.
+    *   `PlayLocal(file)` -> `LocalVideoPlayer` handles MPV playback.
 
 ---
 
-## Phase 4: The Features (Pages & Cards)
+## Phase 4: The Features (Pages & Cards) - **IN PROGRESS**
 **Objective:** Build specific views (Playlists, Videos).
 
-### 4.1 Playlists Grid (`Views/PlaylistsView.xaml`)
-*   **Source:** `PlaylistsPage.jsx` (React)
-*   **Destination:** `PlaylistsView.xaml`
-*   **Components:** `PlaylistCard.xaml` (replaces `PlaylistCard.jsx`)
-*   **Interactions:**
-    *   Click: Navigates to `VideosView` for that playlist.
+### 4.1 Playlists Grid (`Views/PlaylistsView.xaml`) - **PROTOTYPED**
+*   **Status:** Basic ItemsControl working. displaying `PlaylistCard`.
+*   **Needs:** High-fidelity UI polish to match React implementation.
+
+### 4.2 Videos Grid (`Views/VideosView.xaml`) - **PROTOTYPED**
+*   **Status:** Basic ItemsControl working, displaying `VideoCard`.
+*   **Needs:**
+    *   High-fidelity UI polish.
+    *   **Filtering Logic:** Currently acts as "All Videos", needs to filter by the selected Playlist from 4.1.
     *   Drag & Drop: Reorder playlists.
     *   Context Menu: Rename, Delete, Export.
 
