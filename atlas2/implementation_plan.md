@@ -29,10 +29,10 @@ dotnet add package Newtonsoft.Json
 
 ---
 
-## Phase 1: The Backbone (Data & Services)
+## Phase 1: The Backbone (Data & Services) - **COMPLETED**
 **Objective:** Replace the Rust Database/Commands and JS Config Stores.
 
-### 1.1 Database (EF Core)
+### 1.1 Database (EF Core) - **DONE**
 **Files:** `Services/Database/`
 *   `AppDbContext.cs`: The generic unit of work.
 *   **Entities**:
@@ -43,13 +43,13 @@ dotnet add package Newtonsoft.Json
     *   `WatchHistory`: Last 100 watched videos.
     *   `VideoProgress`: Resume playback positions.
 
-### 1.2 State Management (Services)
+### 1.2 State Management (Services) - **DONE**
 **Files:** `Services/`
 *   **`StoreService`**: A Singleton that holds the *in-memory* application state (replacing Zustand).
     *   Properties: `AllPlaylists`, `ActiveContext`, `PreviewContext`.
     *   Events: `OnPlaylistChanged`, `OnVideoChanged`.
 *   **`ConfigService`**: Persist User Profile (Avatar/Name) and Visual Settings (Orb Scale, Spill) to `appsettings.json` or a local `.json` file.
-*   **`LibraryService`**: Handles the complex business logic of "Importing," "Moving," and "Deleting" (The logic from `playlistApi.js`).
+*   **`PlaylistService`**: Handles the complex business logic of "Importing," "Moving," and "Deleting" (The logic from `playlistApi.js`).
 
 ---
 

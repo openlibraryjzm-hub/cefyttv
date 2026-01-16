@@ -3,6 +3,7 @@ using System.Data;
 using System.Windows;
 using CefSharp;
 using CefSharp.Wpf;
+using Microsoft.EntityFrameworkCore;
 
 namespace ccc;
 
@@ -20,6 +21,7 @@ public partial class App : System.Windows.Application
     {
         base.OnStartup(e);
 
+        // Initialize CefSharp settings
         var settings = new CefSharp.Wpf.CefSettings();
         // Save cookies/cache to %LocalAppData%/ccc/Cache
         settings.CachePath = System.IO.Path.Combine(
@@ -32,5 +34,8 @@ public partial class App : System.Windows.Application
         settings.CefCommandLineArgs.Add("disable-gpu-shader-disk-cache", "1");
 
         CefSharp.Cef.Initialize(settings);
+
+        // Initialize Database (Creates tables if missing)
+        Services.PlaylistService.Instance.InitializeDatabase();
     }
 }

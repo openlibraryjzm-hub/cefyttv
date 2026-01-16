@@ -4,66 +4,53 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ccc"
-        xmlns:ctrl="clr-namespace:ccc.Controls"
-        xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
-        xmlns:cef="clr-namespace:CefSharp.Wpf;assembly=CefSharp.Wpf"
+        xmlns:vm="clr-namespace:ccc.ViewModels"
         mc:Ignorable="d"
-        Title="MainWindow" Height="720" Width="1280">
-    <Grid x:Name="RootGrid">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
+        Title="Atlas 2.0" Height="720" Width="1280"
+        Background="#121212"> <!-- Atlas Dark Theme -->
 
-        <!-- Content Area (Split View) -->
-        <Grid x:Name="ContentGrid" Grid.Row="0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" x:Name="Col0"/>
-                <ColumnDefinition Width="*" x:Name="Col1"/>
-            </Grid.ColumnDefinitions>
+    <Window.DataContext>
+        <vm:MainViewModel/>
+    </Window.DataContext>
 
-            <!-- Left Pane: WebView2 + MPV (Stacked) -->
-            <Grid x:Name="LeftPane" Grid.Column="0">
-                <!-- 1. YouTube (WebView2) -->
-                <wv2:WebView2 x:Name="YoutubeView" Source="https://www.youtube.com"/>
+    <!-- Main Shell Grid -->
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <!-- Sidebar -->
+            <ColumnDefinition Width="260"/>
+            <!-- Main Content -->
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Sidebar Placeholder -->
+        <Border Grid.Column="0" Background="#1E1E1E" BorderBrush="#333" BorderThickness="0,0,1,0">
+            <StackPanel Margin="10">
+                <TextBlock Text="ATLAS" Foreground="White" FontSize="24" FontWeight="Bold" Margin="0,10,0,20" HorizontalAlignment="Center"/>
                 
-                <!-- 2. Local MPV (Native) -->
-                <ctrl:LocalVideoPlayer x:Name="MpvView" Visibility="Collapsed"/>
-            </Grid>
-
-            <!-- Right Pane: CefSharp (Heavy / Browser) with Tabs -->
-            <Grid x:Name="RightPane" Grid.Column="1">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-
-                <!-- Toolbar -->
-                <StackPanel Grid.Row="0" Orientation="Horizontal" Background="#f0f0f0">
-                    <Button Content=" + New Tab " Click="NewTab_Click" Padding="10,2" Margin="5"/>
-                </StackPanel>
-
-                <!-- Tabs -->
-                <TabControl x:Name="BrowserTabs" Grid.Row="1" BorderThickness="0">
-                    <TabItem Header="Google">
-                        <cef:ChromiumWebBrowser Address="https://www.google.com"/>
-                    </TabItem>
-                </TabControl>
-            </Grid>
-        </Grid>
-
-        <!-- Bottom Layout Control Bar (Spans entire app) -->
-        <Border Grid.Row="1" Background="#eee" Padding="10" BorderBrush="#ccc" BorderThickness="0,1,0,0">
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                <TextBlock Text="Layout:" VerticalAlignment="Center" Margin="0,0,10,0" FontWeight="Bold"/>
-                <Button Content="WV Full" Click="Layout_WvFull_Click" Padding="12,6" Margin="4"/>
-                <Button Content="Split" Click="Layout_Split_Click" Padding="12,6" Margin="4" FontWeight="Bold"/>
-                <Button Content="WV Half" Click="Layout_WvHalf_Click" Padding="12,6" Margin="4"/>
-                <Button Content="Cef Full" Click="Layout_CefFull_Click" Padding="12,6" Margin="4"/>
-                <Border Width="1" Background="#bbb" Margin="10,4"/>
-                <Button Content="Test MPV" Click="TestMpv_Click" Padding="12,6" Margin="4" Background="#ffdddd"/>
-                <Button Content="Open File" Click="OpenFile_Click" Padding="12,6" Margin="4" Background="#ddffdd"/>
+                <!-- Nav Items (Placeholder) -->
+                <Button Command="{Binding NavigateToPlaylistsCommand}" Content="Playlists" Background="Transparent" Foreground="#DDD" BorderThickness="0" HorizontalContentAlignment="Left" Padding="10" Margin="0,2"/>
+                <Button Command="{Binding NavigateToVideosCommand}" Content="Videos" Background="Transparent" Foreground="#DDD" BorderThickness="0" HorizontalContentAlignment="Left" Padding="10" Margin="0,2"/>
+                <Button Command="{Binding NavigateToEngineTestCommand}" Content="Engine Test" Background="#33FFFFFF" Foreground="White" BorderThickness="0" HorizontalContentAlignment="Left" Padding="10" Margin="0,2"/>
             </StackPanel>
         </Border>
+
+        <!-- Main Content Area -->
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                 <!-- Sticky Top Bar (Overlay) -->
+                <RowDefinition Height="Auto"/>
+                 <!-- View Content -->
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- Top Bar Placeholder -->
+            <Border Grid.Row="0" Height="60" Background="#121212" BorderBrush="#333" BorderThickness="0,0,0,1" Padding="20,0">
+                <TextBlock Text="{Binding PageTitle}" Foreground="White" VerticalAlignment="Center" FontSize="18"/>
+            </Border>
+
+            <!-- Active View Content -->
+            <ContentControl Grid.Row="1" Content="{Binding CurrentView}"/>
+            
+        </Grid>
     </Grid>
 </Window>
