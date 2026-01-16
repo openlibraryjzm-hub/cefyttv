@@ -22,13 +22,24 @@
     *   Created Placeholder Views for all future sections (`History`, `Pins`, `Settings`, `Support`).
 
 ### Technical Decisions
-*   **"Manual First" Protocol**: Adopted a strict rule where the AI instructs the user to run terminal commands for package installation, preventing token-wasting loops.
+3.  **Advanced Player Controller (Phase 3 UI)**
+    *   **Structure**: Created `Controls/AdvancedPlayerController/` containing:
+        *   `MainController.xaml`: The Grid layout managing the Menu-Orb-Menu composition.
+        *   `PlaylistMenu.xaml`: Left pane with Title, Folder Badge, and Playlist Navigation.
+        *   `VideoMenu.xaml`: Right pane with Video Title and Action Controls (Star, Shuffle, Pin, etc.).
+        *   `PlayerOrb.xaml`: Central visual element (placeholder 154px circle).
+    *   **Top Navigation**: Implemented `Controls/TopNavigation.xaml` as the global navigation bar below the controller.
+    *   **Integration**: Refactored `MainWindow.xaml` to a Global Vertical Layout (Controller -> Nav -> Content Split), effectively placing the Controller across the full window width.
+
+### Technical Decisions
 *   **Split Layout**: Confirmed the user preference for "Left Half = Player, Right Half = Library/Browser".
 *   **Browser Persistence**: Decided against destroying the CefSharp instance on navigation to ensure zero-latency browsing resumption.
+*   **Design-First**: Implemented the full component hierarchy for the Player Controller before wiring the complex logic (Phase 3).
 
-### Next Steps (Phase 3)
-*   Build the **Player Controller** ("The Orb") overlay.
-*   Implement the Logic to switch the Left Pane between WebView2 and MPV based on content type.
+### Next Steps (Phase 3 - Logic)
+*   **Wire ViewModel**: Create `PlayerControllerViewModel` and bind the buttons (Play, Next, Shuffle) to the `StoreService`.
+*   **Implement Orb Logic**: Add the image spill and hover interactions.
+*   **Engine Switching**: Connect the Controller playback commands to the specific rendering engine (WebView2 vs MPV).
 *   Begin implementing the actual `PlaylistsView` DataTemplates.
 
 ---
