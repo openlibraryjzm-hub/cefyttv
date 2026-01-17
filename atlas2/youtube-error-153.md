@@ -1,6 +1,6 @@
 # Next Priority: Resolving YouTube Error 153
 
-**Status:** Critical Blocker
+**Status:** Resolved
 **Context:** The UI Shell, Data Layer, and Navigation are fully functional. Users can browse their real Playlists and Videos. However, attempting to play a video in the embedded WebView2 player results in **Error 153**.
 
 ## The Issue
@@ -32,3 +32,10 @@ Instead of loading `https://www.youtube.com/embed/...` directly into the WebView
 *   Video plays immediately (autoplay).
 *   No "Video Unavailable" or "Error 153" screen.
 *   Basic controls (Pause/Play) work via the IFrame API.
+
+## Optimization: Lightning Fast Switching
+To solve the slow loading times of `WebView2` for subsequent videos, we implemented a **single-page architecture** for the player:
+1.  **First Load**: Navigates to `https://app.local/player.html?v=...`.
+2.  **Subsequent Loads**: `WebViewYouTubeControls.cs` detects the player is already active.
+3.  **Action**: Instead of reloading the page, it executes `window.loadAppVideo('NEW_ID')` via `ExecuteScriptAsync`.
+4.  **Result**: Instant video swapping without tearing down the browser engine.

@@ -27,36 +27,46 @@
     </Window.Resources>
 
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/> <!-- Left Half: Player Placeholder -->
-            <ColumnDefinition Width="*"/> <!-- Right Half: App Shell -->
-        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="102"/> <!-- Advanced Player Controller (102px) -->
+            <RowDefinition Height="*"/>    <!-- Main Content Area -->
+        </Grid.RowDefinitions>
 
-        <!-- Player Placeholder (Left Half) -->
-        <player:WebViewYouTubeControls Grid.Column="0" 
-                                       VideoId="{Binding CurrentVideoId}"/>
+        <!-- Top Strip: Advanced Player Controller -->
+        <player:AdvancedPlayerController Grid.Row="0" Panel.ZIndex="100"/>
 
-        <!-- App Shell (Right Half) -->
-        <Grid Grid.Column="1" Background="{StaticResource BgPrimaryBrush}">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/> <!-- Top Nav Bar -->
-                <RowDefinition Height="*"/>    <!-- View Content -->
-            </Grid.RowDefinitions>
+        <!-- Main Content Area: Split View -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/> <!-- Left Half: Player Placeholder -->
+                <ColumnDefinition Width="*"/> <!-- Right Half: App Shell -->
+            </Grid.ColumnDefinitions>
 
-            <!-- Top Navigation (Phase 3 Component) -->
-            <nav:TopNavBar Grid.Row="0" 
-                            NavigateCommand="{Binding NavigateCommand}"
-                            BackCommand="{Binding GoBackCommand}"
-                            CloseCommand="{Binding CloseSidebarCommand}"/>
+            <!-- Player Placeholder (Left Half) -->
+            <player:WebViewYouTubeControls Grid.Column="0" 
+                                           VideoId="{Binding CurrentVideoId}"/>
 
-            <!-- Dynamic View Injection -->
-            <ContentControl Grid.Row="1" Content="{Binding CurrentView}"/>
-            
+            <!-- App Shell (Right Half) -->
+            <Grid Grid.Column="1" Background="{StaticResource BgPrimaryBrush}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/> <!-- Top Nav Bar -->
+                    <RowDefinition Height="*"/>    <!-- View Content -->
+                </Grid.RowDefinitions>
+
+                <!-- Top Navigation (Phase 3 Component) -->
+                <nav:TopNavBar Grid.Row="0" 
+                                NavigateCommand="{Binding NavigateCommand}"
+                                BackCommand="{Binding GoBackCommand}"
+                                CloseCommand="{Binding CloseSidebarCommand}"/>
+
+                <!-- Dynamic View Injection -->
+                <ContentControl Grid.Row="1" Content="{Binding CurrentView}"/>
+            </Grid>
         </Grid>
-
-        <!-- Note: TripleEngineTestView is removed for now as per user request to test UI Shell. 
-             Engine integration will return in Phase 5/6 wiring. -->
     </Grid>
+
+    <!-- Note: TripleEngineTestView is removed for now as per user request to test UI Shell. 
+         Engine integration will return in Phase 5/6 wiring. -->
     
 
 </Window>

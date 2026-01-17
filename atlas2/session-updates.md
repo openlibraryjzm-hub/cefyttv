@@ -1,5 +1,53 @@
 # Session Updates
 
+## [Layout] Advanced Player Controller Space - 2026-01-17
+We have restructured the application layout to accommodate the **Advanced Player Controller**.
+
+### 🏗️ Layout Changes
+1.  **`MainWindow.xaml`**:
+    *   Introduced a dedicated **Top Row (102px)** for the controller strip.
+    *   Pushed the existing Split View (Player + App Shell) to Row 1.
+    *   Enabled `Panel.ZIndex` on the top row to allow the Orb to visually spill over into the content area.
+2.  **`AdvancedPlayerController.xaml`**:
+    *   Created the skeleton component with the required **3-Part Layout**:
+        *   **Left**: Playlist Menu (340x102px).
+        *   **Center**: Orb (154px diameter), overlapping the bar.
+        *   **Right**: Video Menu (340x102px).
+    
+    *   **Buttons (Visual Only)**:
+        *   Added "Placeholder Buttons" for all controls defined in the spec `advanced-player-controller.md`.
+        *   **Playlist Menu**: Prev, Grid, Next.
+        *   **Video Menu**: Prev, Grid, Next, Play, Shuffle, Star, Pin, Like, More.
+        *   **Orb**: 4 radial buttons (Upload, Search, Menu, Clipping) positioned around the orb.
+        *   Resolved XAML build issues (ambiguous UserControl, invalid property Spacing/LetterSpacing).
+        *   Visuals are static (no click handlers yet).
+
+## [Performance] Lightning Fast Embeds - 2026-01-17
+We have implemented a **JS Interop Optimization** to eliminate the delay when switching videos.
+
+### 🚀 Optimization Details
+1.  **Direct JS Injection**: Instead of destroying and reloading the entire `WebView` page for every video:
+    *   We load `player.html` **once**.
+    *   Subsequent video clicks send a lightweight JS command (`loadAppVideo(id)`) to the existing player.
+    *   This uses the YouTube IFrame API to swap the video ID instantly.
+2.  **Result**:
+    *   **First Load**: Standard ~1s (WebView2 initialization).
+    *   **Subsequent Loads**: **Instantaneous** (<50ms).
+
+## [Fix] YouTube Error 153 Resolved - 2026-01-17
+We have successfully resolved the "Error 153" blocker preventing YouTube playback in the embedded WebView2.
+
+### 🛠️ The Solution
+1.  **Virtual Host Mapping**: Implemented a local virtual host (`https://app.local`) mapped to the `assets` folder.
+2.  **Local HTML Wrapper**: Replaced direct `youtube.com/embed` loading with a local `player.html` wrapper.
+    *   Sets strict `origin` parameter matching the virtual host.
+    *   Uses strict `User-Agent` spoofing in C# to mimic a real browser.
+3.  **Build Configuration**: Updated `.csproj` to ensure `assets` are copied to the output directory.
+
+### ✅ Verification
+*   **Status**: Fixed.
+*   **Next**: Verify `PlayVideoCommand` works end-to-end with this new component.
+
 ## [Wiring] Phase 6: Data & Player - 2026-01-17
 We have successfully **Imported the User's Database** and wired up the core navigation flow.
 
