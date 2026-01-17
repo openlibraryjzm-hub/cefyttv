@@ -1,0 +1,59 @@
+<UserControl x:Class="ccc.Controls.Cards.PlaylistCard"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ccc.Controls.Cards"
+             mc:Ignorable="d" 
+             d:DesignHeight="220" d:DesignWidth="320">
+
+    <!-- Playlist Card Structure (ui.md 4.1.1.1) -->
+    <Border Style="{StaticResource CardBaseStyle}" Padding="0">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/> <!-- Header (Title) -->
+                <RowDefinition Height="*"/>    <!-- Thumbnail -->
+                <RowDefinition Height="Auto"/> <!-- Footer (Count/Desc) -->
+            </Grid.RowDefinitions>
+
+            <!-- Title Header (Inner Rectangle) -->
+            <Border Grid.Row="0" Margin="12,12,12,8" 
+                    Background="#E2E8F0" BorderBrush="{StaticResource TextPrimaryBrush}" BorderThickness="1" CornerRadius="4"
+                    Padding="8,4">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <TextBlock Text="{Binding Name}" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}" 
+                               TextTrimming="CharacterEllipsis"/>
+
+                    <!-- Hover Actions (Play, Shuffle, Preview) -->
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" 
+                                Visibility="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <Button Content="▶" Width="20" Height="20" Style="{StaticResource InvisibleBtn}" ToolTip="Play" Margin="0,0,4,0"/>
+                        <Button Content="🔀" Width="20" Height="20" Style="{StaticResource InvisibleBtn}" ToolTip="Shuffle"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Thumbnail -->
+            <local:CardThumbnail Grid.Row="1" Margin="12,0,12,0" Height="140"
+                                 Source="{Binding ThumbnailUrl}"
+                                 CornerRadius="8"/>
+
+            <!-- Footer -->
+            <StackPanel Grid.Row="2" Margin="12,8,12,12">
+                <TextBlock Text="{Binding VideoCountText}" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}"/>
+                <TextBlock Text="{Binding Description}" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}" 
+                           TextTrimming="CharacterEllipsis" MaxHeight="36" TextWrapping="Wrap"
+                           Opacity="0.8"/>
+            </StackPanel>
+            
+            <!-- Context Menu (3-dots) inline with title or somewhere? ui.md says "inline with title". 
+                 Added to header stackpanel above conceptually. -->
+
+        </Grid>
+    </Border>
+</UserControl>

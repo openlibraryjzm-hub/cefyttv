@@ -1,0 +1,45 @@
+<UserControl x:Class="ccc.Controls.Cards.CardThumbnail"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="180" d:DesignWidth="320">
+    <Grid>
+        <!-- Main Image -->
+        <Border CornerRadius="{Binding CornerRadius, RelativeSource={RelativeSource AncestorType=UserControl}}" 
+                ClipToBounds="True">
+            <Image Source="{Binding Source, RelativeSource={RelativeSource AncestorType=UserControl}}" 
+                   Stretch="UniformToFill"/>
+        </Border>
+
+        <!-- Hover Overlay -->
+        <Border Background="#66000000" 
+                CornerRadius="{Binding CornerRadius, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                Visibility="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+
+        <!-- Progress Bar (Bottom) -->
+        <ProgressBar VerticalAlignment="Bottom" Height="4" 
+                     BorderThickness="0"
+                     Background="Transparent"
+                     Foreground="Red"
+                     Value="{Binding Progress, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                     Visibility="{Binding HasProgress, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+
+        <!-- Badges Container -->
+        <StackPanel VerticalAlignment="Top" HorizontalAlignment="Left" Orientation="Horizontal" Margin="4">
+            <!-- Now Playing (Placeholder for animated dots) -->
+            <Border Background="#CCEF4444" CornerRadius="4" Padding="4,2" Margin="0,0,4,0"
+                    Visibility="{Binding IsPlaying, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <TextBlock Text="▶" Foreground="White" FontSize="10" FontWeight="Bold"/>
+            </Border>
+            
+            <!-- Watched Checkmark -->
+            <Border Background="#CC22C55E" CornerRadius="4" Padding="4,2"
+                    Visibility="{Binding IsWatched, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <TextBlock Text="✓" Foreground="White" FontSize="10" FontWeight="Bold"/>
+            </Border>
+        </StackPanel>
+
+    </Grid>
+</UserControl>

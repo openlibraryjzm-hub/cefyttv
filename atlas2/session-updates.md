@@ -1,5 +1,33 @@
 # Session Updates
 
+## [Refactor Phase 2] Building Blocks - 2026-01-17
+We have successfully implemented **Phase 2: Building Blocks** of the refactor roadmap. This phase focused on translating the design system and atomic UI components from React to WPF `UserControls` and Resources.
+
+### 🎨 Visual System Implemented
+1.  **Resource Dictionaries**:
+    *   `Resources/Colors.xaml`: Ported all theme colors (Sky Blue system) and the **16 Folder Colors** from `App.css`/`themes.js`.
+    *   `Resources/Styles.xaml`: Defined global styles for `BaseCard` (Border/Background) and invisible Buttons.
+    *   `App.xaml`: Configured to merge these resources on startup.
+
+### 🧩 Components Created
+1.  **Atomic Controls** (`Controls/Cards/`):
+    *   **`CardThumbnail.xaml`**: A highly reusable component encapsulating the 16:9 image, "Now Playing" animated badge (placeholder), "Watched" checkmark, Progress Bar, and Hover Overlay.
+    *   **`VideoCard.xaml`**: The primary item card. Composes `CardThumbnail` with a content area for Title/ID. Includes placeholders for the **Pin**, **Star**, and **3-Dot Menu** hover actions described in `ui.md`.
+    *   **`PlaylistCard.xaml`**: Implemented the specific "Header-Above-Thumbnail" layout for playlists. Includes the inner-rectangle title styling and specific hover actions (Play, Shuffle, Preview).
+
+2.  **Input Controls** (`Controls/Inputs/`):
+    *   **`FolderColorGrid.xaml`**: A reusable 4x4 grid of colored buttons for folder selection menus.
+
+### 🔧 Wiring & Fixes
+*   **App.xaml.cs**: Fixed initialization of static Service properties (Sqlite, Playlist, Navigation, Link, Folder) to be null-safe and properly ordered.
+*   **Build Success**: Resolved ambiguity issues between `System.Windows.Forms` and `System.Windows.Controls` in UserControls.
+
+### ✅ Status
+*   The "Lego blocks" for the UI are ready.
+*   Next Phase (Phase 3) will involve assembling these blocks into the actual Page Views (`PlaylistsView`, `VideosView`) and wiring them to the ViewModels.
+
+---
+
 ## [Refactor Phase 1] Core Data Layer - 2026-01-17
 We have successfully implemented **Phase 1** of the North Star refactoring roadmap, establishing the backend parity with the original Tauri implementation.
 
@@ -39,39 +67,3 @@ The initial refactor (porting React concepts like Stores directly to C# Services
 ### 🗑️ Cleanup
 *   Deleted: `Views/PlaylistsView`, `Views/VideosView`, `Controls/Cards/*`, `Services/PlaylistService` (logic layer).
 *   Preserved: `Core Engines`, `Handlers`, `Database Entities`.
-
----
-
-## [Previous] Embedded Player Breakthrough & Data Layer - 2026-01-16
-**Timestamp**: 2026-01-16
-
-### 🚀 Architectural Breakthrough: WebView2 Embedded Player
-We have successfully implemented a robust **YouTube Embedded Player** that bypasses "Error 153" (Restricted/Bot) issues.
-
-### The Solution: Virtual Host Mapping
-Instead of using `NavigateToString` (which has no Origin) or raw `file://` URLs, we implemented a **Virtual Host** strategy:
-1.  **Assets**: Created `assets/player.html` containing a properly configured `<iframe>`.
-2.  **Mapping**: In `MainWindow.xaml.cs`, we mapped `https://app.local` to the physical `assets` directory.
-   ```csharp
-   PlayerWebView.CoreWebView2.SetVirtualHostNameToFolderMapping(
-       "app.local", 
-       assetsPath, 
-       CoreWebView2HostResourceAccessKind.Allow);
-   ```
-3.  **Origin**: This provides a valid `Origin: https://app.local` header to YouTube, satisfying their embed requirements.
-4.  **Playback**: The app successfully loads and plays valid video IDs (e.g., Lofi Girl).
-
-### ✅ Features Implemented
-1.  **Data Persistence**:
-    *   Implemented `PlaylistService` seeding logic.
-    *   App now auto-seeds "Music Mix" and "Tech Talks" playlists if DB is empty.
-    *   Verified Entity Framework SQLite connection.
-2.  **Primitive UI Views**:
-    *   Created `PlaylistCard` and `VideoCard` WPF controls.
-    *   Created `PlaylistsViewModel` and `VideosViewModel` with ObservableCollections.
-    *   Wired `PlaylistsView` and `VideosView` to display real data.
-
-### ⚠️ Current Limitations (To Be Addressed)
-1.  **UI Fidelity**: The current cards are "primitive" WPF implementations and do not yet match the rich aesthetics of the original React app (documented in `imported-project`).
-2.  **Navigation Logic**: The `VideosView` currently shows *all* videos from the DB, rather than filtering by the selected playlist from `PlaylistsView`.
-3.  **Autoplay**: The embedded player loads but may require a user click to start depending on policy (minor issue).

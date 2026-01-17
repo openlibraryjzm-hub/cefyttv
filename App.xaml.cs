@@ -17,11 +17,11 @@ public partial class App : System.Windows.Application
         InitializeComponent();
     }
 
-    public static Services.Database.SqliteService SqliteService { get; private set; }
-    public static Services.PlaylistService PlaylistService { get; private set; }
-    public static Services.ConfigService ConfigService { get; private set; }
-    public static Services.NavigationService NavigationService { get; private set; }
-    public static Services.FolderService FolderService { get; private set; }
+    public static Services.Database.SqliteService SqliteService { get; private set; } = null!;
+    public static Services.PlaylistService PlaylistService { get; private set; } = null!;
+    public static Services.ConfigService ConfigService { get; private set; } = null!;
+    public static Services.NavigationService NavigationService { get; private set; } = null!;
+    public static Services.FolderService FolderService { get; private set; } = null!;
 
     protected override async void OnStartup(StartupEventArgs e)
     {
