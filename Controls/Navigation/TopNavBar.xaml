@@ -1,0 +1,65 @@
+<UserControl x:Class="ccc.Controls.Navigation.TopNavBar"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ccc.Controls.Navigation"
+             xmlns:btns="clr-namespace:ccc.Controls.Buttons"
+             mc:Ignorable="d" 
+             d:DesignHeight="50" d:DesignWidth="800">
+    <UserControl.Resources>
+        <!-- Tab Button Style -->
+        <Style x:Key="NavTabBtn" TargetType="Button" BasedOn="{StaticResource InvisibleBtn}">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}"/>
+            <Setter Property="Margin" Value="4,0"/>
+            <Setter Property="Padding" Value="12,6"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <!-- Add Triggers for Active State (Selection) via DataTrigger later or VisualState -->
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
+                    <Setter Property="Background" Value="#11FFFFFF"/> 
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Background="Transparent">
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="12,0">
+            
+            <!-- Scroll Controls -->
+            <local:SideScrollButtons x:Name="ScrollControls" Margin="0,0,12,0"/>
+
+            <!-- Back Button -->
+            <Button Style="{StaticResource InvisibleBtn}" Width="32" Height="32" 
+                    Command="{Binding BackCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                    ToolTip="Go Back" Margin="0,0,8,0">
+                <TextBlock Text="◀" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}"/>
+            </Button>
+
+            <!-- Tabs -->
+            <StackPanel Orientation="Horizontal">
+                <!-- Text Tabs -->
+                <Button Content="Playlists" Style="{StaticResource NavTabBtn}" Command="{Binding NavigateCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="playlists"/>
+                <Button Content="Videos" Style="{StaticResource NavTabBtn}" Command="{Binding NavigateCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="videos"/>
+                
+                <!-- Icon Tabs -->
+                <Button Content="🕒" ToolTip="History" Style="{StaticResource NavTabBtn}" Width="40" Padding="0" Command="{Binding NavigateCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="history"/>
+                <Button Content="♥" ToolTip="Likes" Style="{StaticResource NavTabBtn}" Width="40" Padding="0" Command="{Binding NavigateCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="likes"/>
+                <Button Content="📌" ToolTip="Pins" Style="{StaticResource NavTabBtn}" Width="40" Padding="0" Command="{Binding NavigateCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="pins"/>
+                <Button Content="⚙" ToolTip="Settings" Style="{StaticResource NavTabBtn}" Width="40" Padding="0" Command="{Binding NavigateCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="settings"/>
+                <Button Content="🐱" ToolTip="Support" Style="{StaticResource NavTabBtn}" Width="40" Padding="0" Command="{Binding NavigateCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="support"/>
+            </StackPanel>
+            
+        </StackPanel>
+
+        <!-- Use DockPanel or Grid to push Close Button to Far Right -->
+        <btns:SidebarToggle HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,12,0"
+                            IsOpen="True"
+                            ToggleCommand="{Binding CloseCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" 
+                            ToolTip="Close Side Menu"/>
+        <!-- Note: Binding CloseDataCommand is placeholder, ViewModel will bind -->
+
+    </Grid>
+</UserControl>

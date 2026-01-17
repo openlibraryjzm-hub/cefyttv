@@ -1,0 +1,27 @@
+<UserControl x:Class="ccc.Controls.Chrome.WindowCaptionControls"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="30" d:DesignWidth="120">
+    <StackPanel Orientation="Horizontal">
+        <!-- Minimize -->
+        <Button Width="40" Height="30" Style="{StaticResource InvisibleBtn}" Command="{Binding MinimizeCommand, RelativeSource={RelativeSource AncestorType=UserControl}}">
+            <TextBlock Text="—" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        </Button>
+        <!-- Maximize/Restore -->
+        <Button Width="40" Height="30" Style="{StaticResource InvisibleBtn}" Command="{Binding MaximizeCommand, RelativeSource={RelativeSource AncestorType=UserControl}}">
+            <TextBlock Text="☐" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        </Button>
+        <!-- Close -->
+        <Button Width="40" Height="30" Style="{StaticResource InvisibleBtn}" Command="{Binding CloseCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                Background="Transparent">
+            <!-- Close often has hover red effect -->
+            <Button.Triggers>
+                 <!-- Simple visual state trigger if needed, or rely on Style -->
+            </Button.Triggers>
+            <TextBlock Text="✕" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        </Button>
+    </StackPanel>
+</UserControl>
