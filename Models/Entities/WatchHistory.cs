@@ -2,7 +2,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace ccc.Services.Database.Entities
+namespace ccc.Models.Entities
 {
     [Table("watch_history")]
     public class WatchHistory

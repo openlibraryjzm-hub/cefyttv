@@ -17,9 +17,26 @@ public partial class App : System.Windows.Application
         InitializeComponent();
     }
 
-    protected override void OnStartup(StartupEventArgs e)
+    public static Services.Database.SqliteService SqliteService { get; private set; }
+    public static Services.PlaylistService PlaylistService { get; private set; }
+    public static Services.ConfigService ConfigService { get; private set; }
+    public static Services.NavigationService NavigationService { get; private set; }
+    public static Services.FolderService FolderService { get; private set; }
+
+    protected override async void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
+
+        // Initialize Services
+        ConfigService = new Services.ConfigService();
+        await ConfigService.LoadAsync();
+
+        SqliteService = new Services.Database.SqliteService();
+        await SqliteService.InitializeAsync();
+
+        NavigationService = new Services.NavigationService();
+        PlaylistService = new Services.PlaylistService(SqliteService);
+        FolderService = new Services.FolderService(SqliteService, ConfigService);
 
         // Initialize CefSharp settings
         var settings = new CefSharp.Wpf.CefSettings();
@@ -34,9 +51,5 @@ public partial class App : System.Windows.Application
         settings.CefCommandLineArgs.Add("disable-gpu-shader-disk-cache", "1");
 
         CefSharp.Cef.Initialize(settings);
-
-        // Initialize Database (Creates tables if missing)
-        Services.PlaylistService.Instance.InitializeDatabase();
-        Services.PlaylistService.Instance.SeedDebugData();
     }
 }

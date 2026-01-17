@@ -1,5 +1,26 @@
 # Session Updates
 
+## [Refactor Phase 1] Core Data Layer - 2026-01-17
+We have successfully implemented **Phase 1** of the North Star refactoring roadmap, establishing the backend parity with the original Tauri implementation.
+
+### 🏗️ Infrastructure Implemented
+1.  **Entities & Schema**: Created strict EF Core entities in `Models/Entities` matching `database-schema.md` (Playlists, Items, FolderAssignments, Progress, History, Sticky).
+2.  **Services Layer**:
+    *   **SqliteService**: A robust Data Access Layer wrapping `AppDbContext` to mirror Tauri's database commands for CRUD operations.
+    *   **ConfigService**: Handles persistent user preferences (Theme, Profile) with JSON storage.
+    *   **NavigationService**: Manages internal page routing state (`CurrentPage`, History).
+    *   **FolderService**: Manages folder selection state and folder assignment logic.
+    *   **PlaylistService**: Refactored to act as the central **State Store** (Stateful Service) for playlist data and playback navigation state.
+    *   **Logic Services**: `PinService`, `StickyService`, `ShuffleService` implemented with respective logic.
+3.  **Wiring**: All services are instantiated and initialized in `App.xaml.cs`.
+
+### ✅ Status
+*   The Data Layer is now ready to support the UI components (Phase 2).
+*   `App.xaml.cs` now manages the lifecycle of these services, replacing previous ad-hoc singletons.
+*   Old `Services/Database/Entities` folder was cleaned up in favor of `Models/Entities`.
+
+---
+
 ## [Clean Slate] Return to Foundation - 2026-01-17
 We have successfully **wiped the slate clean** of the initial refactoring attempts (partial Library views, Services, and interim ViewModels) to return to the core, stable "Triple Engine" architecture.
 

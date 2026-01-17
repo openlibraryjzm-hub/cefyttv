@@ -1,8 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace ccc.Services.Database.Entities
+namespace ccc.Models.Entities
 {
     [Table("playlist_items")]
     public class PlaylistItem
@@ -29,9 +30,15 @@ namespace ccc.Services.Database.Entities
         [Column("thumbnail_url")]
         public string? ThumbnailUrl { get; set; }
 
+        [Column("author")]
+        public string? Author { get; set; }
+
+        [Column("view_count")]
+        public string? ViewCount { get; set; }
+
         [Required]
         [Column("position")]
-        public int Position { get; set; }
+        public long Position { get; set; }
 
         [Required]
         [Column("added_at")]
@@ -39,19 +46,15 @@ namespace ccc.Services.Database.Entities
 
         [Required]
         [Column("is_local")]
-        public bool IsLocal { get; set; }
-
-        [Column("author")]
-        public string? Author { get; set; }
-
-        [Column("view_count")]
-        public string? ViewCount { get; set; }
+        public long IsLocal { get; set; } = 0; // 0 or 1
 
         [Column("published_at")]
         public string? PublishedAt { get; set; }
 
-        // Navigation
-        [ForeignKey("PlaylistId")]
-        public virtual Playlist Playlist { get; set; } = null!;
+        // Navigation Properties
+        [ForeignKey(nameof(PlaylistId))]
+        public virtual Playlist? Playlist { get; set; }
+
+        public virtual ICollection<VideoFolderAssignment> FolderAssignments { get; set; } = new List<VideoFolderAssignment>();
     }
 }

@@ -2,7 +2,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace ccc.Services.Database.Entities
+namespace ccc.Models.Entities
 {
     [Table("video_progress")]
     public class VideoProgress
@@ -24,11 +24,11 @@ namespace ccc.Services.Database.Entities
 
         [Required]
         [Column("last_progress")]
-        public double LastProgress { get; set; } = 0.0;
+        public double LastProgress { get; set; } = 0;
 
         [Required]
         [Column("progress_percentage")]
-        public double ProgressPercentage { get; set; } = 0.0;
+        public double ProgressPercentage { get; set; } = 0;
 
         [Required]
         [Column("last_updated")]
@@ -36,6 +36,6 @@ namespace ccc.Services.Database.Entities
 
         [Required]
         [Column("has_fully_watched")]
-        public bool HasFullyWatched { get; set; } = false;
+        public long HasFullyWatched { get; set; } = 0; // 0 or 1
     }
 }
