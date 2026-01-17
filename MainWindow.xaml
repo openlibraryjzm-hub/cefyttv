@@ -7,6 +7,8 @@
         xmlns:vm="clr-namespace:ccc.ViewModels"
         xmlns:views="clr-namespace:ccc.Views"
         xmlns:ctrl="clr-namespace:ccc.Controls"
+        xmlns:lists="clr-namespace:ccc.Controls.Lists"
+        xmlns:nav="clr-namespace:ccc.Controls.Navigation"
 
         xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
         mc:Ignorable="d"
@@ -46,7 +48,37 @@
     </Window.Resources>
 
     <Grid>
-        <views:TripleEngineTestView/>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/> <!-- Left Half: Player Placeholder -->
+            <ColumnDefinition Width="*"/> <!-- Right Half: App Shell -->
+        </Grid.ColumnDefinitions>
+
+        <!-- Player Placeholder (Left Half) -->
+        <Border Grid.Column="0" Background="Black">
+            <TextBlock Text="[Video Player Placeholder]" Foreground="#555" 
+                       HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20"/>
+        </Border>
+
+        <!-- App Shell (Right Half) -->
+        <Grid Grid.Column="1" Background="{StaticResource BgPrimaryBrush}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/> <!-- Top Nav Bar -->
+                <RowDefinition Height="*"/>    <!-- View Content -->
+            </Grid.RowDefinitions>
+
+            <!-- Top Navigation (Phase 3 Component) -->
+            <nav:TopNavBar Grid.Row="0" 
+                            NavigateCommand="{Binding NavigateCommand}"
+                            BackCommand="{Binding GoBackCommand}"
+                            CloseCommand="{Binding CloseSidebarCommand}"/>
+
+            <!-- Dynamic View Injection -->
+            <ContentControl Grid.Row="1" Content="{Binding CurrentView}"/>
+            
+        </Grid>
+
+        <!-- Note: TripleEngineTestView is removed for now as per user request to test UI Shell. 
+             Engine integration will return in Phase 5/6 wiring. -->
     </Grid>
     
 

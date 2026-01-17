@@ -236,8 +236,9 @@ C.  **Lists & Visuals**:
     *   Build `Controls/Visuals/PieChart.xaml` (`PieGraph.jsx`).
     *   Build `Controls/Inputs/ColorGrid.xaml` (`BulkTagColorGrid.jsx`).
 
-### Phase 4: The Player System
+### Phase 4: The Player System (DEFERRED)
 **Goal**: Interactive media controls.
+*Status: Deferred to after Phase 5 to prioritize visual page validation.*
 A.  **The Orb**: Build `Controls/Player/OrbController.xaml` (`PlayerController.jsx`).
 B.  **Integrations** (Adapting existing working window to controls):
     *   Wrap WebView2 logic in `Controls/Player/WebViewYouTube.xaml` (`YouTubePlayer.jsx`, `youtubeUtils.js`).
@@ -248,8 +249,8 @@ C.  **Visualizer**:
     *   Implement `Services/Audio/FftProcessor.cs` (`audioProcessor.js`).
     *   Build `Controls/Visuals/CircularVisualizer.xaml` (`AudioVisualizer.jsx`).
 
-### Phase 5: The Views (Pages)
-**Goal**: Assemble components into pages.
+### Phase 5: The Views (Pages) (CURRENT PRIORITY)
+**Goal**: Assemble components into pages and wire up the Main Window.
 A.  **Main Content Views**:
     *   Build `Views/PlaylistsView.xaml` (`PlaylistsPage.jsx`).
     *   Build `Views/VideosView.xaml` (`VideosPage.jsx`).
@@ -281,4 +282,4 @@ C.  **Local Media Server**:
 
 
 ### Phase completion progress:
-None so far..
+Phase 1,2,3 complete. Phase 4 Deferred. Starting Phase 5.

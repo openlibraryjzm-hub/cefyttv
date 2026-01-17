@@ -10,16 +10,29 @@
         <ItemsControl ItemsSource="{Binding Playlists, RelativeSource={RelativeSource AncestorType=UserControl}}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <UniformGrid Columns="2" VerticalAlignment="Top"/>
+                    <StackPanel Orientation="Vertical"/>
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <cards:PlaylistCard Margin="4"
-                        Height="220"
-                        DataContext="{Binding}"
-                        /> 
-                    <!-- DataContext is the Playlist ViewModel/Entity -->
+                    <Button Background="Transparent" BorderThickness="0" HorizontalContentAlignment="Stretch" Padding="12,8" Margin="0,1" Cursor="Hand">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border Background="{TemplateBinding Background}" CornerRadius="4">
+                                    <ContentPresenter Margin="{TemplateBinding Padding}"/>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#33FFFFFF"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
+                        <StackPanel>
+                            <TextBlock Text="{Binding Name}" Foreground="White" FontSize="14" TextTrimming="CharacterEllipsis"/>
+                            <TextBlock Text="{Binding VideoCountText}" Foreground="#99FFFFFF" FontSize="12"/>
+                        </StackPanel>
+                    </Button>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>

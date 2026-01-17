@@ -1,5 +1,24 @@
 # Session Updates
 
+## [Pivot] Phase 5 Priority & Shell Wiring - 2026-01-17
+At the user's request, we deferred **Phase 4 (Player System)** to prioritize **Phase 5 (The Views)** to validate visual progress.
+1.  **Strategic Pivot**: Skipped complex player integration to focus on "accommodating the pages".
+2.  **`MainWindow.xaml` Refactor**:
+    *   Replaced `TripleEngineTestView` with the production **Application Shell**.
+    *   Implemented the Grid Layout: Sidebar (Col 0) + Main Content (Col 1).
+    *   Wired `SidebarList` (Left) and `TopNavBar` (Top-Right).
+3.  **`PlaylistsView.xaml`**:
+    *   Created the first full Page View.
+    *   Integrated `PageBanner` and a responsive `ItemsControl` (WrapPanel) for Playlist Cards.
+4.  **Data Wiring**:
+    *   Updated `MainViewModel` with a dummy `Playlists` collection (`PlaylistDisplayItem`) for immediate visual feedback.
+    *   Implemented placeholder Navigation Commands.
+
+The application now launches into a fully styled "Playlists" page with a working sidebar and top navigation structure, populated with 24 dummy playlists.
+
+---
+
+
 ## [Refactor Phase 3] Composition Controls - 2026-01-17
 We have successfully implemented **Phase 3: Composition Controls** of the refactor roadmap. This phase focused on assembling atomic "Lego blocks" into larger, functional UI structures (Molecules).
 

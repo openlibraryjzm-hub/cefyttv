@@ -62,7 +62,7 @@
                   Visibility="{Binding HasContinueWatching, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <Border CornerRadius="8" BorderBrush="{StaticResource TextPrimaryBrush}" BorderThickness="1" Padding="2" Background="#1E293B">
                     <StackPanel>
-                        <TextBlock Text="CONTINUE?" FontSize="10" FontWeight="Bold" Foreground="{StaticResource PrimaryBrush}" Margin="2" HorizontalAlignment="Center"/>
+                        <TextBlock Text="CONTINUE?" FontSize="10" FontWeight="Bold" Foreground="{StaticResource BgPrimaryBrush}" Margin="2" HorizontalAlignment="Center"/>
                         <Image Source="{Binding ContinueWatchingThumbnail, RelativeSource={RelativeSource AncestorType=UserControl}}" 
                                Width="120" Height="67" Stretch="UniformToFill"/>
                     </StackPanel>
