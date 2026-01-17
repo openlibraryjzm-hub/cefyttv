@@ -40,9 +40,9 @@ This entire stack is orchestrated by **WPF (Windows Presentation Foundation)**, 
 | ❌ | **Missing** | No documentation exists. Rely on generic WPF knowledge. |
 
 ### 1. Architecture & Core
-*   **"What is the Master Plan?"**
+*   **"What was the refactor plan?"**
     *   📄 [NORTH_STAR2.md](NORTH_STAR2.md) (✅ Active)
-    *   *The Historical Refactor Map & Original Scope.*
+    *   *The now completed refactor plan - reference only now.*
 *   **"How do the 3 engines work together?"**
     *   📄 [architecture.md](architecture.md) (✅ Active)
     *   *System design, Triple Engine philosophy, and Engine integration.*
@@ -158,10 +158,11 @@ ccc/
 ├── App.xaml.cs                 # Entry Point (CefSharp Init)
 ├── MainWindow.xaml             # Root Window (Grid Layout & Z-Index Layering)
 └── atlas2/                     # Documentation System (This Directory)
-    ├── NORTH_STAR2.md          # 🚀 The Grand Master Plan & Roadmap
+    ├── NORTH_STAR2.md          # 🚀 Rust-Tauri -> C# Refactor plan (completed)
     ├── architecture.md         # 🏛️ System Design & Triple Engine Theory
     ├── current-state.md        # 📸 Current Status Snapshot
     ├── README.md               # 🧭 The Index (You are here)
+    ├── documentation-conversion.md # 🗺️ Mapping Legacy (Rust/Tauri) to New (C#) Docs
     ├── setup.md                # 🛠️ Build & Environment Setup
     ├── session-updates.md      # 📝 Chronological Change Log
     ├── ui-system.md            # 🎨 Design System & Theming
