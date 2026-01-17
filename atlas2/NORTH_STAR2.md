@@ -1,6 +1,20 @@
-## Overview of Project we are Re-factoring:
+## 📜 Historical Context & Master Refactor Map
 
-**yttv2** is a desktop application built with Tauri (Rust + React) for managing and playing YouTube playlists. The app provides a modern, grid-based interface for browsing playlists and videos, with full SQLite database integration for persistent storage.
+**Status:** Reference Only (Refactor Core Complete)
+
+This document outlined the comprehensive plan to port **yttv2** (a Rust/Tauri + React application) to **Project CCC** (C# WPF). 
+It maps every original React component, Zustand store, and Rust backend function to its C# equivalent.
+
+**Use this document to:**
+1.  Find the original intent of a specific component.
+2.  Understand the "Mental Map" between the old app and the new app.
+3.  Check off remaining "nice-to-have" features from the original app (e.g. Dialogs, Import Tools).
+
+---
+
+## 🚀 Original App Overview (`yttv2`)
+
+**yttv2** was a desktop application built with Tauri (Rust + React) for managing and playing YouTube playlists. The app provided a modern, grid-based interface for browsing playlists and videos, with full SQLite database integration.
 
 ## Tech Stack
 

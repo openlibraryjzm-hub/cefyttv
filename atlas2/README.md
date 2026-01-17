@@ -2,6 +2,10 @@
 
 This directory contains comprehensive documentation for Project CCC (The "Hybrid Hub"), serving as the **System of Record** for the application's architecture, state, and implementation details.
 
+## App Overview
+
+**Project CCC** is a desktop application for managing and playing YouTube playlists, Local video files (mp4, webm, etc) that also features a specialized "Full Browser" mode using a CEF Child engine. The app provides a modern, grid-based interface for browsing playlists and videos, with full SQLite database integration for persistent storage.
+
 ## 🌟 The Hybrid Hub Concept
 
 **Project CCC** is a Windows Desktop application that solves the "Browser Performance vs Native Control" dilemma by adopting a **Triple Engine Architecture**:
@@ -23,49 +27,76 @@ This entire stack is orchestrated by **WPF (Windows Presentation Foundation)**, 
 
 ---
 
-## 📚 System Documentation Map
+## 🧭 Service Manual & System Map
 
-We structure our documentation to mirror the successfully deployed Rust/Tauri architecture, adapted for the C# WPF paradigm.
+**For AI Agents:** This documentation is structured to answer specific questions. Use the map below to find the right context.
+
+### 🟡 Status Legend
+| Icon | Meaning | Action for Agent |
+| :--- | :--- | :--- |
+| ✅ | **Active / Implemented** | Read this for the Truth. Code exists and works. |
+| ⚠️ | **Skeleton / Partial** | Read for High-Level Strategy. Detailed implementation is missing or TBD. |
+| 🚧 | **Planned / In-Progress**| Read for Intent. Code is currently being written or does not exist. |
+| ❌ | **Missing** | No documentation exists. Rely on generic WPF knowledge. |
 
 ### 1. Architecture & Core
-| Document | Description | Status |
-| :--- | :--- | :--- |
-| `NORTH_STAR2.md` | The Grand Roadmap and Master Plan. | ✅ Active |
-| `architecture.md` | System design, Triple Engine philosophy, and Engine integration. | ⚠️ Update Needed |
-| `mvvm-store-architecture.md` | **State Management**. How `MainViewModel` replaces Zustand/Redux. | 🚧 In Progress |
-| `interop-services.md` | **API Bridge**. How JS (WebView2) talks to C# and vice versa. | 🚧 In Progress |
-| `startup-flow.md` | Application initialization sequencing (CefSharp, WebView2, Database). | 🚧 In Progress |
+*   **"What is the Master Plan?"**
+    *   📄 [NORTH_STAR2.md](NORTH_STAR2.md) (✅ Active)
+    *   *The Historical Refactor Map & Original Scope.*
+*   **"How do the 3 engines work together?"**
+    *   📄 [architecture.md](architecture.md) (✅ Active)
+    *   *System design, Triple Engine philosophy, and Engine integration.*
+*   **"What is the State Store?"**
+    *   📄 [mvvm-store-architecture.md](mvvm-store-architecture.md) (✅ Implemented)
+    *   *State Management. How `MainViewModel` replaces Zustand/Redux.*
+*   **"What is the current status of the App?"**
+    *   📄 [current-state.md](current-state.md) (✅ Active)
+    *   *Snapshot. Detailed description of the app's status as of Jan 2026.*
+*   **"How does the app start up?"**
+    *   📄 [startup-flow.md](startup-flow.md) (⚠️ Skeleton)
+    *   *Application initialization sequencing (CefSharp, WebView2, Database).*
 
 ### 2. UI & Interaction
-| Document | Description | Status |
-| :--- | :--- | :--- |
-| `ui-system.md` | Design System, Theming (Colors/Fonts), and Layout Strategy. | 🚧 Planned |
-| `navigation-routing.md` | **Navigation**. View switching logic, Back stack, and History. | 🚧 In Progress |
-| `advanced-player-controller.md`| **Deep Dive** into the top controller strip (Orb, Menus, Buttons). | ⚠️ Skeleton |
+*   **"How does navigation work?"**
+    *   📄 [navigation-routing.md](navigation-routing.md) (✅ Implemented)
+    *   *View switching logic, Back stack, and History.*
+*   **"How is the Top Player Controller built?"**
+    *   📄 [advanced-player-controller.md](advanced-player-controller.md) (✅ Implemented)
+    *   *Deep Dive into the top controller strip (Orb, Menus, Buttons).*
+*   **"What are the Colors/Styles?"**
+    *   📄 [ui-system.md](ui-system.md) (⚠️ Skeleton)
+    *   *Design System, Theming (Colors/Fonts), and Layout Strategy.*
 
 ### 3. Data & Persistence
-| Document | Description | Status |
-| :--- | :--- | :--- |
-| `database-schema.md` | **SQLite Schema**. Mirroring the Rust/Diesel definition. | 🚧 In Progress |
-| `settings-configuration.md` | User preferences, Config Store, and LocalStorage equivalents. | ❌ Missing |
+*   **"What is the Database Schema?"**
+    *   📄 [database-schema.md](database-schema.md) (✅ Implemented)
+    *   *SQLite Schema. Mirroring the Rust/Diesel definition.*
+*   **"Where are user settings?"**
+    *   📄 [settings-configuration.md](settings-configuration.md) (⚠️ Skeleton)
+    *   *User preferences, Config Store, and LocalStorage equivalents.*
 
-### 4. Media Engines
-| Document | Description | Status |
-| :--- | :--- | :--- |
-| `media-engines.md` | **Video Player** logic. MPV P/Invoke, YouTube Wrappers, Audio Visualizers. | 🚧 In Progress |
-
-### 5. Developer Guide
-| Document | Description | Status |
-| :--- | :--- | :--- |
-| `setup.md` | Build requirements (`mpv-2.dll`, runtimes) and "Hot Reload" workflow. | ✅ Stable |
-| `session-updates.md` | Chronological change log and "Wins". | ✅ Active |
-| `youtube-error-153.md` | Specific troubleshooting guide for the "Error 153" saga. | ✅ Case Study |
+### 4. Technical Implementation & Development
+*   **"How do I build the app?"**
+    *   📄 [setup.md](setup.md) (✅ Stable)
+    *   *Build requirements (`mpv-2.dll`, runtimes) and "Hot Reload" workflow.*
+*   **"How does the YouTube Interop work?"**
+    *   📄 [interop-services.md](interop-services.md) (⚠️ Skeleton)
+    *   *API Bridge. How JS (WebView2) talks to C# and vice versa.*
+*   **"How does MPV load?"**
+    *   📄 [media-engines.md](media-engines.md) (⚠️ Skeleton)
+    *   *Video Player logic. MPV P/Invoke, YouTube Wrappers, Audio Visualizers.*
+*   **"What did we just change?"**
+    *   📄 [session-updates.md](session-updates.md) (✅ Active)
+    *   *Chronological change log and "Wins".*
+*   **"How do I fix Error 153?"**
+    *   📄 [youtube-error-153.md](youtube-error-153.md) (✅ Case Study)
+    *   *Specific troubleshooting guide for the "Error 153" saga.*
 
 ---
 
 ## 🏗️ Project Structure
 
-This tree represents the actual, current state of the C# codebase as of `2026-01-17`.
+This tree represents the actual, current state of the C# codebase as of `Jan 18, 2026`.
 
 ```text
 ccc/
@@ -127,6 +158,22 @@ ccc/
 ├── App.xaml.cs                 # Entry Point (CefSharp Init)
 ├── MainWindow.xaml             # Root Window (Grid Layout & Z-Index Layering)
 └── atlas2/                     # Documentation System (This Directory)
+    ├── NORTH_STAR2.md          # 🚀 The Grand Master Plan & Roadmap
+    ├── architecture.md         # 🏛️ System Design & Triple Engine Theory
+    ├── current-state.md        # 📸 Current Status Snapshot
+    ├── README.md               # 🧭 The Index (You are here)
+    ├── setup.md                # 🛠️ Build & Environment Setup
+    ├── session-updates.md      # 📝 Chronological Change Log
+    ├── ui-system.md            # 🎨 Design System & Theming
+    ├── database-schema.md      # 💾 SQLite Schema & Entities
+    ├── advanced-player-controller.md # 🎛️ Top Controller Deep-Dive
+    ├── mvvm-store-architecture.md    # 🧠 State Management (MVVM)
+    ├── navigation-routing.md   # 🗺️ Navigation Logic
+    ├── interop-services.md     # 🌉 JS <-> C# Bridge Specs
+    ├── media-engines.md        # 🎬 MPV & Youtube Player Details
+    ├── startup-flow.md         # 🚦 Boot Sequence Details
+    ├── settings-configuration.md # ⚙️ Config & Preferences
+    └── youtube-error-153.md    # 🐛 "Error 153" Case Study
 ```
 
 ## Usage Tips for AI Agents
