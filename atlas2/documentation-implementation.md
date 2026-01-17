@@ -28,15 +28,23 @@ This document bridges the gap between the legacy functionality (documented in `a
 ### Player Controls (Top Orbit)
 *   **Legacy**: [`atlas/advanced-player-controller.md`](../atlas/advanced-player-controller.md) - The "Orb" menu, Shuffle/Repeat toggles, and Dual Player logic.
 *   **Current C#**:
-    *   **Logic**: `MainViewModel.cs` stores player state.
-    *   **UI**: `Controls/Player/AdvancedPlayerController.xaml` (Visual port is high fidelity).
-*   **Missing**: "Preview Mode" (hovering timeline) and specific "Dual Player" state management.
+    *   **Logic**: `MainViewModel.cs` (Navigation Commands `NextPlaylist`, `NextVideo`...).
+    *   **UI**: `Controls/Player/AdvancedPlayerController.xaml` (Themed & Wired).
+*   **Status**: **Mixed**. 
+    *   ✅ Navigation Arrows (Prev/Next) fully functional (cycles playlist/video).
+    *   ✅ Metadata Binding (Titles/Counts) fully functional.
+    *   ❌ Play/Pause/Shuffle buttons visible but disconnected.
+*   **Missing**: "Preview Mode" and specific "Dual Player" state management.
 
 ### Navigation
 *   **Legacy**: [`atlas/navigation-routing.md`](../atlas/navigation-routing.md) - React Router paths and History stack.
 *   **Current C#**:
     *   **Logic**: `Services/NavigationService.cs` (View switching manager).
+    *   **Main VM**: `MainViewModel.cs` manages view state (`CurrentView`).
     *   **UI**: `Controls/TopNavigation.xaml` and `MainWindow.xaml` (Shell).
+*   **Status**: **Functional**.
+    *   ✅ Tab Switching (Playlists, Videos, Browser).
+    *   ✅ **Browser Toggle** implemented.
 *   **Missing**: Browser-like history (Forward/Back buttons) for app navigation is simplified in WPF.
 
 ### Settings & Configuration

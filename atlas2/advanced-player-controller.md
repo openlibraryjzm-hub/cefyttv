@@ -1,7 +1,7 @@
 # Advanced Player Controller (C# Implementation)
 
-**Last Updated:** 2026-01-17
-**Status:** UI Skeleton Implemented / Logic Pending
+**Last Updated:** 2026-01-18
+**Status:** UI Wired (Navigation Logic) / Visuals Updated
 **Parent Document:** [Architecture](architecture.md)
 
 ---
@@ -50,16 +50,14 @@ The control itself uses a simple 3-column grid:
 
 ---
 
-## 3. Control Inventory (Buttons)
-
-We have implemented visual placeholders for all controls defined in the React/Tauri spec.
+## 3. Control Inventory & Wiring
 
 ### 3.1 Playlist Menu (Left)
-*   **Metadata Area**: Displays `Author | Views` (Placeholder).
+*   **Metadata Area**: Displays `SelectedPlaylist.Name` and `SelectedPlaylist.VideoCountText`.
 *   **Navigation Bar**:
-    *   `<` (Previous Playlist)
-    *   `#` (Playlist Grid)
-    *   `>` (Next Playlist)
+    *   `<` (Previous Playlist): **Wired**. Cycles to previous playlist and auto-plays video.
+    *   `#` (Playlist Grid): **Wired**. Navigates to `PlaylistsView`.
+    *   `>` (Next Playlist): **Wired**. Cycles to next playlist and auto-plays video.
 
 ### 3.2 The Orb (Center)
 *   **Central Image**: currently a dark circle placeholder.
@@ -70,43 +68,38 @@ We have implemented visual placeholders for all controls defined in the React/Ta
     *   `O` (Bottom): Clipping/Spill Toggle
 
 ### 3.3 Video Menu (Right)
-*   **Metadata Area**: Title Text.
+*   **Metadata Area**: Displays `SelectedVideo.Title`.
 *   **Navigation Bar** (Left Cluster):
-    *   `<` (Prev Video)
-    *   `#` (Video Grid)
-    *   `>` (Next Video)
-    *   `▶` (Play/Folder Cycle)
+    *   `<` (Prev Video): **Wired**. Cycles to previous video in list.
+    *   `#` (Video Grid): **Wired**. Navigates to `VideosView`.
+    *   `>` (Next Video): **Wired**. Cycles to next video in list.
+    *   `▶` (Play/Folder Cycle): *Pending Wiring*.
 *   **Tool Bar** (Right Cluster):
-    *   `S` (Shuffle)
-    *   `*` (Star/Folder Assign)
-    *   `P` (Pin Priority)
-    *   `L` (Like)
-    *   `...` (More Options)
+    *   `S` (Shuffle), `*` (Star), `P` (Pin), `L` (Like), `...` (More).
 
 ---
 
 ## 4. Styling & Resources
 
-### 4.1 Local Resources
-To avoid "Forward Reference" crashes in XAML, styles are defined in `<UserControl.Resources>` at the very top of the file.
+### 4.1 Theme Integration (Updated 2026-01-18)
+The controller now uses the GLOBAL resource dictionary (`Colors.xaml`, `Styles.xaml`) for a cohesive **Dark Glass** look.
 
+*   **Backgrounds**: Uses `GlassCardBrush` (#CC1e293b) for semi-transparent panels.
+*   **Text**: Uses `TextPrimaryBrush` (Slate-50) and `TextMutedBrush` (Slate-500).
+*   **Accents**: Uses `AccentPrimaryBrush` (Red-500) for highlights.
+
+### 4.2 Local Resources
 *   **`IconButtonStyle`**: 
     *   Transparent background by default.
-    *   Hover: Deep Blue (`#1E293B`) background, Sky Blue (`#38BDF8`) text.
-    *   Corner Radius: 12.
+    *   Hover: `BgTertiaryBrush` (Slate-700) background, `AccentPrimaryBrush` text.
 *   **`OrbButtonStyle`**: 
     *   White background, Dark text.
     *   Hover: Scale 1.1x zoom effect.
-    *   Corner Radius: 14 (Circular).
 
 ---
 
 ## 5. Next Steps (Implementation Roadmap)
 
-1.  **Icon Integration**: Replace text placeholders (`<`, `S`, assuming basic chars) with `Path` vectors or an Icon Font (FontAwesome/Material).
-2.  **Data Binding**:
-    *   Bind `VideoTitle`, `Author`, `ViewCount` to `MainViewModel`.
-    *   Bind `ImageSource` for the Orb.
-3.  **Command Wiring**:
-    *   Connect `Command="{Binding NextVideoCommand}"`, etc.
-4.  **Audio Visualizer**: Implement the canvas/rendering logic for the ring around the orb.
+1.  **Player Bridge Integration**: Wiring the Play/Pause logic to `WebView2`.
+2.  **Icon Integration**: Replace text placeholders (`<`, `S`) with `Path` vectors or an Icon Font (FontAwesome/Material).
+3.  **Audio Visualizer**: Implement the canvas/rendering logic for the ring around the orb.

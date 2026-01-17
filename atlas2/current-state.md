@@ -12,8 +12,9 @@ The application is in a **Barebones / Functional Skeleton** state.
 While the core architecture (WPF + SQLite + Triple Engine Shell) is established and data migration for major tables (Playlists/Videos) is successful, the UI lacks significant styling, polish, and interactivity compared to the previous Rust/Tauri iteration.
 
 ### 1.1 Styling & Aesthetics
-*   **Status**: ❌ Missing / Extremely Barebones.
-*   **Issue**: Styles are basic WPF defaults or minimal custom styles. The distinct "Premium/Glassmorphic" look of the Rust app has not yet been ported.
+*   **Status**: 🚧 Partial / Premium Dark Mode (Glassmorphism).
+*   **Update**: Implemented global `Colors.xaml` and `Styles.xaml` with a "Deep Slate" and "Red Glow" theme. The app no longer looks like a default WPF skeleton.
+*   **Missing**: Micro-animations, Hover glow effects on cards, and custom scrollbars.
 
 ---
 
@@ -22,9 +23,11 @@ While the core architecture (WPF + SQLite + Triple Engine Shell) is established 
 ### 2.1 Main Window Structure
 *   **Top Strip (Rows 0, Height 102px)**: Dedicated "Advanced Player Controller" space.
     *   **Center**: The Orb (Visual placeholder present).
-    *   **Left**: Playlist Menu (Placeholder titles/metadata).
-    *   **Right**: Video Menu (Placeholder titles/metadata).
-    *   **Interactivity**: All buttons (30+) are non-wired placeholders.
+    *   **Left**: Playlist Menu (Active Data Binding).
+    *   **Right**: Video Menu (Active Data Binding).
+    *   **Interactivity**: 
+        *   ✅ **Navigation Arrows**: Functional (Cycle Playlist/Video).
+        *   ❌ **Action Buttons**: (Play/Shuffle/Like) still non-functional.
 *   **Split View (Row 1)**:
     *   **Left Half**: Video Player (WebView2/MPV container).
     *   **Right Half**: Navigation/Content Pane.
@@ -34,16 +37,10 @@ While the core architecture (WPF + SQLite + Triple Engine Shell) is established 
 *   **Active Pages**:
     *   `PlaylistsView` (Home)
     *   `VideosView` (Drill-down from Playlist)
-    *   `HistoryView` (Data missing)
-    *   `LikesView` (Data missing)
-    *   `PinsView` (Data missing)
-    *   `SettingsView` (Placeholder)
-    *   `SupportView` (Placeholder)
+    *   `BrowserView` (CefSharp Web Browser) - **New Wiring**
 *   **Top Nav Controls**:
-    *   Setup: Back, Scroll Top, Scroll Active, Scroll Bottom, Close Menu.
-    *   Status: **Present but Broken** (Non-functional).
-*   **Missing**: 
-    *   **Browser Toggle**: No button exists on the Top Nav to switch to the CefSharp browser layer.
+    *   **Browser Toggle**: ✅ Added and Functional (Globe Icon).
+    *   **Scroll/Close**: Present but partially wired.
 
 ---
 

@@ -1,5 +1,33 @@
 # Session Updates
 
+# Session Updates
+
+## [Wiring] Advanced Player Controller & Visual Upgrade - 2026-01-18
+We have successfully implemented the **Navigation Logic** for the advanced top controller and given the application a significant visual overhaul.
+
+### 🎨 Visual Upgrade (Premium Dark Mode)
+1.  **Global Theme**: Replaced the mixed Light/Slate palette with a cohesive **Deep Slate / Glassmorphic** theme.
+    *   **Backgrounds**: `Slate-950` (#020617) base with `Slate-800` glass panels.
+    *   **Accents**: Brand Red (#ef4444) to match the required "Glow" aesthetic.
+    *   **Resources**: Defined global resources in `Colors.xaml` and `Styles.xaml` for consistency.
+2.  **Top Navigation**:
+    *   Updated tabs to match the dark theme.
+    *   Added **Browser Mode Toggle** (Globe Icon) to switch between Library and CefSharp Browser.
+
+### 🎮 Advanced Player Controller Wiring
+The Top Controller (Head-Up Display) is now functional for navigation:
+1.  **Metadata Binding**:
+    *   The **Playlist Menu** (Left) now binds to `MainViewModel.SelectedPlaylist`.
+    *   The **Video Menu** (Right) now binds to `MainViewModel.SelectedVideo`.
+    *   Result: Accurate titles and video counts are displayed instead of placeholders.
+2.  **Navigation Logic**:
+    *   **Playlist Cycle**: Implementing `NextPlaylist` / `PrevPlaylist` commands that cycle through the library.
+    *   **Video Cycle**: Implementing `NextVideo` / `PrevVideo` commands that cycle through the current playlist.
+    *   **Auto-Play**: Switching playlists automatically loads and plays the first video, fulfilling the "Seamless Navigation" requirement.
+
+### 🚧 Next Steps
+*   **Player Bridge**: The "Play/Pause" buttons on the controller still do nothing because the C# ViewModel cannot yet "talk" to the WebView2 YouTube player. This is the next critical path.
+
 ## [Layout] Advanced Player Controller Space - 2026-01-17
 We have restructured the application layout to accommodate the **Advanced Player Controller**.
 

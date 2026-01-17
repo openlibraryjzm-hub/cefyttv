@@ -87,7 +87,7 @@
 
                 <!-- 1. Title Area -->
                 <StackPanel Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center">
-                    <TextBlock Text="PLAYLIST TITLE" 
+                    <TextBlock Text="{Binding SelectedPlaylist.Name, FallbackValue='NO PLAYLIST'}" 
                                Foreground="{StaticResource TextPrimaryBrush}"
                                FontWeight="Black"
                                FontSize="16"
@@ -95,7 +95,7 @@
                                TextTrimming="CharacterEllipsis"/>
                     <!-- Optional Folder Badge Placeholder -->
                     <Border Background="{StaticResource BgTertiaryBrush}" CornerRadius="4" Padding="6,2" HorizontalAlignment="Center" Margin="0,4,0,0">
-                         <TextBlock Text="FOLDER NAME" Foreground="{StaticResource TextSecondaryBrush}" FontSize="9" FontWeight="Bold"/>
+                         <TextBlock Text="{Binding SelectedPlaylist.VideoCountText, FallbackValue=''}" Foreground="{StaticResource TextSecondaryBrush}" FontSize="9" FontWeight="Bold"/>
                     </Border>
                 </StackPanel>
 
@@ -116,11 +116,14 @@
                         <!-- Navigation Controls (Right) -->
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right">
                             <!-- Prev Playlist -->
-                            <Button Style="{StaticResource IconButtonStyle}" Width="24" Height="24" Content="&lt;"/>
+                            <Button Style="{StaticResource IconButtonStyle}" Width="24" Height="24" Content="&lt;"
+                                    Command="{Binding PrevPlaylistCommand}"/>
                             <!-- Playlist Grid -->
-                            <Button Style="{StaticResource IconButtonStyle}" Width="24" Height="24" Content="#"/>
+                            <Button Style="{StaticResource IconButtonStyle}" Width="24" Height="24" Content="#"
+                                    Command="{Binding NavigateCommand}" CommandParameter="playlists"/>
                             <!-- Next Playlist -->
-                            <Button Style="{StaticResource IconButtonStyle}" Width="24" Height="24" Content="&gt;"/>
+                            <Button Style="{StaticResource IconButtonStyle}" Width="24" Height="24" Content="&gt;"
+                                    Command="{Binding NextPlaylistCommand}"/>
                         </StackPanel>
                     </Grid>
                 </Border>
@@ -187,7 +190,7 @@
 
                 <!-- 1. Title Area -->
                  <StackPanel Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center">
-                    <TextBlock Text="VIDEO TITLE" 
+                    <TextBlock Text="{Binding SelectedVideo.Title, FallbackValue='NO VIDEO'}" 
                                Foreground="{StaticResource TextPrimaryBrush}"
                                FontWeight="Black"
                                FontSize="16"
@@ -205,11 +208,14 @@
                         <!-- Nav Controls (Far Left) -->
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
                               <!-- Prev Video -->
-                            <Button Style="{StaticResource IconButtonStyle}" Width="24" Height="24" Content="&lt;"/>
+                            <Button Style="{StaticResource IconButtonStyle}" Width="24" Height="24" Content="&lt;"
+                                    Command="{Binding PrevVideoCommand}"/>
                              <!-- Video Grid -->
-                            <Button Style="{StaticResource IconButtonStyle}" Width="24" Height="24" Content="#"/>
+                            <Button Style="{StaticResource IconButtonStyle}" Width="24" Height="24" Content="#"
+                                    Command="{Binding NavigateCommand}" CommandParameter="videos"/>
                              <!-- Next Video -->
-                            <Button Style="{StaticResource IconButtonStyle}" Width="24" Height="24" Content="&gt;"/>
+                            <Button Style="{StaticResource IconButtonStyle}" Width="24" Height="24" Content="&gt;"
+                                    Command="{Binding NextVideoCommand}"/>
                              <!-- Play/Folder Cycle -->
                             <Button Style="{StaticResource IconButtonStyle}" Width="24" Height="24" Content="▶"/>
                         </StackPanel>

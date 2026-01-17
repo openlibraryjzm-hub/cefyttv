@@ -204,7 +204,23 @@ namespace ccc.ViewModels
                     
                     // 3. Navigate
                     Navigate("Videos");
-                    PageTitle = App.PlaylistService.GetAllPlaylistsAsync().Result.FirstOrDefault(p => p.Id == playlistId)?.Name ?? "Playlist";
+                    var playlist = App.PlaylistService.GetAllPlaylistsAsync().Result.FirstOrDefault(p => p.Id == playlistId);
+                    if (playlist != null)
+                    {
+                        SelectedPlaylist = new PlaylistDisplayItem
+                        {
+                            Id = playlist.Id,
+                            Name = playlist.Name,
+                            Description = playlist.Description ?? "",
+                            VideoCountText = $"{items.Count} Videos",
+                            ThumbnailUrl = playlist.CustomThumbnailUrl ?? "https://picsum.photos/300/200"
+                        };
+                        PageTitle = playlist.Name;
+                    }
+                    else
+                    {
+                        PageTitle = "Playlist";
+                    }
                 });
             }
             catch (Exception ex)
@@ -223,6 +239,10 @@ namespace ccc.ViewModels
                 foreach (var v in Videos)
                 {
                     v.IsPlaying = (v.VideoId == videoId);
+                    if (v.IsPlaying)
+                    {
+                        SelectedVideo = v;
+                    }
                 }
             }
         }
@@ -279,4 +299,73 @@ namespace ccc.ViewModels
         public void CloseSidebar() { /* TODO */ }
 
         [RelayCommand]
-        public void NavigateToBrowser
+        public void NavigateToBrowser()
+        {
+            PageTitle = "Web Browser";
+            IsBrowserVisible = true;
+            OnPropertyChanged(nameof(IsLibraryVisible));
+        }
+
+        [RelayCommand]
+        public async Task NextPlaylist()
+        {
+            if (SelectedPlaylist == null || !Playlists.Any()) return;
+
+            var currentIndex = Playlists.IndexOf(Playlists.FirstOrDefault(p => p.Id == SelectedPlaylist.Id));
+            if (currentIndex == -1) return;
+
+            var nextIndex = (currentIndex + 1) % Playlists.Count; // Cycle
+            
+            await OpenPlaylist(Playlists[nextIndex].Id);
+            
+            // Auto-play first video of the new playlist
+            if (Videos.Any())
+            {
+                PlayVideo(Videos[0].VideoId);
+            }
+        }
+
+        [RelayCommand]
+        public async Task PrevPlaylist()
+        {
+            if (SelectedPlaylist == null || !Playlists.Any()) return;
+
+            var currentIndex = Playlists.IndexOf(Playlists.FirstOrDefault(p => p.Id == SelectedPlaylist.Id));
+            if (currentIndex == -1) return;
+
+            var prevIndex = (currentIndex - 1 + Playlists.Count) % Playlists.Count; // Cycle
+            
+            await OpenPlaylist(Playlists[prevIndex].Id);
+
+            // Auto-play first video of the new playlist
+            if (Videos.Any())
+            {
+                PlayVideo(Videos[0].VideoId);
+            }
+        }
+
+        [RelayCommand]
+        public void NextVideo()
+        {
+            if (SelectedVideo == null || !Videos.Any()) return;
+
+            var currentIndex = Videos.IndexOf(Videos.FirstOrDefault(v => v.VideoId == SelectedVideo.VideoId));
+            if (currentIndex == -1) return;
+
+            var nextIndex = (currentIndex + 1) % Videos.Count; // Cycle
+            PlayVideo(Videos[nextIndex].VideoId);
+        }
+
+        [RelayCommand]
+        public void PrevVideo()
+        {
+             if (SelectedVideo == null || !Videos.Any()) return;
+
+            var currentIndex = Videos.IndexOf(Videos.FirstOrDefault(v => v.VideoId == SelectedVideo.VideoId));
+             if (currentIndex == -1) return;
+
+            var prevIndex = (currentIndex - 1 + Videos.Count) % Videos.Count; // Cycle
+            PlayVideo(Videos[prevIndex].VideoId);
+        }
+    }
+}
