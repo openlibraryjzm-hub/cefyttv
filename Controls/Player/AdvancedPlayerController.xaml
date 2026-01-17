@@ -76,8 +76,8 @@
                 Width="340" Height="102"
                 HorizontalAlignment="Right"
                 Margin="0,0,20,0"
-                Background="#1E293B" 
-                BorderBrush="#334155" BorderThickness="2"
+                Background="{StaticResource GlassCardBrush}" 
+                BorderBrush="{StaticResource BorderBrush}" BorderThickness="2"
                 CornerRadius="16">
             <Grid>
                 <Grid.RowDefinitions>
@@ -88,29 +88,29 @@
                 <!-- 1. Title Area -->
                 <StackPanel Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center">
                     <TextBlock Text="PLAYLIST TITLE" 
-                               Foreground="#E2E8F0"
+                               Foreground="{StaticResource TextPrimaryBrush}"
                                FontWeight="Black"
                                FontSize="16"
                                TextAlignment="Center"
                                TextTrimming="CharacterEllipsis"/>
                     <!-- Optional Folder Badge Placeholder -->
-                    <Border Background="#334155" CornerRadius="4" Padding="6,2" HorizontalAlignment="Center" Margin="0,4,0,0">
-                         <TextBlock Text="FOLDER NAME" Foreground="#94A3B8" FontSize="9" FontWeight="Bold"/>
+                    <Border Background="{StaticResource BgTertiaryBrush}" CornerRadius="4" Padding="6,2" HorizontalAlignment="Center" Margin="0,4,0,0">
+                         <TextBlock Text="FOLDER NAME" Foreground="{StaticResource TextSecondaryBrush}" FontSize="9" FontWeight="Bold"/>
                     </Border>
                 </StackPanel>
 
                 <!-- 2. Bottom Bar -->
                 <Border Grid.Row="1" 
-                        Background="#0F172A" 
-                        BorderBrush="#334155" BorderThickness="0,1,0,0"
+                        Background="{StaticResource BgPrimaryBrush}" 
+                        BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,1,0,0"
                         CornerRadius="0,0,16,16"
                         Padding="12,0">
                     <Grid>
                         <!-- Metadata (Left) -->
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
-                            <TextBlock Text="AUTHOR" Foreground="#38BDF8" Opacity="0.8" FontSize="10" FontWeight="Bold"/>
-                            <TextBlock Text=" | " Foreground="#64748B" FontSize="10"/>
-                            <TextBlock Text="1.2M" Foreground="#38BDF8" Opacity="0.8" FontSize="10" FontWeight="Bold"/>
+                            <TextBlock Text="AUTHOR" Foreground="{StaticResource AccentPrimaryBrush}" Opacity="0.8" FontSize="10" FontWeight="Bold"/>
+                            <TextBlock Text=" | " Foreground="{StaticResource TextMutedBrush}" FontSize="10"/>
+                            <TextBlock Text="1.2M" Foreground="{StaticResource AccentPrimaryBrush}" Opacity="0.8" FontSize="10" FontWeight="Bold"/>
                         </StackPanel>
 
                         <!-- Navigation Controls (Right) -->
@@ -132,19 +132,19 @@
              ========================================================= -->
         <Grid Grid.Column="1" Width="154" Height="154" VerticalAlignment="Top" Margin="0,0,0,0">
              <!-- Orb Glow/Shadow -->
-             <Ellipse Fill="#00000000" Stroke="#0EA5E9" StrokeThickness="0" Width="154" Height="154">
+             <Ellipse Fill="#00000000" Stroke="{StaticResource AccentPrimaryBrush}" StrokeThickness="0" Width="154" Height="154">
                 <Ellipse.Effect>
-                    <DropShadowEffect Color="#0EA5E9" BlurRadius="40" ShadowDepth="0" Opacity="0.3"/>
+                    <DropShadowEffect Color="{StaticResource AccentPrimaryColor}" BlurRadius="40" ShadowDepth="0" Opacity="0.3"/>
                 </Ellipse.Effect>
              </Ellipse>
 
              <!-- Main Orb Circle -->
-             <Ellipse Width="154" Height="154" Fill="#0F172A" Stroke="#0EA5E9" StrokeThickness="2">
+             <Ellipse Width="154" Height="154" Fill="{StaticResource BgPrimaryBrush}" Stroke="{StaticResource AccentPrimaryBrush}" StrokeThickness="2">
              </Ellipse>
              
              <!-- Image Placeholder -->
-             <Ellipse Width="150" Height="150" Fill="#1E293B" Margin="2"/>
-             <TextBlock Text="ORB" Foreground="#0EA5E9" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+             <Ellipse Width="150" Height="150" Fill="{StaticResource BgSecondaryBrush}" Margin="2"/>
+             <TextBlock Text="ORB" Foreground="{StaticResource AccentPrimaryBrush}" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
 
              <!-- Orb Radial Buttons (Visual Only - Positioned manually for now) -->
              <!-- 12 o'clock - Upload (Top Center) -->
@@ -176,8 +176,8 @@
                 Width="340" Height="102"
                 HorizontalAlignment="Left"
                 Margin="20,0,0,0"
-                Background="#1E293B" 
-                BorderBrush="#334155" BorderThickness="2"
+                Background="{StaticResource GlassCardBrush}" 
+                BorderBrush="{StaticResource BorderBrush}" BorderThickness="2"
                 CornerRadius="16">
             <Grid>
                  <Grid.RowDefinitions>
@@ -188,7 +188,7 @@
                 <!-- 1. Title Area -->
                  <StackPanel Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center">
                     <TextBlock Text="VIDEO TITLE" 
-                               Foreground="#E2E8F0"
+                               Foreground="{StaticResource TextPrimaryBrush}"
                                FontWeight="Black"
                                FontSize="16"
                                TextAlignment="Center"
@@ -197,8 +197,8 @@
 
                 <!-- 2. Bottom Bar -->
                 <Border Grid.Row="1" 
-                        Background="#0F172A" 
-                        BorderBrush="#334155" BorderThickness="0,1,0,0"
+                        Background="{StaticResource BgPrimaryBrush}" 
+                        BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,1,0,0"
                         CornerRadius="0,0,16,16"
                         Padding="8,0"> <!-- Tighter padding for more buttons -->
                     <Grid>

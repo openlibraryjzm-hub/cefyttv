@@ -14,7 +14,7 @@
         xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
         mc:Ignorable="d"
         Title="Atlas 2.0" Height="720" Width="1280"
-        Background="#121212"> 
+        Background="{StaticResource BgPrimaryBrush}"> 
 
     <Window.DataContext>
         <vm:MainViewModel/>

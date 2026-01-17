@@ -54,6 +54,12 @@ namespace ccc.ViewModels
         [ObservableProperty]
         private string? _currentVideoId;
 
+        [ObservableProperty]
+        private PlaylistDisplayItem? _selectedPlaylist;
+
+        [ObservableProperty]
+        private VideoDisplayItem? _selectedVideo;
+
         // Collections
         [ObservableProperty]
         private ObservableCollection<PlaylistDisplayItem> _playlists = new();
@@ -255,6 +261,12 @@ namespace ccc.ViewModels
                     CurrentView = new SupportView();
                     PageTitle = "Support";
                     break;
+                case "browser":
+                    CurrentView = new BrowserView();
+                    PageTitle = "Web Browser";
+                    IsBrowserVisible = true;
+                    OnPropertyChanged(nameof(IsLibraryVisible));
+                    break;
                 default:
                     break;
             }
@@ -267,11 +279,4 @@ namespace ccc.ViewModels
         public void CloseSidebar() { /* TODO */ }
 
         [RelayCommand]
-        public void NavigateToBrowser()
-        {
-            PageTitle = "Web Browser";
-            IsBrowserVisible = true;
-            OnPropertyChanged(nameof(IsLibraryVisible));
-        }
-    }
-}
+        public void NavigateToBrowser

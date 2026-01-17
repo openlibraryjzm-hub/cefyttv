@@ -19,7 +19,7 @@
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
                     <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
-                    <Setter Property="Background" Value="#11FFFFFF"/> 
+                    <Setter Property="Background" Value="{StaticResource BgTertiaryBrush}"/> 
                 </Trigger>
             </Style.Triggers>
         </Style>
@@ -50,6 +50,7 @@
                 <Button Content="📌" ToolTip="Pins" Style="{StaticResource NavTabBtn}" Width="40" Padding="0" Command="{Binding NavigateCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="pins"/>
                 <Button Content="⚙" ToolTip="Settings" Style="{StaticResource NavTabBtn}" Width="40" Padding="0" Command="{Binding NavigateCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="settings"/>
                 <Button Content="🐱" ToolTip="Support" Style="{StaticResource NavTabBtn}" Width="40" Padding="0" Command="{Binding NavigateCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="support"/>
+                <Button Content="🌐" ToolTip="Browser Mode" Style="{StaticResource NavTabBtn}" Width="40" Padding="0" Command="{Binding NavigateCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="browser"/>
             </StackPanel>
             
         </StackPanel>
