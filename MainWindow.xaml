@@ -9,6 +9,7 @@
         xmlns:ctrl="clr-namespace:ccc.Controls"
         xmlns:lists="clr-namespace:ccc.Controls.Lists"
         xmlns:nav="clr-namespace:ccc.Controls.Navigation"
+        xmlns:player="clr-namespace:ccc.Controls.Player"
 
         xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
         mc:Ignorable="d"
@@ -32,10 +33,8 @@
         </Grid.ColumnDefinitions>
 
         <!-- Player Placeholder (Left Half) -->
-        <Border Grid.Column="0" Background="Black">
-            <TextBlock Text="[Video Player Placeholder]" Foreground="#555" 
-                       HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20"/>
-        </Border>
+        <player:WebViewYouTubeControls Grid.Column="0" 
+                                       VideoId="{Binding CurrentVideoId}"/>
 
         <!-- App Shell (Right Half) -->
         <Grid Grid.Column="1" Background="{StaticResource BgPrimaryBrush}">

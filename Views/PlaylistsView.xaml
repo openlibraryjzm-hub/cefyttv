@@ -32,7 +32,13 @@
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <cards:PlaylistCard Margin="10" Width="220" Height="300"/>
+                        <cards:PlaylistCard Margin="10" Width="220" Height="300">
+                             <cards:PlaylistCard.InputBindings>
+                                <MouseBinding MouseAction="LeftClick" 
+                                              Command="{Binding DataContext.OpenPlaylistCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                              CommandParameter="{Binding Id}"/>
+                            </cards:PlaylistCard.InputBindings>
+                        </cards:PlaylistCard>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>

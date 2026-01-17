@@ -50,6 +50,10 @@ namespace ccc.ViewModels
 
         public bool IsLibraryVisible => !IsBrowserVisible;
 
+        // Player State
+        [ObservableProperty]
+        private string? _currentVideoId;
+
         // Collections
         [ObservableProperty]
         private ObservableCollection<PlaylistDisplayItem> _playlists = new();
@@ -163,6 +167,60 @@ namespace ccc.ViewModels
             }
         }
 
+
+        [RelayCommand]
+        public async Task OpenPlaylist(long playlistId)
+        {
+            try
+            {
+                // 1. Load data in Service
+                await App.PlaylistService.LoadPlaylistAsync(playlistId);
+
+                // 2. Map to ViewModel Collection
+                var items = App.PlaylistService.CurrentPlaylistItems;
+                
+                // Switch to UI Thread
+                System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                {
+                    Videos.Clear();
+                    foreach (var item in items)
+                    {
+                        Videos.Add(new VideoDisplayItem
+                        {
+                            Title = item.Title ?? "Unknown Title",
+                            VideoId = item.VideoId,
+                            ThumbnailUrl = item.ThumbnailUrl ?? "/Resources/Images/placeholder.jpg",
+                            // Progress/Watched will come from joined data later
+                            ProgressPercentage = 0, 
+                            IsWatched = false
+                        });
+                    }
+                    
+                    // 3. Navigate
+                    Navigate("Videos");
+                    PageTitle = App.PlaylistService.GetAllPlaylistsAsync().Result.FirstOrDefault(p => p.Id == playlistId)?.Name ?? "Playlist";
+                });
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error opening playlist: {ex.Message}");
+            }
+        }
+
+        [RelayCommand]
+        public void PlayVideo(string videoId)
+        {
+            if (!string.IsNullOrEmpty(videoId))
+            {
+                CurrentVideoId = videoId;
+                // Ideally also update 'IsPlaying' state in the list
+                foreach (var v in Videos)
+                {
+                    v.IsPlaying = (v.VideoId == videoId);
+                }
+            }
+        }
+
         [RelayCommand]
         public void Navigate(string destination)
         {
@@ -175,7 +233,7 @@ namespace ccc.ViewModels
                     break;
                 case "videos":
                     CurrentView = new VideosView();
-                    PageTitle = "Videos";
+                    // PageTitle = "Videos"; // Let caller set specific title if needed
                     break;
                 case "history":
                     CurrentView = new HistoryView();

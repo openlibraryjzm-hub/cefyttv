@@ -261,16 +261,17 @@ B.  **Secondary Views**:
     *   [x] Build `Views/SettingsView.xaml` (`SettingsPage.jsx`).
     *   [x] Build `Views/SupportView.xaml` (`SupportView.xaml`).
 
-### Phase 6: Data Integration & Wiring (CURRENT PRIORITY)
+### Phase 6: Data Integration & Wiring (PARTIALLY COMPLETE)
 **Goal**: Connect Views to Real Data and Player.
 A.  **Database Migration**:
-    *   [ ] Locate original Tauri SQLite database.
-    *   [ ] Migrate/Copy data to C# `library.db`.
+    *   [x] Locate original Tauri SQLite database.
+    *   [x] Migrate/Copy data to C# `library.db`.
 B.  **Real Data Binding**:
-    *   [ ] Connect `SqliteService` to ViewModels.
-    *   [ ] Replace Dummy Data with DB Calls.
+    *   [x] Connect `SqliteService` to ViewModels.
+    *   [x] Replace Dummy Data with DB Calls (Playlists & Videos wired).
 C.  **Player Integration**:
-    *   [ ] Wire up Video Cards to trigger Player state.
+    *   [ ] **CRITICAL**: Resolve YouTube Embed [Error 153](youtube-error-153.md).
+    *   [ ] Wire up Video Cards to trigger Player state (Done).
     *   [ ] Implement Youtube/MPV switching logic.
 
 ### Phase 7: Dialogs & Interaction

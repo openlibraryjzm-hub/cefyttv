@@ -1,5 +1,28 @@
 # Session Updates
 
+## [Wiring] Phase 6: Data & Player - 2026-01-17
+We have successfully **Imported the User's Database** and wired up the core navigation flow.
+
+### 🔌 Data Integration
+1.  **Database Migration**: The application now connects to the user's legacy `playlists.db` (SQLite) instead of a fresh instance.
+2.  **`PlaylistService` Wiring**:
+    *   Implemented `GetAllPlaylistsAsync()` to fetch real collections.
+    *   Implemented `LoadPlaylistAsync()` to fetch real video lists, joining `PlaylistItems`.
+3.  **ViewModel-First Navigation**:
+    *   Wired `PlaylistCard` clicks to open the `VideosView`.
+    *   Populated `VideosView` with actual metadata from the selected playlist.
+
+### 🎥 Player Wiring
+1.  **Integration**: Added `WebViewYouTubeControls` to the left-hand pane of `MainWindow`.
+2.  **Event Wiring**: Clicking a `VideoCard` now triggers the `PlayVideoCommand`.
+3.  **Result**: The video ID is successfully passed to the WebView, which attempts to load the YouTube Embed.
+
+### 🚧 Current Blocker
+*   **YouTube Error 153**: The embedded player is currently blocked by YouTube with "Error 153".
+*   **Resolution Plan**: Documented in `atlas2/youtube-error-153.md`. This requires configuring the WebView with proper Referer/Origin headers or using a local HTML wrapper.
+
+---
+
 ## [Pivot] Phase 5 Priority & Shell Wiring - 2026-01-17
 At the user's request, we deferred **Phase 4 (Player System)** to prioritize **Phase 5 (The Views)** to validate visual progress.
 1.  **Strategic Pivot**: Skipped complex player integration to focus on "accommodating the pages".
