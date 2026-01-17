@@ -1,47 +1,53 @@
 # UI & UX Documentation
 
-## Layout System
-The main window uses a **Grid-based layout** defined in `MainWindow.xaml`.
+## Core Philosophy
+The interface is designed around a **Simultaneous Consumption** model:
+1.  **The Stage (Left 50%)**: Dedicated always-on media playback.
+2.  **The Library (Right 50%)**: A rich, navigable application for managing content without interrupting playback.
 
-### The "Control Bar"
-*   **Location:** Bottom Row (Grid.Row="1").
-*   **Role:** Persistent navigation and mode switching.
-*   **Buttons:**
-    *   **WV Full:** Maximizes the WebView2 (YouTube) Pane.
-    *   **Split:** Restores standard side-by-side view.
-    *   **Cef Full:** Maximizes the Browser Pane.
-    *   **Test MPV:** Toggles MPV visibility (Debug).
-    *   **Open File:** Opens system file picker to load local video into MPV.
+## Global Layout architecture
+The `MainWindow.xaml` defines a strict **Two-Column Grid**:
 
-### The Pane System
-The application is divided into two primary vertical columns.
+### 1. Left Pane: "The Stage" (Column 0)
+*   **Purpose**: Media Playback.
+*   **Engine Handling**: Acts as a container for the Triple-Engine system.
+    *   **Default**: `WebViewYouTubeControls` (WebView2) for streaming content.
+    *   **Local**: `LocalVideoPlayer` (MPV) for file playback (swapped dynamically).
+*   **Behavior**:
+    *   Persists across all navigation in the Right Pane.
+    *   Responds to "Play" commands triggered from the Library.
 
-#### Left Pane (Column 0)
-*   **Content:** Stacked `WebView2` and `LocalVideoPlayer`.
-*   **Logic:** Only one is visible at a time.
-    *   **Default:** `YoutubeView` (WebView2) is visible.
-    *   **Video Mode:** `MpvView` (LocalVideoPlayer) becomes visible, hiding YouTube.
-*   **Sizing:** 
-    *   In **Split Mode**, takes 1* width.
-    *   In **WV Full**, takes entire width (ColumnSpan 2).
+### 2. Right Pane: "The Library" (Column 1)
+*   **Purpose**: Content Discovery & Management.
+*   **Structure**: Hosted within a specific `Grid` shell.
+    *   **Header (Row 0)**: `TopNavBar`.
+    *   **Body (Row 1)**: `ContentControl` managed by `MainViewModel`.
 
-#### Right Pane (Column 1)
-*   **Content:** `ChromiumView` (CefSharp).
-*   **Logic:** Handles multiple tabs via custom button logic.
-*   **Sizing:**
-    *   In **Split Mode**, takes 1* width.
-    *   In **Cef Full**, takes entire width (ColumnSpan 2) while Left Pane is collapsed.
+---
 
-## Interaction Patterns
+## Component Systems
 
-### Opening Local Videos
-1.  User clicks **"Open File"** (Green Button).
-2.  Windows File Dialog appears.
-3.  Upon selection:
-    *   Left Pane switches to **MPV Mode**.
-    *   MPV loads the file.
-    *   Status Text below the player confirms "Playing: filename".
+### Navigation (TopNavBar)
+Ideally located at the top of the Right Pane, this replaces the traditional Sidebar to maximize horizontal space for content cards.
+*   **Tabs**: Text-based tabs (Playlists, Videos) for primary views, Icon-based tabs (History, Likes, Settings) for utilities.
+*   **Context**: Changes active state based on the `CurrentView` bound in the ViewModel.
 
-### Switching Engines
-*   The UI allows instant swapping between **YouTube** (Web) and **MPV** (Local).
-*   **Note:** Switching *away* from MPV calls `Stop()` to ensure audio doesn't keep playing in the background.
+### Content Views (MVVM)
+The application uses a standard MVVM pattern to swap views inside the Right Pane's Body.
+*   **Playlists View**: A grid of `PlaylistCard` elements.
+    *   *Interaction*: Clicking a card navigates to the **Videos View** and loads that playlist's context.
+*   **Videos View**: A list/grid of `VideoCard` elements.
+    *   *Interaction*: Clicking a card triggers the global `PlayVideoCommand`, updating the **Left Pane**.
+
+### Visual Language
+*   **Theme**: Deep Dark Mode (`#121212` background).
+*   **Typography**: Clean, sans-serif (Segoe UI / Inter).
+*   **Banners**: `PageBanner` component provides context (Title, Video Count) with visual flair (ASCII art, gradients).
+
+---
+
+## Interaction Flow
+1.  **Browse**: User scrolls through Playlists in the Right Pane.
+2.  **Select**: User clicks a Playlist -> Right Pane transitions to Videos list.
+3.  **Consume**: User clicks a Video -> Right Pane *stays* on list, Left Pane *immediately* loads and plays video.
+4.  **Multitask**: User can navigate to "Settings" or "History" in the Right Pane while the Left Pane continues playback uninterrupted.

@@ -45,9 +45,27 @@ CefSharp is an unmanaged wrapper. It **requires** the application to run as `x64
 *   **App.xaml.cs:** Initializes `CefSettings` with `disable-gpu-shader-disk-cache` to prevent startup lag artifacts.
 
 ### Layout Management
-The `MainWindow` acts as a State Machine switching between:
-*   **Split Mode:** Grid Col 0 (WebView/MPV) | Grid Col 1 (Browser)
-*   **Full Mode A:** Grid Col 0 (Span 2)
-*   **Full Mode B:** Grid Col 1 (Span 2)
+The layout is strictly defined in `MainWindow.xaml`:
 
-This is handled by manipulating `Grid.ColumnSpan` and `Visibility` properties in `MainWindow.xaml.cs`.
+```xml
+<Grid>
+    <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*"/> <!-- Col 0: Player (Left) -->
+        <ColumnDefinition Width="*"/> <!-- Col 1: Library (Right) -->
+    </Grid.ColumnDefinitions>
+    
+    <!-- Left Pane: Player Stack -->
+    <Grid Grid.Column="0">
+        <WebView2 .../>       <!-- YouTube Engine -->
+        <WindowsFormsHost.../> <!-- MPV Engine -->
+    </Grid>
+    
+    <!-- Right Pane: App Shell -->
+    <Grid Grid.Column="1">
+       <TopNavBar .../>       <!-- Navigation -->
+       <ContentControl .../>  <!-- MVVM Pages -->
+    </Grid>
+</Grid>
+```
+
+This split ensures that media playback (Left) is **always** visually distinct from library management (Right), preventing the "context switching" fatigue common in single-pane apps.
