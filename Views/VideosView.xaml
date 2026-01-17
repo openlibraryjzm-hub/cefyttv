@@ -1,0 +1,67 @@
+<UserControl x:Class="ccc.Views.VideosView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:visuals="clr-namespace:ccc.Controls.Visuals"
+             xmlns:cards="clr-namespace:ccc.Controls.Cards"
+             mc:Ignorable="d" 
+             d:DesignHeight="720" d:DesignWidth="1000">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/> <!-- Banner -->
+            <RowDefinition Height="Auto"/> <!-- Toolbar -->
+            <RowDefinition Height="*"/>    <!-- Content -->
+        </Grid.RowDefinitions>
+
+        <!-- Banner -->
+        <visuals:PageBanner Grid.Row="0" 
+                            Title="All Videos" 
+                            Description="Your complete local library."
+                            AvatarAscii="📹"
+                            VideoCountText="1,243 Videos"/>
+
+        <!-- Toolbar Mockup -->
+        <Border Grid.Row="1" Background="{StaticResource BgSecondaryBrush}" Padding="16,12" BorderBrush="#333" BorderThickness="0,0,0,1">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                
+                <!-- Left: Folder Selector (Mock) -->
+                <StackPanel Orientation="Horizontal" Grid.Column="0">
+                    <TextBlock Text="Folders:" VerticalAlignment="Center" Foreground="#888" Margin="0,0,12,0"/>
+                    <Border Width="16" Height="16" CornerRadius="8" Background="#EF4444" Margin="4"/>
+                    <Border Width="16" Height="16" CornerRadius="8" Background="#F59E0B" Margin="4"/>
+                    <Border Width="16" Height="16" CornerRadius="8" Background="#10B981" Margin="4"/>
+                    <Border Width="16" Height="16" CornerRadius="8" Background="#3B82F6" Margin="4"/>
+                    <Border Width="16" Height="16" CornerRadius="8" Background="#8B5CF6" Margin="4"/>
+                </StackPanel>
+
+                <!-- Right: Sort/Tag -->
+                <StackPanel Orientation="Horizontal" Grid.Column="1">
+                    <Button Content="Sort: Default" Style="{StaticResource NavButton}" Foreground="White"/>
+                    <Button Content="Bulk Tag" Style="{StaticResource NavButton}" Margin="8,0,0,0"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Video Grid -->
+        <ScrollViewer Grid.Row="2" Padding="20">
+            <ItemsControl ItemsSource="{Binding Videos}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel Orientation="Horizontal" ItemWidth="300" ItemHeight="260"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <cards:VideoCard Margin="8"/>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

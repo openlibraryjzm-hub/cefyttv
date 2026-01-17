@@ -25,6 +25,7 @@ namespace ccc.Services.Database
         {
             using var context = new AppDbContext();
             return await context.Playlists
+                .Include(p => p.Items)
                 .AsNoTracking()
                 .OrderByDescending(p => p.CreatedAt)
                 .ToListAsync();

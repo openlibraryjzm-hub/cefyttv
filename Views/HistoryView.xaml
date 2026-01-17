@@ -1,0 +1,38 @@
+<UserControl x:Class="ccc.Views.HistoryView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:visuals="clr-namespace:ccc.Controls.Visuals"
+             xmlns:cards="clr-namespace:ccc.Controls.Cards"
+             mc:Ignorable="d" 
+             d:DesignHeight="720" d:DesignWidth="1000">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <visuals:PageBanner Grid.Row="0" 
+                            Title="History" 
+                            Description="Resume where you left off."
+                            AvatarAscii="🕒"
+                            VideoCountText="Last 100 watched"/>
+
+        <ScrollViewer Grid.Row="1" Padding="20">
+            <ItemsControl ItemsSource="{Binding HistoryItems}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Vertical"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <cards:HistoryCard Margin="0,8"/>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

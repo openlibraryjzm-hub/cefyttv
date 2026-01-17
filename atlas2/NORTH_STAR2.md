@@ -249,19 +249,31 @@ C.  **Visualizer**:
     *   Implement `Services/Audio/FftProcessor.cs` (`audioProcessor.js`).
     *   Build `Controls/Visuals/CircularVisualizer.xaml` (`AudioVisualizer.jsx`).
 
-### Phase 5: The Views (Pages) (CURRENT PRIORITY)
+### Phase 5: The Views (Pages) (COMPLETE)
 **Goal**: Assemble components into pages and wire up the Main Window.
 A.  **Main Content Views**:
-    *   Build `Views/PlaylistsView.xaml` (`PlaylistsPage.jsx`).
-    *   Build `Views/VideosView.xaml` (`VideosPage.jsx`).
-    *   Build `Views/HistoryView.xaml` (`HistoryPage.jsx`).
-    *   Build `Views/LikesView.xaml` (`LikesPage.jsx`).
-    *   Build `Views/PinsView.xaml` (`PinsPage.jsx`).
+    *   [x] Build `Views/PlaylistsView.xaml` (`PlaylistsPage.jsx`).
+    *   [x] Build `Views/VideosView.xaml` (`VideosPage.jsx`).
+    *   [x] Build `Views/HistoryView.xaml` (`HistoryPage.jsx`).
+    *   [x] Build `Views/LikesView.xaml` (`LikesPage.jsx`).
+    *   [x] Build `Views/PinsView.xaml` (`PinsPage.jsx`).
 B.  **Secondary Views**:
-    *   Build `Views/SettingsView.xaml` (`SettingsPage.jsx`).
-    *   Build `Views/SupportView.xaml` (`SupportView.xaml`).
+    *   [x] Build `Views/SettingsView.xaml` (`SettingsPage.jsx`).
+    *   [x] Build `Views/SupportView.xaml` (`SupportView.xaml`).
 
-### Phase 6: Dialogs & Interaction
+### Phase 6: Data Integration & Wiring (CURRENT PRIORITY)
+**Goal**: Connect Views to Real Data and Player.
+A.  **Database Migration**:
+    *   [ ] Locate original Tauri SQLite database.
+    *   [ ] Migrate/Copy data to C# `library.db`.
+B.  **Real Data Binding**:
+    *   [ ] Connect `SqliteService` to ViewModels.
+    *   [ ] Replace Dummy Data with DB Calls.
+C.  **Player Integration**:
+    *   [ ] Wire up Video Cards to trigger Player state.
+    *   [ ] Implement Youtube/MPV switching logic.
+
+### Phase 7: Dialogs & Interaction
 **Goal**: Complex modals and overlays.
 A.  **Management Dialogs**:
     *   Build `Dialogs/EditPlaylistDialog.xaml` (`EditPlaylistModal.jsx`).
@@ -270,7 +282,7 @@ A.  **Management Dialogs**:
 B.  **Import System**:
     *   Build `Dialogs/UnifiedImportDialog.xaml` (`PlaylistUploader.jsx`, `BulkPlaylistImporter.jsx`, `importexport.md`).
 
-### Phase 7: Polish & Wiring
+### Phase 8: Polish & Wiring
 **Goal**: Final connections.
 A.  **Shell Wiring**:
     *   Connect `MainWindow.xaml` to `NavigationService`.
@@ -282,4 +294,4 @@ C.  **Local Media Server**:
 
 
 ### Phase completion progress:
-Phase 1,2,3 complete. Phase 4 Deferred. Starting Phase 5.
+Phase 1,2,3,5 complete. Phase 4 Deferred. Starting Phase 6.

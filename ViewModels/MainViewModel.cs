@@ -4,15 +4,37 @@ using System.Collections.ObjectModel;
 using System.Windows.Controls;
 using ccc.Services;
 using ccc.Views;
+using System.Threading.Tasks;
+using System;
 
 namespace ccc.ViewModels
 {
     public class PlaylistDisplayItem
     {
+        public long Id { get; set; }
         public string Name { get; set; } = "";
         public string Description { get; set; } = "";
-        public string ThumbnailUrl { get; set; } = "/Resources/Images/placeholder.jpg"; // Path needs to exist or be handled
+        public string ThumbnailUrl { get; set; } = "";
         public string VideoCountText { get; set; } = "0 Videos";
+    }
+
+    public class VideoDisplayItem
+    {
+        public string Title { get; set; } = "";
+        public string VideoId { get; set; } = "";
+        public string ThumbnailUrl { get; set; } = "";
+        public int ProgressPercentage { get; set; }
+        public bool HasProgress => ProgressPercentage > 0;
+        public bool IsPlaying { get; set; }
+        public bool IsWatched { get; set; }
+    }
+
+    public class HistoryDisplayItem
+    {
+        public string Title { get; set; } = "";
+        public string ThumbnailUrl { get; set; } = "";
+        public string RelativeTime { get; set; } = "";
+        public int ProgressPercentage { get; set; }
     }
 
     public partial class MainViewModel : ObservableObject
@@ -23,43 +45,120 @@ namespace ccc.ViewModels
         [ObservableProperty]
         private object? _currentView;
 
-        // Visibility State
         [ObservableProperty]
         private bool _isBrowserVisible;
 
         public bool IsLibraryVisible => !IsBrowserVisible;
 
-        // Data for Views
+        // Collections
         [ObservableProperty]
         private ObservableCollection<PlaylistDisplayItem> _playlists = new();
 
+        [ObservableProperty]
+        private ObservableCollection<VideoDisplayItem> _videos = new();
+
+        [ObservableProperty]
+        private ObservableCollection<VideoDisplayItem> _likedVideos = new();
+
+        [ObservableProperty]
+        private ObservableCollection<VideoDisplayItem> _pinnedVideos = new();
+
+        [ObservableProperty]
+        private ObservableCollection<HistoryDisplayItem> _historyItems = new();
+
         public MainViewModel()
         {
-            // Seed Dummy Data for Visual Verification
-            PopulateDummyData();
+            // Load Real Data
+            Task.Run(LoadDataAsync);
 
-            // Set Initial View
-            // CurrentView = new PlaylistsView(); // This would require reference to Views. 
-            // Better to genericize or use a NavigationLogic.
-            // For this step, we will instantiate it directly if we have the reference, 
-            // or let MainWindow set it. 
-            // We'll expose the command to set it.
-            
-            // Actually, we can just new it up here if we add `using ccc.Views;`
             CurrentView = new PlaylistsView();
         }
 
-        private void PopulateDummyData()
+        private async Task LoadDataAsync()
         {
-            for (int i = 1; i <= 24; i++)
+            // 1. Playlists (Real Data)
+            try
             {
-                Playlists.Add(new PlaylistDisplayItem
+                var playlists = await App.PlaylistService.GetAllPlaylistsAsync();
+                
+                System.Windows.Application.Current.Dispatcher.Invoke(() =>
                 {
-                    Name = $"Playlist {i}",
-                    Description = $"A collection of amazing videos for topic {i}.",
-                    VideoCountText = $"{i * 12} Videos",
-                    // Use a valid image placeholder or generic web URL if specific images aren't ready
-                    ThumbnailUrl = "https://picsum.photos/300/200" 
+                    Playlists.Clear();
+                    foreach (var p in playlists)
+                    {
+                        Playlists.Add(new PlaylistDisplayItem
+                        {
+                            Id = p.Id,
+                            Name = p.Name,
+                            Description = p.Description ?? "",
+                            VideoCountText = $"{p.Items.Count} Videos",
+                            ThumbnailUrl = p.CustomThumbnailUrl ?? "https://picsum.photos/300/200" // Fallback
+                        });
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error loading playlists: {ex.Message}");
+            }
+
+            // 2. Dummy Data for other views (until wired up)
+            System.Windows.Application.Current.Dispatcher.Invoke(PopulateDummyDetailData);
+        }
+
+        private void PopulateDummyDetailData()
+        {
+             // Videos (General)
+            for (int i = 1; i <= 50; i++)
+            {
+                var progress = (i * 7) % 100;
+                Videos.Add(new VideoDisplayItem
+                {
+                    Title = $"Video Title {i}: The Amazing Exploration",
+                    VideoId = $"VID-{i:000}",
+                    ThumbnailUrl = $"https://picsum.photos/300/169?random={100+i}",
+                    ProgressPercentage = progress,
+                    IsWatched = progress > 85,
+                    IsPlaying = i == 2
+                });
+            }
+            // ... (Rest of dummy data kept for UI stability)
+            
+            // Liked Videos
+            for (int i = 1; i <= 15; i++)
+            {
+                LikedVideos.Add(new VideoDisplayItem
+                {
+                    Title = $"Liked Video {i}",
+                    VideoId = $"LKD-{i:000}",
+                    ThumbnailUrl = $"https://picsum.photos/300/169?random={200+i}",
+                    ProgressPercentage = 0,
+                    IsWatched = true
+                });
+            }
+
+            // Pinned Videos
+            for (int i = 1; i <= 8; i++)
+            {
+                PinnedVideos.Add(new VideoDisplayItem
+                {
+                    Title = $"Priority Content {i}",
+                    VideoId = $"PIN-{i:000}",
+                    ThumbnailUrl = $"https://picsum.photos/300/169?random={300+i}",
+                    ProgressPercentage = 10,
+                    IsWatched = false
+                });
+            }
+
+            // History
+            for (int i = 1; i <= 20; i++)
+            {
+                HistoryItems.Add(new HistoryDisplayItem
+                {
+                    Title = $"Recently Watched {i}",
+                    ThumbnailUrl = $"https://picsum.photos/300/169?random={400+i}",
+                    RelativeTime = $"{i * 10} minutes ago",
+                    ProgressPercentage = 100 - (i * 2)
                 });
             }
         }
@@ -67,7 +166,7 @@ namespace ccc.ViewModels
         [RelayCommand]
         public void Navigate(string destination)
         {
-            // Placeholder Navigation Logic
+            PageTitle = destination; // Fallback title
             switch (destination.ToLower())
             {
                 case "playlists":
@@ -75,31 +174,39 @@ namespace ccc.ViewModels
                     PageTitle = "Playlists";
                     break;
                 case "videos":
-                    // CurrentView = new VideosView();
+                    CurrentView = new VideosView();
                     PageTitle = "Videos";
                     break;
+                case "history":
+                    CurrentView = new HistoryView();
+                    PageTitle = "History";
+                    break;
+                case "likes":
+                    CurrentView = new LikesView();
+                    PageTitle = "Likes";
+                    break;
+                case "pins":
+                    CurrentView = new PinsView();
+                    PageTitle = "Pins";
+                    break;
                 case "settings":
-                    // CurrentView = new SettingsView();
+                    CurrentView = new SettingsView();
                     PageTitle = "Settings";
                     break;
+                case "support":
+                    CurrentView = new SupportView();
+                    PageTitle = "Support";
+                    break;
                 default:
-                    // MessageBox.Show($"Navigating to {destination}");
-                    PageTitle = destination;
                     break;
             }
         }
 
         [RelayCommand]
-        public void GoBack()
-        {
-            // Placeholder
-        }
+        public void GoBack() { /* TODO */ }
 
         [RelayCommand]
-        public void CloseSidebar()
-        {
-            // Placeholder
-        }
+        public void CloseSidebar() { /* TODO */ }
 
         [RelayCommand]
         public void NavigateToBrowser()
