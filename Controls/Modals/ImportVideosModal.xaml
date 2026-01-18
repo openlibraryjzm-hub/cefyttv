@@ -1,0 +1,165 @@
+<UserControl x:Class="ccc.Controls.Modals.ImportVideosModal"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="400" d:DesignWidth="500">
+    <Grid>
+        <!-- Backdrop -->
+        <Border Background="#AA000000" MouseDown="Backdrop_MouseDown"/>
+
+        <!-- Modal Card -->
+        <Border Width="500" Height="Auto" VerticalAlignment="Center" HorizontalAlignment="Center"
+                Background="#1E293B" BorderBrush="#334155" BorderThickness="1" CornerRadius="12" Padding="24">
+            <Border.Effect>
+                <DropShadowEffect Color="Black" Opacity="0.5" BlurRadius="20" ShadowDepth="10"/>
+            </Border.Effect>
+            
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/> <!-- Header -->
+                    <RowDefinition Height="Auto"/> <!-- Playlist Select -->
+                    <RowDefinition Height="*"/>    <!-- URL Input -->
+                    <RowDefinition Height="Auto"/> <!-- Footer -->
+                </Grid.RowDefinitions>
+
+                <!-- 1. Header -->
+                <TextBlock Grid.Row="0" Text="Import Videos" FontSize="20" FontWeight="Bold" Foreground="White" Margin="0,0,0,16"/>
+
+                <!-- 2. Playlist Selection -->
+                <StackPanel Grid.Row="1" Margin="0,0,0,16">
+                    <TextBlock Text="Add to Playlist" Foreground="#94A3B8" FontSize="12" Margin="0,0,0,4"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        
+                        <!-- Standard Selection -->
+                        <ComboBox Grid.Column="0"
+                                  ItemsSource="{Binding Playlists}" 
+                                  SelectedItem="{Binding ImportTargetPlaylist}"
+                                  DisplayMemberPath="Name"
+                                  Height="36"
+                                  Background="#0F172A" Foreground="White" BorderBrush="#334155"
+                                  Visibility="{Binding IsNewPlaylistMode, Converter={StaticResource InverseBooleanToVisibilityConverter}}"/>
+
+                        <!-- New Playlist Input -->
+                        <TextBox Grid.Column="0"
+                                 Text="{Binding NewPlaylistName, UpdateSourceTrigger=PropertyChanged}"
+                                 Height="36"
+                                 Background="#0F172A" Foreground="White" BorderBrush="#334155"
+                                 Padding="8" VerticalContentAlignment="Center"
+                                 Visibility="{Binding IsNewPlaylistMode, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                 <TextBox.Resources>
+                                     <Style TargetType="Border">
+                                         <Setter Property="CornerRadius" Value="4"/>
+                                     </Style>
+                                 </TextBox.Resources>
+                        </TextBox>
+
+                        <!-- Toggle Button -->
+                        <Button Grid.Column="1" Command="{Binding ToggleNewPlaylistModeCommand}" Margin="8,0,0,0"
+                                Background="Transparent" BorderThickness="0" Cursor="Hand" ToolTip="New Playlist">
+                             <TextBlock Text="+" FontSize="24" FontWeight="Bold" Foreground="#3B82F6"/>
+                        </Button>
+                    </Grid>
+                </StackPanel>
+
+                <!-- 3. URL Inputs -->
+                <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" Height="300" Margin="0,0,0,24">
+                     <StackPanel>
+                        <!-- Main Input -->
+                        <TextBlock Text="YouTube Links (Default / Unsorted)" Foreground="#94A3B8" FontSize="12" Margin="0,0,0,4"/>
+                        <TextBox Text="{Binding ImportUrlInput, UpdateSourceTrigger=PropertyChanged}"
+                                 Height="100"
+                                 AcceptsReturn="True"
+                                 VerticalScrollBarVisibility="Auto"
+                                 Background="#0F172A" Foreground="White" BorderBrush="#334155" 
+                                 Padding="8"
+                                 FontFamily="Consolas, Monospace" FontSize="12"
+                                 TextWrapping="NoWrap"/>
+                        
+                        <Separator Background="#334155" Margin="0,16"/>
+
+                        <!-- Colored Inputs -->
+                        <TextBlock Text="Add Directly to Folder" Foreground="#94A3B8" FontSize="12" Margin="0,0,0,8"/>
+                        <ItemsControl ItemsSource="{Binding ColorImports}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <UniformGrid Columns="3"/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Margin="4">
+                                        <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                                            <Border Width="12" Height="12" CornerRadius="6" Background="{Binding BrushKey, Converter={StaticResource StringBrushConverter}}" Margin="0,0,6,0"/>
+                                            <TextBlock Text="{Binding ColorName}" Foreground="#CBD5E1" FontSize="11"/>
+                                        </StackPanel>
+                                        <TextBox Text="{Binding InputText, UpdateSourceTrigger=PropertyChanged}"
+                                                 Height="60"
+                                                 AcceptsReturn="True"
+                                                 Background="#0F172A" Foreground="White" BorderBrush="#334155" 
+                                                 Padding="4"
+                                                 FontFamily="Consolas, Monospace" FontSize="11"
+                                                 TextWrapping="NoWrap"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </ScrollViewer>
+
+                <!-- 4. Footer (Buttons) -->
+                <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button Content="Cancel" 
+                            Command="{Binding CloseImportModalCommand}"
+                            Background="Transparent" Foreground="#94A3B8" BorderThickness="0"
+                            Margin="0,0,12,0" Padding="12,8" Cursor="Hand">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border Background="{TemplateBinding Background}">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Foreground" Value="White"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                    
+                    <Button Content="Import Videos" 
+                            Command="{Binding ImportVideosCommand}"
+                            Background="#3B82F6" Foreground="White" BorderThickness="0"
+                            Padding="16,8" Cursor="Hand">
+                        <Button.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="6"/>
+                            </Style>
+                        </Button.Resources>
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border Background="{TemplateBinding Background}">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="{TemplateBinding Padding}"/>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#2563EB"/>
+                                    </Trigger>
+                                    <Trigger Property="IsEnabled" Value="False">
+                                        <Setter Property="Background" Value="#1E3A8A"/>
+                                        <Setter Property="Foreground" Value="#64748B"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

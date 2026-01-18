@@ -28,6 +28,11 @@ namespace ccc.ViewModels
         public bool HasProgress => ProgressPercentage > 0;
         public bool IsPlaying { get; set; }
         public bool IsWatched { get; set; }
+
+        public string Author { get; set; } = "";
+        public string PublishYear { get; set; } = "";
+        public string ViewCount { get; set; } = "";
+        public string MetadataLine { get; set; } = "";
     }
 
     public class HistoryDisplayItem
@@ -51,6 +56,17 @@ namespace ccc.ViewModels
         private bool _isBrowserVisible;
 
         public bool IsLibraryVisible => !IsBrowserVisible;
+        
+        // Modal State
+        [ObservableProperty]
+        private bool _isImportModalOpen;
+
+        [ObservableProperty]
+        private string _importUrlInput = "";
+
+        // User selected playlist in Modal
+        [ObservableProperty]
+        private PlaylistDisplayItem? _importTargetPlaylist;
 
         // Player State
         [ObservableProperty]
@@ -214,18 +230,8 @@ namespace ccc.ViewModels
                 });
             }
 
-            // Pinned Videos
-            for (int i = 1; i <= 8; i++)
-            {
-                PinnedVideos.Add(new VideoDisplayItem
-                {
-                    Title = $"Priority Content {i}",
-                    VideoId = $"PIN-{i:000}",
-                    ThumbnailUrl = $"https://picsum.photos/300/169?random={300+i}",
-                    ProgressPercentage = 10,
-                    IsWatched = false
-                });
-            }
+             // Pinned Videos
+             // Loaded from DB now
 
              // History
              // Loaded from DB now
@@ -326,7 +332,11 @@ namespace ccc.ViewModels
                             ThumbnailUrl = item.ThumbnailUrl ?? "/Resources/Images/placeholder.jpg",
                             // Progress/Watched will come from joined data later
                             ProgressPercentage = 0,
-                            IsWatched = false
+                            IsWatched = false,
+                            Author = item.Author ?? "Unknown",
+                            ViewCount = FormatViewCount(item.ViewCount),
+                            PublishYear = !string.IsNullOrEmpty(item.PublishedAt) && DateTime.TryParse(item.PublishedAt, out var d) ? d.Year.ToString() : "",
+                            MetadataLine = $"{FormatViewCount(item.ViewCount)} | {(!string.IsNullOrEmpty(item.PublishedAt) && DateTime.TryParse(item.PublishedAt, out var d2) ? d2.Year.ToString() : "")}"
                         });
                     }
 
@@ -420,6 +430,7 @@ namespace ccc.ViewModels
                 case "pins":
                     CurrentView = new PinsView();
                     PageTitle = "Pins";
+                    Task.Run(LoadPinsAsync);
                     break;
                 case "settings":
                     CurrentView = new SettingsView();
@@ -613,6 +624,18 @@ namespace ccc.ViewModels
                 PlayVideo(prev.VideoId);
             }
         }
+
+        [RelayCommand]
+        public void ShuffleVideo()
+        {
+            if (!_allVideosCache.Any()) return;
+
+            var random = new Random();
+            var index = random.Next(_allVideosCache.Count);
+            var video = _allVideosCache[index];
+            
+            PlayVideo(video.VideoId);
+        }
         [RelayCommand]
         public void ChangeTabPreset(ccc.Models.Config.TabPreset preset)
         {
@@ -687,6 +710,55 @@ namespace ccc.ViewModels
             }
         }
 
+        [RelayCommand]
+        public async Task TogglePin(VideoDisplayItem? video = null)
+        {
+            var target = video ?? SelectedVideo;
+            if (target == null) return;
+
+            await App.SqliteService.TogglePinAsync(
+                target.VideoId,
+                target.VideoUrl,
+                target.Title,
+                target.ThumbnailUrl
+            );
+            
+            // If we are on the pins page, refresh immediately
+            if (CurrentView is Views.PinsView)
+            {
+                await LoadPinsAsync();
+            }
+        }
+
+        private async Task LoadPinsAsync()
+        {
+            try
+            {
+                var pins = await App.SqliteService.GetPinnedVideosAsync(1000);
+                
+                System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                {
+                    PinnedVideos.Clear();
+                    foreach (var p in pins)
+                    {
+                        PinnedVideos.Add(new VideoDisplayItem
+                        {
+                            Title = p.Title ?? "Unknown Video",
+                            VideoId = p.VideoId,
+                            VideoUrl = p.VideoUrl,
+                            ThumbnailUrl = p.ThumbnailUrl ?? "/Resources/Images/placeholder.jpg",
+                            ProgressPercentage = 0,
+                            IsWatched = false
+                        });
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error loading pins: {ex.Message}");
+            }
+        }
+
         private async Task LoadTabsAsync()
         {
              var config = await App.TabService.LoadConfigAsync();
@@ -704,5 +776,302 @@ namespace ccc.ViewModels
                  ChangeTabPreset(SelectedPreset);
              }
         }
+        private string FormatViewCount(string? rawCount)
+        {
+            if (string.IsNullOrEmpty(rawCount)) return "-";
+
+            // Try to parse raw string (remove any existing non-digits if needed, though usually just digits)
+            // Assuming database has raw numbers like "123456" OR already formatted strings?
+            // "just replace that with actual data from @[playlists.db]", probably implies raw data needs formatting.
+            if (long.TryParse(rawCount, out var count))
+            {
+                if (count >= 1_000_000_000) return $"{(count / 1_000_000_000.0):0.#}B";
+                if (count >= 1_000_000) return $"{(count / 1_000_000)}M";
+                if (count >= 1_000) return $"{(count / 1_000)}K";
+                return count.ToString();
+            }
+            return rawCount; // Fallback if it's already text
+        }
+
+        public class ColorImportItem
+        {
+            public string ColorName { get; set; } = "";
+            public string BrushKey { get; set; } = "";
+            public string InputText { get; set; } = ""; // Bindable? No, needs INPC if we want updates.
+            // Actually, we can just use a simple class but the UI needs to update the property. 
+            // So let's make it a tiny ObservableObject or just manual binding.
+            // Simpler: Just a class properties, if it's in an ObservableCollection the UI binds to properties. 
+            // The TextBox updates the property. Standard binding works on POCO properties too.
+        }
+
+        [ObservableProperty]
+        private ObservableCollection<ColorImportItem> _colorImports = new();
+
+        [RelayCommand]
+        public void OpenImportModal()
+        {
+            // Reset state
+            IsImportModalOpen = true;
+            ImportUrlInput = ""; 
+            IsNewPlaylistMode = false;
+            NewPlaylistName = "";
+
+            // Initialize Color Imports if empty
+            if (!ColorImports.Any())
+            {
+                var colors = new[] { "Red", "Orange", "Amber", "Yellow", "Lime", "Green", "Emerald", "Teal", "Cyan", "Sky", "Blue", "Indigo", "Violet", "Purple", "Fuchsia", "Pink" };
+                foreach (var c in colors)
+                {
+                    ColorImports.Add(new ColorImportItem { ColorName = c, BrushKey = $"Folder{c}Brush", InputText = "" });
+                }
+            }
+            else
+            {
+                // Clear inputs
+                foreach(var c in ColorImports) c.InputText = "";
+            }
+
+            // Default Selection Logic
+            ImportTargetPlaylist = null; // Clear previous
+            
+            // 1. If viewing a specific playlist (Videos View), select it
+            if (CurrentView is VideosView && SelectedPlaylist != null)
+            {
+                 ImportTargetPlaylist = Playlists.FirstOrDefault(p => p.Id == SelectedPlaylist.Id) 
+                                        ?? _allPlaylistsCache.FirstOrDefault(p => p.Id == SelectedPlaylist.Id);
+            }
+            // 2. If viewing Playlists View, select "Unsorted" (ID 1)
+            else if (CurrentView is PlaylistsView)
+            {
+                // Assuming "Unsorted" is usually the first one or ID 1. 
+                // Logic based on USER request: "if playlists page ... automatic option will be for the already existing 'unsorted' playlist"
+                // Finding playlist named "Unsorted"
+                ImportTargetPlaylist = Playlists.FirstOrDefault(p => p.Name.ToLower() == "unsorted") 
+                                       ?? _allPlaylistsCache.FirstOrDefault(p => p.Name.ToLower() == "unsorted")
+                                       ?? Playlists.FirstOrDefault(); // Fallback
+            }
+            
+            // Fallback if still null
+            if (ImportTargetPlaylist == null && Playlists.Any())
+            {
+                ImportTargetPlaylist = Playlists.First();
+            }
+        }
+
+        [ObservableProperty]
+        private bool _isNewPlaylistMode;
+
+        [ObservableProperty]
+        private string _newPlaylistName = "";
+
+        [RelayCommand]
+        public void ToggleNewPlaylistMode()
+        {
+            IsNewPlaylistMode = !IsNewPlaylistMode;
+        }
+
+        [RelayCommand]
+        public void CloseImportModal()
+        {
+            IsImportModalOpen = false;
+        }
+
+        [RelayCommand]
+        public async Task ImportVideos()
+        {
+            var hasMainInput = !string.IsNullOrWhiteSpace(ImportUrlInput);
+            var hasColorInput = ColorImports.Any(c => !string.IsNullOrWhiteSpace(c.InputText));
+            var isCreating = IsNewPlaylistMode && !string.IsNullOrWhiteSpace(NewPlaylistName);
+
+            if ((!IsNewPlaylistMode && ImportTargetPlaylist == null) || (!hasMainInput && !hasColorInput)) return;
+
+            IsImportModalOpen = false; 
+
+            long targetId = 0;
+            if (IsNewPlaylistMode)
+            {
+                 // Create new playlist
+                 targetId = await App.PlaylistService.CreatePlaylistAsync(NewPlaylistName, "Created via Import");
+                 // Refresh Playlists Cache
+                 var newPlist = new PlaylistDisplayItem { Id = targetId, Name = NewPlaylistName, VideoCountText = "0 Videos", ThumbnailUrl = "https://picsum.photos/300/200" };
+                 _allPlaylistsCache.Add(newPlist);
+                 Playlists.Add(newPlist);
+                 SelectedPlaylist = newPlist;
+                 ImportTargetPlaylist = newPlist;
+            }
+            else
+            {
+                targetId = ImportTargetPlaylist.Id;
+            }
+
+            var input = ImportUrlInput;
+
+            await Task.Run(async () =>
+            {
+                var lines = input.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+                foreach (var line in lines)
+                {
+                    // Check for Playlist Link first
+                    var playlistId = ExtractPlaylistId(line);
+                    if (!string.IsNullOrEmpty(playlistId))
+                    {
+                        try
+                        {
+                            var videos = await ccc.Services.YoutubeApiService.Instance.GetPlaylistVideos(playlistId);
+                            foreach (var v in videos)
+                            {
+                                await App.PlaylistService.AddVideoToPlaylistAsync(
+                                    targetId,
+                                    $"https://www.youtube.com/watch?v={v.VideoId}",
+                                    v.VideoId,
+                                    v.Title,
+                                    v.ThumbnailUrl,
+                                    v.Author,
+                                    v.ViewCount,
+                                    v.PublishedAt
+                                );
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            System.Diagnostics.Debug.WriteLine($"Failed to import playlist {playlistId}: {ex.Message}");
+                        }
+                        continue; // Done with this line
+                    }
+
+                    // Fallback to Video Link
+                    var videoId = ExtractVideoId(line);
+                    if (!string.IsNullOrEmpty(videoId))
+                    {
+                        try 
+                        {
+                            var details = await ccc.Services.YoutubeApiService.Instance.GetVideoDetails(videoId);
+                            await App.PlaylistService.AddVideoToPlaylistAsync(
+                                targetId,
+                                $"https://www.youtube.com/watch?v={videoId}",
+                                videoId,
+                                details.Title,
+                                details.ThumbnailUrl,
+                                details.Author,
+                                details.ViewCount,
+                                details.PublishedAt
+                            );
+                        }
+                        catch (Exception ex)
+                        {
+                            System.Diagnostics.Debug.WriteLine($"Failed to import {videoId}: {ex.Message}");
+                        }
+                    }
+                }
+                // 2. Process Color Folder Inputs
+                foreach (var colorItem in ColorImports)
+                {
+                    if (string.IsNullOrWhiteSpace(colorItem.InputText)) continue;
+
+                    var colorInput = colorItem.InputText;
+                    var colorName = colorItem.ColorName.ToLower(); // "red", "blue" etc to match db logic
+
+                    var cLines = colorInput.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+                    foreach (var line in cLines)
+                    {
+                         // Check for Playlist Link first
+                        var playlistId = ExtractPlaylistId(line);
+                        if (!string.IsNullOrEmpty(playlistId))
+                        {
+                            try
+                            {
+                                var videos = await ccc.Services.YoutubeApiService.Instance.GetPlaylistVideos(playlistId);
+                                foreach (var v in videos)
+                                {
+                                    long itemId = await App.PlaylistService.AddVideoToPlaylistAsync(
+                                        targetId,
+                                        $"https://www.youtube.com/watch?v={v.VideoId}",
+                                        v.VideoId,
+                                        v.Title,
+                                        v.ThumbnailUrl,
+                                        v.Author,
+                                        v.ViewCount,
+                                        v.PublishedAt
+                                    );
+                                    // Assign to Folder
+                                    await App.SqliteService.AssignVideoToFolderAsync(targetId, itemId, colorName);
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                System.Diagnostics.Debug.WriteLine($"Failed to import color playlist {playlistId}: {ex.Message}");
+                            }
+                            continue;
+                        }
+
+                        // Fallback to Video Link
+                        var videoId = ExtractVideoId(line);
+                        if (!string.IsNullOrEmpty(videoId))
+                        {
+                            try 
+                            {
+                                var details = await ccc.Services.YoutubeApiService.Instance.GetVideoDetails(videoId);
+                                var itemId = await App.PlaylistService.AddVideoToPlaylistAsync(
+                                    targetId,
+                                    $"https://www.youtube.com/watch?v={videoId}",
+                                    videoId,
+                                    details.Title,
+                                    details.ThumbnailUrl,
+                                    details.Author,
+                                    details.ViewCount,
+                                    details.PublishedAt
+                                );
+                                // Assign to Folder
+                                await App.SqliteService.AssignVideoToFolderAsync(targetId, itemId, colorName);
+                            }
+                            catch (Exception ex)
+                            {
+                                System.Diagnostics.Debug.WriteLine($"Failed to import color video {videoId}: {ex.Message}");
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Refresh UI if we added to the currently viewed playlist
+            if (SelectedPlaylist != null && SelectedPlaylist.Id == targetId)
+            {
+                 // Reload to refresh defaults and colors
+                 await LoadPlaylistVideos(targetId);
+            }
+        }
+
+        private string ExtractVideoId(string url)
+        {
+            // Simple robust regex for standard, short, and raw IDs
+            // https://www.youtube.com/watch?v=VIDEO_ID
+            // https://youtu.be/VIDEO_ID
+            // VIDEO_ID
+            var regex = new System.Text.RegularExpressions.Regex(@"(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^""&?\/\s]{11})");
+            var match = regex.Match(url);
+            if (match.Success) return match.Groups[1].Value;
+            
+            if (url.Trim().Length == 11) return url.Trim(); // Assume raw ID
+
+            return "";
+        }
+
+        private string ExtractPlaylistId(string url)
+        {
+            // https://www.youtube.com/playlist?list=PLAYLIST_ID
+            // https://www.youtube.com/watch?v=VIDEO_ID&list=PLAYLIST_ID
+            var regex = new System.Text.RegularExpressions.Regex(@"[?&]list=([^#&?]+)");
+            var match = regex.Match(url);
+            if (match.Success) return match.Groups[1].Value;
+            
+            // Raw ID heuristics? usually starts with PL, UU, LL, RD and ~34 chars
+            // Check if it's just a long string not starting with http
+            var trimmed = url.Trim();
+            if (!trimmed.StartsWith("http") && trimmed.Length > 12 && (trimmed.StartsWith("PL") || trimmed.StartsWith("UU") || trimmed.StartsWith("LL") || trimmed.StartsWith("RD"))) 
+                return trimmed;
+
+            return "";
+        }
+
     }
 }

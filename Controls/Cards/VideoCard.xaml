@@ -8,6 +8,27 @@
              d:DesignHeight="260" d:DesignWidth="320">
     
     <Border x:Name="ContainerBorder" Style="{StaticResource CardBaseStyle}" Padding="0">
+        <Border.Resources>
+            <Style x:Key="RoundIconBtn" TargetType="Button">
+                <Setter Property="Background" Value="#99000000"/>
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border Background="{TemplateBinding Background}" CornerRadius="14">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#CC000000"/>
+                                    <Setter Property="Cursor" Value="Hand"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+        </Border.Resources>
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/> <!-- Thumbnail (Aspect Ratio handled by Image or Width) -->
@@ -44,9 +65,13 @@
              <Grid Grid.Row="0" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="8"
                    Visibility="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource BooleanToVisibilityConverter}}">
                  <StackPanel Orientation="Horizontal">
-                     <!-- Pin Button placeholder -->
-                     <Button Style="{StaticResource InvisibleBtn}" Width="24" Height="24" Margin="0,0,4,0">
-                         <TextBlock Text="📌" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                     <!-- Pin Button -->
+                     <Button Style="{StaticResource RoundIconBtn}"
+                             Command="{Binding DataContext.TogglePinCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                             CommandParameter="{Binding}"
+                             ToolTip="Pin Video"
+                             Width="28" Height="28" Margin="0,0,4,0">
+                         <Path Fill="White" Data="M16,12V4H17V2H7V4H8V12L6,14V16H11.2V22H12.8V16H18V14L16,12Z" Width="12" Height="12" Stretch="Uniform"/>
                      </Button>
                      <!-- Star Button placeholder -->
                      <Button Style="{StaticResource InvisibleBtn}" Width="24" Height="24">

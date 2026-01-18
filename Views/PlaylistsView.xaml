@@ -181,7 +181,7 @@
 
                 <!-- Right: Add Button -->
                 <StackPanel Orientation="Horizontal" Grid.Column="1">
-                     <Button Command="{Binding AddPlaylistCommand}" 
+                     <Button Command="{Binding OpenImportModalCommand}" 
                             Style="{StaticResource NavButton}" 
                             Margin="8,0,0,0">
                         <StackPanel Orientation="Horizontal">

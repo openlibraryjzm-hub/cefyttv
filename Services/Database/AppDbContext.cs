@@ -15,6 +15,7 @@ namespace ccc.Services.Database
         public DbSet<VideoFolderAssignment> VideoFolderAssignments { get; set; }
         public DbSet<StuckFolder> StuckFolders { get; set; }
         public DbSet<FolderMetadata> FolderMetadata { get; set; }
+        public DbSet<PinnedVideo> PinnedVideos { get; set; }
 
         // The path to the SQLite database
         private string DbPath { get; }
@@ -94,6 +95,12 @@ namespace ccc.Services.Database
             // --- Liked Videos ---
             // Unique Constraint: video_id
             modelBuilder.Entity<LikedVideo>()
+                .HasIndex(v => v.VideoId)
+                .IsUnique();
+
+            // --- Pinned Videos ---
+            // Unique Constraint: video_id
+            modelBuilder.Entity<PinnedVideo>()
                 .HasIndex(v => v.VideoId)
                 .IsUnique();
         }

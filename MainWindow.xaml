@@ -11,6 +11,7 @@
         xmlns:lists="clr-namespace:ccc.Controls.Lists"
         xmlns:nav="clr-namespace:ccc.Controls.Navigation"
         xmlns:player="clr-namespace:ccc.Controls.Player"
+        xmlns:modals="clr-namespace:ccc.Controls.Modals"
 
         xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
         mc:Ignorable="d"
@@ -34,7 +35,6 @@
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
         
-
     </Window.Resources>
 
     <Grid>
@@ -101,6 +101,11 @@
                 <!-- Dynamic View Injection -->
                 <ContentControl Grid.Row="1" Content="{Binding CurrentView}"/>
             </Grid>
+            <!-- Modals Overlay (Right Side Only to avoid WebView2 Airspace issues) -->
+            <modals:ImportVideosModal Visibility="{Binding IsImportModalOpen, Converter={StaticResource BoolToVis}}"
+                                      Panel.ZIndex="500"
+                                      Grid.Column="1"
+                                      Grid.Row="0" Grid.RowSpan="2"/> <!-- Span rows if needed, or just occupy space. Since inner grid has no rows, RowSpan irrelevant but harmless. Wait, inner grid DOES NOT have rows. -->
         </Grid>
     </Grid>
 

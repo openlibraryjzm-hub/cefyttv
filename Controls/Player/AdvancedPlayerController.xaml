@@ -145,9 +145,10 @@
                     <Grid>
                         <!-- Metadata (Left) -->
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
-                            <TextBlock Text="AUTHOR" Foreground="{StaticResource AccentPrimaryBrush}" Opacity="0.8" FontSize="11" FontWeight="Bold"/>
-                            <TextBlock Text=" | " Foreground="{StaticResource TextMutedBrush}" FontSize="11"/>
-                            <TextBlock Text="1.2M" Foreground="{StaticResource AccentPrimaryBrush}" Opacity="0.8" FontSize="11" FontWeight="Bold"/>
+                            <TextBlock Text="{Binding SelectedVideo.Author, FallbackValue='Unknown', TargetNullValue='Unknown'}" 
+                                       Foreground="{StaticResource AccentPrimaryBrush}" Opacity="0.8" FontSize="11" FontWeight="Bold"/>
+                            <TextBlock Text=" | " Foreground="{StaticResource TextMutedBrush}" FontSize="11" Margin="4,0"/>
+                            <TextBlock Text="{Binding SelectedVideo.MetadataLine}" Foreground="{StaticResource AccentPrimaryBrush}" Opacity="0.8" FontSize="11" FontWeight="Bold"/>
                         </StackPanel>
 
                         <!-- Navigation Controls (Right) -->
@@ -275,11 +276,16 @@
                                 <Path Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}" Data="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z" Width="12" Height="12" Stretch="Uniform"/>
                             </Button>
                              <!-- Shuffle (Swapped) -->
-                            <Button Style="{StaticResource IconButtonStyle}" ToolTip="Shuffle">
+                            <Button Style="{StaticResource IconButtonStyle}" 
+                                    Command="{Binding ShuffleVideoCommand}"
+                                    ToolTip="Shuffle Playlist">
                                 <Path Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}" Data="M14.83,13.41L13.42,14.83L16.59,18H2V20H16.59L13.42,23.17L14.83,24.58L20.41,19L14.83,13.41M4,6.83L5.41,8.24L8.59,11.41L10,10L6.83,6.83L5.41,5.41L4,4M20.41,5L14.83,-0.59L13.42,0.83L16.59,4H2V6H16.59L13.42,9.17L14.83,10.59L20.41,5Z" Width="12" Height="12" Stretch="Uniform"/>
                             </Button>
                              <!-- Pin -->
-                            <Button Style="{StaticResource IconButtonStyle}" ToolTip="Pin">
+                            <Button Style="{StaticResource IconButtonStyle}" 
+                                    Command="{Binding TogglePinCommand}"
+                                    CommandParameter="{Binding SelectedVideo}"
+                                    ToolTip="Pin/Unpin">
                                 <Path Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}" Data="M16,12V4H17V2H7V4H8V12L6,14V16H11.2V22H12.8V16H18V14L16,12Z" Width="12" Height="12" Stretch="Uniform"/>
                             </Button>
                             <!-- Like -->

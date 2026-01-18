@@ -28,6 +28,15 @@ namespace ccc.Services.Database
                     ""thumbnail_url"" TEXT NULL,
                     ""liked_at"" TEXT NOT NULL
                 );
+
+                CREATE TABLE IF NOT EXISTS ""pinned_videos"" (
+                    ""id"" INTEGER NOT NULL CONSTRAINT ""PK_pinned_videos"" PRIMARY KEY AUTOINCREMENT,
+                    ""video_id"" TEXT NOT NULL,
+                    ""video_url"" TEXT NOT NULL,
+                    ""title"" TEXT NULL,
+                    ""thumbnail_url"" TEXT NULL,
+                    ""pinned_at"" TEXT NOT NULL
+                );
             ");
             
             // Re-create index (IF NOT EXISTS syntax for indexes depends on sqlite version, 
@@ -39,6 +48,10 @@ namespace ccc.Services.Database
             {
                 await context.Database.ExecuteSqlRawAsync(@"
                     CREATE UNIQUE INDEX IF NOT EXISTS ""IX_liked_videos_video_id"" ON ""liked_videos"" (""video_id"");
+                ");
+                
+                await context.Database.ExecuteSqlRawAsync(@"
+                    CREATE UNIQUE INDEX IF NOT EXISTS ""IX_pinned_videos_video_id"" ON ""pinned_videos"" (""video_id"");
                 ");
             } 
             catch { /* Index might exist */ }
@@ -110,7 +123,7 @@ namespace ccc.Services.Database
 
         // --- Playlist Item Operations ---
 
-        public async Task<long> AddVideoToPlaylistAsync(long playlistId, string videoUrl, string videoId, string? title, string? thumbnailUrl)
+        public async Task<long> AddVideoToPlaylistAsync(long playlistId, string videoUrl, string videoId, string? title, string? thumbnailUrl, string? author = null, string? viewCount = null, string? publishedAt = null)
         {
             using var context = new AppDbContext();
             var count = await context.PlaylistItems.CountAsync(i => i.PlaylistId == playlistId);
@@ -133,7 +146,10 @@ namespace ccc.Services.Database
                 ThumbnailUrl = thumbnailUrl,
                 Position = nextPos,
                 AddedAt = DateTime.UtcNow.ToString("o"),
-                IsLocal = 0
+                IsLocal = 0,
+                Author = author,
+                ViewCount = viewCount,
+                PublishedAt = publishedAt
             };
 
             context.PlaylistItems.Add(item);
@@ -201,6 +217,16 @@ namespace ccc.Services.Database
              // Join might be better
              return await context.PlaylistItems
                 .Where(i => i.PlaylistId == playlistId && i.FolderAssignments.Any(a => a.FolderColor == folderColor))
+                .OrderBy(i => i.Position)
+                .AsNoTracking()
+                .ToListAsync();
+        }
+
+        public async Task<List<PlaylistItem>> GetUnsortedPlaylistItemsAsync(long playlistId)
+        {
+             using var context = new AppDbContext();
+             return await context.PlaylistItems
+                .Where(i => i.PlaylistId == playlistId && !i.FolderAssignments.Any())
                 .OrderBy(i => i.Position)
                 .AsNoTracking()
                 .ToListAsync();
@@ -333,6 +359,50 @@ namespace ccc.Services.Database
              using var context = new AppDbContext();
              return await context.LikedVideos
                  .OrderByDescending(l => l.LikedAt)
+                 .Take(limit)
+                 .AsNoTracking()
+                 .ToListAsync();
+         }
+
+         // --- Pins ---
+         public async Task<bool> TogglePinAsync(string videoId, string videoUrl, string? title, string? thumbnail)
+         {
+             using var context = new AppDbContext();
+             var existing = await context.PinnedVideos.FirstOrDefaultAsync(p => p.VideoId == videoId);
+             
+             if (existing != null)
+             {
+                 context.PinnedVideos.Remove(existing);
+                 await context.SaveChangesAsync();
+                 return false; // Removed (Unpin)
+             }
+             else
+             {
+                 var pin = new PinnedVideo
+                 {
+                     VideoId = videoId,
+                     VideoUrl = videoUrl,
+                     Title = title,
+                     ThumbnailUrl = thumbnail,
+                     PinnedAt = DateTime.UtcNow.ToString("o")
+                 };
+                 context.PinnedVideos.Add(pin);
+                 await context.SaveChangesAsync();
+                 return true; // Added (Pin)
+             }
+         }
+
+         public async Task<bool> IsVideoPinnedAsync(string videoId)
+         {
+             using var context = new AppDbContext();
+             return await context.PinnedVideos.AnyAsync(p => p.VideoId == videoId);
+         }
+
+         public async Task<List<PinnedVideo>> GetPinnedVideosAsync(int limit = 1000)
+         {
+             using var context = new AppDbContext();
+             return await context.PinnedVideos
+                 .OrderByDescending(p => p.PinnedAt)
                  .Take(limit)
                  .AsNoTracking()
                  .ToListAsync();

@@ -2,8 +2,8 @@
 
 # Session Updates
 
-## [Feature] Likes & History - 2026-01-19
-We have successfully implemented the **Watch History** and **Liked Videos** systems, providing users with persistent tracking of their activity and favorites.
+## [Feature] Likes, History & Pins - 2026-01-19
+We have successfully implemented the **Watch History**, **Liked Videos**, and **Pinned Videos** systems, providing users with persistent tracking of their activity and favorites.
 
 ### 💾 Watch History System
 1.  **Architecture**:
@@ -27,6 +27,31 @@ We have successfully implemented the **Watch History** and **Liked Videos** syst
     *   **Likes View**: A dedicated page displaying a grid of all liked videos.
     *   **Playback**: Like the history page, clicking a Liked Video card instantly plays it.
 
+### 📌 Pinned Videos System
+1.  **Architecture**:
+    *   **Database Schema**: Created `pinned_videos` table (VideoID, URL, Title, Thumbnail, Date) with a unique constraint on VideoID.
+    *   **Toggle Logic**: Implemented `TogglePinAsync` in `SqliteService` handling Add/Remove logic.
+2.  **UI Wiring**:
+    *   **Player Controller**: The **Pin Icon** in the top "Video Menu" is now fully functional.
+    *   **Video Cards**: Added a hover-visible Pin button to all video cards, allowing quick pinning from the grid.
+    *   **Pins View**: A dedicated page displaying all pinned videos.
+
+### 🎲 Shuffle System
+1.  **Architecture**:
+    *   **Logic**: Implemented `ShuffleVideoCommand` in `MainViewModel`. It picks a random video from the *currently loaded playlist's full cache* (`_allVideosCache`) and plays it.
+2.  **UI Wiring**:
+    *   **Player Controller**: The **Shuffle Icon** in the video menu is now fully functional.
+
+### 📥 Import System
+1.  **Architecture**:
+    *   **Backend**: `YoutubeApiService` integration with Google API Key.
+    *   **Database**: `SqliteService` updated to support extended metadata (Author, ViewCount, PublishedAt).
+    *   **Logic**: `MainViewModel` handles parsing URLs and orchestration.
+        *   **Support**: Now accepts individual video links AND full playlist links (via `list` parameter), importing entire collections at once.
+2.  **UI**:
+    *   **Modal**: Created `ImportVideosModal.xaml` overlay.
+    *   **Access**: Wired "Add" buttons in `PlaylistsView` and `VideosView` to open the modal.
+
 ## [Infrastructure] Tab Presets - 2026-01-19
 We have established the foundation for **Tab Presets**, allowing the application sidebar to be dynamically reconfigured.
 
@@ -40,6 +65,36 @@ We have established the foundation for **Tab Presets**, allowing the application
     *   Added a **Preset Dropdown** to the `PlaylistsView` sticky toolbar.
     *   Added a horizontal list of **Tab Pills** to the same toolbar.
     *   *Note*: While the UI and Data plumbing are complete, the actual filtering logic (filtering playlists by the selected tab) is the next scheduled task.
+
+## [Polish] Pins, Metadata & Advanced Import - 2026-01-19
+We have finalized the core interaction details, ensuring the import workflow and video metadata presentation are production-ready.
+
+### 📌 Pins System
+*   **Fully Functional**: The logic implemented for Pinned Videos is now verified working locally.
+*   **Interaction**: Users can Pin/Unpin videos via the hovering "Thumbtack" icon on any Video Card or the Star/Pin button in the Advanced Player Controller.
+*   **Persistance**: Pinned status is saved to the SQLite database and reflected in the dedicated **Pins View**.
+
+### 📝 Video Metadata
+*   **Enhanced Display**: Video Cards and Playlist headers now correctly display rich metadata.
+    *   **View Count**: Formatted with suffixes (e.g., "1.2M views", "850K views").
+    *   **Author**: Channel name displayed prominently.
+    *   **Date**: Publication year (e.g., "2023").
+*   **Data Source**: All metadata is correctly sourced from the `SqliteService`, which now includes `Author`, `ViewCount`, and `PublishedAt` fields populated during Import.
+
+### 📥 Advanced Import Modal
+We have significantly upgraded the `ImportVideosModal` to be a powerful "Control Center" for adding content.
+1.  **Direct-to-Folder Import**:
+    *   The modal now features a **16-Color Grid** below the main input.
+    *   **Workflow**: Users can paste links directly into a colored box (e.g., "Red") to import the video AND automatically assign it to that folder in one step.
+    *   **Parallel Processing**: Users can import standard (Unsorted) videos and specific colored videos simultaneously.
+2.  **Smart "Add Playlist"**:
+    *   **Toggle Mode**: A new **(+)** button next to the playlist dropdown switches it to a "Create New" text field.
+    *   **Atomic Action**: Users can type a new playlist name and paste links. The system handles Creating the Playlist, Adding it to the Library, Importing the Videos, and Updating the UI in a single click.
+3.  **Intelligent Defaults**:
+    *   **Context Aware**: If opened from a Playlist page, the modal defaults to *that* playlist.
+    *   **Playlists Page**: If opened from the library root, it intelligently defaults to the "Unsorted" playlist.
+4.  **Polish**:
+    *   **Auto-Reset**: The form completely clears its state (inputs and mode) when reopened, preventing stale data.
 
 ## [Style] Custom Page Banners - 2026-01-18
 We have integrated a custom banner image system into the application, ensuring the user's provided artwork (`banner.PNG`) is displayed prominently across the experience.

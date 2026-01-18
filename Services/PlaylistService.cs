@@ -30,9 +30,13 @@ namespace ccc.Services
         public async Task LoadPlaylistAsync(long playlistId, string? folderFilter = null)
         {
             CurrentPlaylistId = playlistId;
-            if (string.IsNullOrEmpty(folderFilter))
+            if (string.IsNullOrEmpty(folderFilter) || folderFilter == "all")
             {
                 CurrentPlaylistItems = await _sqliteService.GetPlaylistItemsAsync(playlistId);
+            }
+            else if (folderFilter == "unsorted")
+            {
+                CurrentPlaylistItems = await _sqliteService.GetUnsortedPlaylistItemsAsync(playlistId);
             }
             else
             {
@@ -86,14 +90,15 @@ namespace ccc.Services
         
         public async Task<long> CreatePlaylistAsync(string name, string? description) => await _sqliteService.CreatePlaylistAsync(name, description);
         
-        public async Task AddVideoToPlaylistAsync(long playlistId, string url, string videoId, string title, string thumbnail)
+        public async Task<long> AddVideoToPlaylistAsync(long playlistId, string url, string videoId, string title, string thumbnail, string? author = null, string? viewCount = null, string? publishedAt = null)
         {
-             await _sqliteService.AddVideoToPlaylistAsync(playlistId, url, videoId, title, thumbnail);
+             long itemId = await _sqliteService.AddVideoToPlaylistAsync(playlistId, url, videoId, title, thumbnail, author, viewCount, publishedAt);
              // If adding to current playlist, refresh?
              if (CurrentPlaylistId == playlistId)
              {
                  await LoadPlaylistAsync(playlistId); // Refresh
              }
+             return itemId;
         }
     }
 }
