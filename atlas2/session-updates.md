@@ -1,5 +1,20 @@
 # Session Updates
 
+## [UI] Playlist Page Card Improvements - 2026-01-18
+We have refined the layout and sizing of the playlist cards on the **Playlists Page** to improve visual impact and alignment.
+
+### 🎨 Visual & Layout Upgrades
+1.  **Grid Layout**:
+    *   Replaced the fluid `WrapPanel` with a structured `UniformGrid (Columns="2")`.
+    *    **Result**: Cards are now strictly organized in horizontally aligned rows of two, regardless of window width.
+2.  **Card Sizing**:
+    *   **Increased Size**: Switched from fixed `220x300` dimensions to valid responsive width (filling the column) with a fixed height of `380px`.
+    *   **Responsive Thumbnails**: Removed the hardcoded `140px` height constraint on `CardThumbnail`, allowing the artwork to expand to fill the available vertical space within the larger card.
+3.  **Scroll-Away Pagination**:
+    *   Moved the pagination controls (Previous/Next/Count) inside the main `ScrollViewer` for both **Playlists** and **Videos** pages.
+    *   **Result**: The footer is no longer fixed to the bottom of the viewport. It now lives at the end of the content stream, allowing for a cleaner, full-height view of the grid until the user deliberately scrolls to the end.
+
+
 ## [Feature] Advanced Player Controller Refinement - 2026-01-18
 We have significantly refined the **Advanced Player Controller**, transforming it into a high-fidelity "Head-Up Display" with a modern orbital aesthetic.
 

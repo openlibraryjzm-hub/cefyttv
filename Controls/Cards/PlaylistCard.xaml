@@ -39,7 +39,7 @@
             </Border>
 
             <!-- Thumbnail -->
-            <local:CardThumbnail Grid.Row="1" Margin="12,0,12,0" Height="140"
+            <local:CardThumbnail Grid.Row="1" Margin="12,0,12,0"
                                  Source="{Binding ThumbnailUrl}"
                                  CornerRadius="8"/>
 

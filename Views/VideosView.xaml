@@ -13,7 +13,6 @@
             <RowDefinition Height="Auto"/> <!-- Banner -->
             <RowDefinition Height="Auto"/> <!-- Toolbar -->
             <RowDefinition Height="*"/>    <!-- Content -->
-            <RowDefinition Height="Auto"/> <!-- Footer -->
         </Grid.RowDefinitions>
 
         <!-- Banner -->
@@ -283,45 +282,47 @@
             </Grid>
         </Border>
 
-        <!-- Video Grid -->
+        <!-- Video Grid & Pagination -->
         <ScrollViewer Grid.Row="2" Padding="20">
-            <ItemsControl ItemsSource="{Binding Videos}">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <WrapPanel Orientation="Horizontal" ItemWidth="300" ItemHeight="260"/>
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <cards:VideoCard Margin="8">
-                            <cards:VideoCard.InputBindings>
-                                <MouseBinding MouseAction="LeftClick" 
-                                              Command="{Binding DataContext.PlayVideoCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                              CommandParameter="{Binding VideoId}"/>
-                            </cards:VideoCard.InputBindings>
-                        </cards:VideoCard>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-        </ScrollViewer>
+            <StackPanel>
+                <ItemsControl ItemsSource="{Binding Videos}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel Orientation="Horizontal" ItemWidth="300" ItemHeight="260"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <cards:VideoCard Margin="8">
+                                <cards:VideoCard.InputBindings>
+                                    <MouseBinding MouseAction="LeftClick" 
+                                                  Command="{Binding DataContext.PlayVideoCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                  CommandParameter="{Binding VideoId}"/>
+                                </cards:VideoCard.InputBindings>
+                            </cards:VideoCard>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
 
-        <!-- Pagination Footer -->
-        <Border Grid.Row="3" Padding="20" Background="#0F172A">
-             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                <Button Content="Previous" 
-                        Command="{Binding PrevVideoPageCommand}"
-                        Background="Transparent" Foreground="White" BorderThickness="1" BorderBrush="#334155" Padding="12,6" Margin="0,0,12,0" 
-                        Style="{StaticResource InvisibleBtn}"/>
-                
-                <TextBlock Text="{Binding VideoPageText}" 
-                           Foreground="#94A3B8"
-                           VerticalAlignment="Center" Margin="12,0"/>
+                <!-- Pagination Footer -->
+                <Border Padding="20" Background="#0F172A" Margin="0,20,0,0" CornerRadius="8">
+                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <Button Content="Previous" 
+                                Command="{Binding PrevVideoPageCommand}"
+                                Background="Transparent" Foreground="White" BorderThickness="1" BorderBrush="#334155" Padding="12,6" Margin="0,0,12,0" 
+                                Style="{StaticResource InvisibleBtn}"/>
+                        
+                        <TextBlock Text="{Binding VideoPageText}" 
+                                   Foreground="#94A3B8"
+                                   VerticalAlignment="Center" Margin="12,0"/>
 
-                <Button Content="Next" 
-                        Command="{Binding NextVideoPageCommand}"
-                         Background="Transparent" Foreground="White" BorderThickness="1" BorderBrush="#334155" Padding="12,6" Margin="12,0,0,0" 
-                        Style="{StaticResource InvisibleBtn}"/>
+                        <Button Content="Next" 
+                                Command="{Binding NextVideoPageCommand}"
+                                Background="Transparent" Foreground="White" BorderThickness="1" BorderBrush="#334155" Padding="12,6" Margin="12,0,0,0" 
+                                Style="{StaticResource InvisibleBtn}"/>
+                    </StackPanel>
+                </Border>
             </StackPanel>
-        </Border>
+        </ScrollViewer>
     </Grid>
 </UserControl>

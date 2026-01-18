@@ -13,7 +13,6 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <!-- Page Banner -->
@@ -24,43 +23,45 @@
                             VideoCountText="24 Playlists • 192 Videos"/>
 
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="20">
-            <ItemsControl ItemsSource="{Binding Playlists}">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <WrapPanel Orientation="Horizontal" ItemWidth="240" ItemHeight="320"/>
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <cards:PlaylistCard Margin="10" Width="220" Height="300">
-                             <cards:PlaylistCard.InputBindings>
-                                <MouseBinding MouseAction="LeftClick" 
-                                              Command="{Binding DataContext.OpenPlaylistCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                              CommandParameter="{Binding Id}"/>
-                            </cards:PlaylistCard.InputBindings>
-                        </cards:PlaylistCard>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-        </ScrollViewer>
+            <StackPanel>
+                <ItemsControl ItemsSource="{Binding Playlists}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <UniformGrid Columns="2" FirstColumn="0"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <cards:PlaylistCard Margin="12" Height="380">
+                                 <cards:PlaylistCard.InputBindings>
+                                    <MouseBinding MouseAction="LeftClick" 
+                                                  Command="{Binding DataContext.OpenPlaylistCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                  CommandParameter="{Binding Id}"/>
+                                </cards:PlaylistCard.InputBindings>
+                            </cards:PlaylistCard>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
 
-        <!-- Use a DockPanel or StackPanel for Pagination Footer -->
-        <Border Grid.Row="2" Padding="20" Background="#0F172A">
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                <Button Content="Previous" 
-                        Command="{Binding PrevPlaylistPageCommand}"
-                        Background="Transparent" Foreground="White" BorderThickness="1" BorderBrush="#334155" Padding="12,6" Margin="0,0,12,0" 
-                        Style="{StaticResource InvisibleBtn}"/>
-                
-                <TextBlock Text="{Binding PlaylistPageText}" 
-                           Foreground="#94A3B8"
-                           VerticalAlignment="Center" Margin="12,0"/>
+                <!-- Pagination Footer -->
+                <Border Padding="20" Background="#0F172A" Margin="0,20,0,0" CornerRadius="8">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <Button Content="Previous" 
+                                Command="{Binding PrevPlaylistPageCommand}"
+                                Background="Transparent" Foreground="White" BorderThickness="1" BorderBrush="#334155" Padding="12,6" Margin="0,0,12,0" 
+                                Style="{StaticResource InvisibleBtn}"/>
+                        
+                        <TextBlock Text="{Binding PlaylistPageText}" 
+                                   Foreground="#94A3B8"
+                                   VerticalAlignment="Center" Margin="12,0"/>
 
-                <Button Content="Next" 
-                        Command="{Binding NextPlaylistPageCommand}"
-                         Background="Transparent" Foreground="White" BorderThickness="1" BorderBrush="#334155" Padding="12,6" Margin="12,0,0,0" 
-                        Style="{StaticResource InvisibleBtn}"/>
+                        <Button Content="Next" 
+                                Command="{Binding NextPlaylistPageCommand}"
+                                Background="Transparent" Foreground="White" BorderThickness="1" BorderBrush="#334155" Padding="12,6" Margin="12,0,0,0" 
+                                Style="{StaticResource InvisibleBtn}"/>
+                    </StackPanel>
+                </Border>
             </StackPanel>
-        </Border>
+        </ScrollViewer>
     </Grid>
 </UserControl>
