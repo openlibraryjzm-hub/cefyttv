@@ -8,22 +8,130 @@
              mc:Ignorable="d" 
              d:DesignHeight="720" d:DesignWidth="1000">
 
+    <UserControl.Resources>
+        <Style TargetType="ScrollBar">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Width" Value="10"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ScrollBar">
+                        <Grid Background="Transparent">
+                            <Track x:Name="PART_Track" IsDirectionReversed="true">
+                                <Track.Thumb>
+                                    <Thumb>
+                                        <Thumb.Template>
+                                            <ControlTemplate TargetType="Thumb">
+                                                <Border x:Name="bd" Background="#1E293B" CornerRadius="5" Margin="2"/>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter TargetName="bd" Property="Background" Value="#334155"/>
+                                                    </Trigger>
+                                                    <Trigger Property="IsDragging" Value="True">
+                                                        <Setter TargetName="bd" Property="Background" Value="#475569"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Thumb.Template>
+                                    </Thumb>
+                                </Track.Thumb>
+                            </Track>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/> <!-- Banner -->
-            <RowDefinition Height="Auto"/> <!-- Toolbar -->
-            <RowDefinition Height="*"/>    <!-- Content -->
-        </Grid.RowDefinitions>
+        <!-- Content Layer -->
+        <!-- ScrollViewer fills the space so ScrollBar is at the edge -->
+        <ScrollViewer x:Name="MainScrollViewer" 
+                      VerticalScrollBarVisibility="Auto" 
+                      Padding="0,0,0,20"
+                      ScrollChanged="ScrollViewer_ScrollChanged">
+            <!-- Inner Content Width Constrained to exactly 3 Video Cells (3x300 = 900) -->
+            <StackPanel Width="900" HorizontalAlignment="Center" Margin="0,24,0,0">
+                <!-- 1. The Banner (Scrolls away) -->
+                <!-- Width 884 to match Card Margins (8px left + 8px right indent) -->
+                <!-- Rounded Top Corners via OpacityMask -->
+                <Grid Margin="8,0">
+                    <Grid.OpacityMask>
+                        <VisualBrush>
+                            <VisualBrush.Visual>
+                                <Border Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=Grid}}"
+                                        Height="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=Grid}}"
+                                        Background="Black"
+                                        CornerRadius="12,12,0,0"/>
+                            </VisualBrush.Visual>
+                        </VisualBrush>
+                    </Grid.OpacityMask>
+                    
+                    <visuals:PageBanner x:Name="PageBannerControl"
+                                        Title="All Videos" 
+                                        Description="Your complete local library."
+                                        AvatarAscii="📹"
+                                        VideoCountText="1,243 Videos"/>
+                </Grid>
+                
+                <!-- 2. Placeholder for the Sticky Toolbar -->
+                <Border Height="{Binding ElementName=StickyToolbar, Path=ActualHeight}" Background="Transparent"/>
 
-        <!-- Banner -->
-        <visuals:PageBanner Grid.Row="0" 
-                            Title="All Videos" 
-                            Description="Your complete local library."
-                            AvatarAscii="📹"
-                            VideoCountText="1,243 Videos"/>
+                <!-- 3. Video Grid -->
+                <!-- Margin top 10 separates videos from toolbar -->
+                <ItemsControl ItemsSource="{Binding Videos}" Margin="0,10,0,0">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel Orientation="Horizontal" ItemWidth="300" ItemHeight="260"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <cards:VideoCard Margin="8">
+                                <cards:VideoCard.InputBindings>
+                                    <MouseBinding MouseAction="LeftClick" 
+                                                  Command="{Binding DataContext.PlayVideoCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                  CommandParameter="{Binding VideoId}"/>
+                                </cards:VideoCard.InputBindings>
+                            </cards:VideoCard>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
 
-        <!-- Toolbar Mockup -->
-        <Border Grid.Row="1" Background="{StaticResource BgSecondaryBrush}" Padding="16,12" BorderBrush="#333" BorderThickness="0,0,0,1">
+                <!-- 4. Pagination Footer -->
+                <Border Padding="20" Background="#0F172A" Margin="0,20,0,0" CornerRadius="8">
+                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <Button Content="Previous" 
+                                Command="{Binding PrevVideoPageCommand}"
+                                Background="Transparent" Foreground="White" BorderThickness="1" BorderBrush="#334155" Padding="12,6" Margin="0,0,12,0" 
+                                Style="{StaticResource InvisibleBtn}"/>
+                        
+                        <TextBlock Text="{Binding VideoPageText}" 
+                                   Foreground="#94A3B8"
+                                   VerticalAlignment="Center" Margin="12,0"/>
+
+                        <Button Content="Next" 
+                                Command="{Binding NextVideoPageCommand}"
+                                Background="Transparent" Foreground="White" BorderThickness="1" BorderBrush="#334155" Padding="12,6" Margin="12,0,0,0" 
+                                Style="{StaticResource InvisibleBtn}"/>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Sticky Toolbar Layer (Floating on top) -->
+        <!-- Width 884 matches the visual width of the Banner (900 - 16 margin) -->
+        <Border x:Name="StickyToolbar"
+                Width="884"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Top"
+                CornerRadius="12"
+                Background="{StaticResource BgSecondaryBrush}" 
+                Padding="16,12" 
+                BorderBrush="#333" 
+                BorderThickness="0,0,0,1">
+            <Border.Effect>
+                <DropShadowEffect Color="Black" Opacity="0.3" BlurRadius="10" ShadowDepth="4" Direction="270"/>
+            </Border.Effect>
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
@@ -31,8 +139,22 @@
                 </Grid.ColumnDefinitions>
                 
                 <StackPanel Orientation="Horizontal" Grid.Column="0" VerticalAlignment="Center">
-                    <TextBlock Text="Folders:" VerticalAlignment="Center" Foreground="#888" Margin="0,0,12,0"/>
-                    
+                    <!-- 1. Filters: All & Unsorted -->
+                    <Button Content="All" 
+                            Command="{Binding FilterByFolderCommand}" 
+                            CommandParameter="all"
+                            Style="{StaticResource NavButton}" 
+                            Foreground="White" 
+                            Margin="0,0,8,0"/>
+
+                    <Button Content="Unsorted" 
+                            Command="{Binding FilterByFolderCommand}" 
+                            CommandParameter="unsorted"
+                            Style="{StaticResource NavButton}" 
+                            Foreground="#94A3B8" 
+                            Margin="0,0,16,0"/>
+
+                    <!-- 2. Colored Dots -->
                     <!-- Red -->
                     <Button Command="{Binding FilterByFolderCommand}" CommandParameter="red" Margin="2">
                         <Button.Template>
@@ -274,55 +396,22 @@
                     </Button>
                 </StackPanel>
 
-                <!-- Right: Sort/Tag -->
+                <!-- Right: Sort/Tag/Add -->
                 <StackPanel Orientation="Horizontal" Grid.Column="1">
                     <Button Content="Sort: Default" Style="{StaticResource NavButton}" Foreground="White"/>
                     <Button Content="Bulk Tag" Style="{StaticResource NavButton}" Margin="8,0,0,0"/>
+                    
+                    <!-- Add Button -->
+                    <Button Command="{Binding AddVideoCommand}" 
+                            Style="{StaticResource NavButton}" 
+                            Margin="8,0,0,0">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="+" FontSize="16" Margin="0,0,4,2"/>
+                            <TextBlock Text="Add"/>
+                        </StackPanel>
+                    </Button>
                 </StackPanel>
             </Grid>
         </Border>
-
-        <!-- Video Grid & Pagination -->
-        <ScrollViewer Grid.Row="2" Padding="20">
-            <StackPanel>
-                <ItemsControl ItemsSource="{Binding Videos}">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <WrapPanel Orientation="Horizontal" ItemWidth="300" ItemHeight="260"/>
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <cards:VideoCard Margin="8">
-                                <cards:VideoCard.InputBindings>
-                                    <MouseBinding MouseAction="LeftClick" 
-                                                  Command="{Binding DataContext.PlayVideoCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                                  CommandParameter="{Binding VideoId}"/>
-                                </cards:VideoCard.InputBindings>
-                            </cards:VideoCard>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-
-                <!-- Pagination Footer -->
-                <Border Padding="20" Background="#0F172A" Margin="0,20,0,0" CornerRadius="8">
-                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                        <Button Content="Previous" 
-                                Command="{Binding PrevVideoPageCommand}"
-                                Background="Transparent" Foreground="White" BorderThickness="1" BorderBrush="#334155" Padding="12,6" Margin="0,0,12,0" 
-                                Style="{StaticResource InvisibleBtn}"/>
-                        
-                        <TextBlock Text="{Binding VideoPageText}" 
-                                   Foreground="#94A3B8"
-                                   VerticalAlignment="Center" Margin="12,0"/>
-
-                        <Button Content="Next" 
-                                Command="{Binding NextVideoPageCommand}"
-                                Background="Transparent" Foreground="White" BorderThickness="1" BorderBrush="#334155" Padding="12,6" Margin="12,0,0,0" 
-                                Style="{StaticResource InvisibleBtn}"/>
-                    </StackPanel>
-                </Border>
-            </StackPanel>
-        </ScrollViewer>
     </Grid>
 </UserControl>

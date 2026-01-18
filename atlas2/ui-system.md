@@ -95,6 +95,14 @@ Defined in `Resources/Styles.xaml`.
 *   **Behavior**: Custom chrome handles Maximize correctly (respects Taskbar).
 *   **Hit-Testing**: Specific interactive zones (Buttons) use `IsHitTestVisibleInChrome="True"` to override drag behavior.
 
+### 5.4 Sticky Feed Layout (Videos/Playlists)
+*   **Pattern**: Single `ScrollViewer` containing a `StackPanel`.
+*   **Banner**: Scrolls away with content. `CornerRadius="12,12,0,0"`.
+*   **Toolbar**: Uses `ScrollChanged` event to adjust `Margin.Top`, creating a "Stick to Banner then Stick to Top" effect.
+*   **Dimensions**: 
+    *   **Container**: `Width="900"`, centered.
+    *   **Banner/Toolbar**: `Width="884"` (flush with card visual edges).
+
 ---
 
 ## 6. Controls & Widgets

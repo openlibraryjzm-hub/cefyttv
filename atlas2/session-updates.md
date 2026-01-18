@@ -12,7 +12,26 @@ We have refined the layout and sizing of the playlist cards on the **Playlists P
     *   **Responsive Thumbnails**: Removed the hardcoded `140px` height constraint on `CardThumbnail`, allowing the artwork to expand to fill the available vertical space within the larger card.
 3.  **Scroll-Away Pagination**:
     *   Moved the pagination controls (Previous/Next/Count) inside the main `ScrollViewer` for both **Playlists** and **Videos** pages.
-    *   **Result**: The footer is no longer fixed to the bottom of the viewport. It now lives at the end of the content stream, allowing for a cleaner, full-height view of the grid until the user deliberately scrolls to the end.
+    *   **Result**: The footer is no longer fixed to the bottom of the viewport. It now lives at the end of the content stream.
+4.  **Sticky Filter Bar (Videos Page)**:
+    *   **Advanced Scroll Behavior**: The "Folder Filter Toolbar" is now initially anchored **below** the Page Banner.
+    *   **Effect**: As you scroll down, the Banner moves up and off-screen. The Toolbar follows it until it hits the top of the viewport, where it "sticks" and remains accessible while the video grid slides underneath.
+    *   **Implementation**: Used a `PageBannerPlaceholder` inside the ScrollViewer and a custom `ScrollChanged` event handler to dynamically adjust the Toolbar's top margin (`Margin.Top = Max(0, BannerHeight - ScrollOffset)`).
+    *   **Refined Controls**:
+        *   Removed "Folders:" label.
+        *   Added **All** and **Unsorted** text buttons to the left of the color dots.
+        *   Added **+ Add** button to the far right.
+        *   **Visual Styling**: Added `Margin="24,0"` to the entire Video grid and toolbar to create a floating card effect within the pane. The Sticky Toolbar now has `CornerRadius="12"` and floats detached from the window edges.
+        *   **Refinements**:
+            *   Added Custom **Dark ScrollBar** style to remove the jarring white line.
+            *   Applied `CornerRadius="12,12,0,0"` to the Page Banner for a smoother top edge.
+            *   **Precision Layout**: Adjusted container width to `900px` (3 cols x 300px). 
+            *   **Flush Alignment**: Set Banner and Toolbar width to `884px` (900px - 16px margins), ensuring they align perfectly with the visual edges of the video cards (which have 8px margins).
+        *   **Playlists Page Refinement**: Applied the same unified design to `PlaylistsView.xaml`:
+            *   Implemented Sticky Header logic (AppBar sticks to top).
+            *   Added "Empty" Toolbar with just an "+ Add" button.
+            *   Applied `CornerRadius="12,12,0,0"` to Playlist Banner.
+            *   Constrained layout to `900px` for consistent centering.
 
 
 ## [Feature] Advanced Player Controller Refinement - 2026-01-18

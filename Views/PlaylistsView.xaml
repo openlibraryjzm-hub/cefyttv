@@ -9,30 +9,86 @@
              mc:Ignorable="d" 
              d:DesignHeight="720" d:DesignWidth="1080"
              Background="#121212">
+    <UserControl.Resources>
+        <Style TargetType="ScrollBar">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Width" Value="10"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ScrollBar">
+                        <Grid Background="Transparent">
+                            <Track x:Name="PART_Track" IsDirectionReversed="true">
+                                <Track.Thumb>
+                                    <Thumb>
+                                        <Thumb.Template>
+                                            <ControlTemplate TargetType="Thumb">
+                                                <Border x:Name="bd" Background="#1E293B" CornerRadius="5" Margin="2"/>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter TargetName="bd" Property="Background" Value="#334155"/>
+                                                    </Trigger>
+                                                    <Trigger Property="IsDragging" Value="True">
+                                                        <Setter TargetName="bd" Property="Background" Value="#475569"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Thumb.Template>
+                                    </Thumb>
+                                </Track.Thumb>
+                            </Track>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
+        <!-- Content Layer -->
+        <ScrollViewer x:Name="MainScrollViewer" 
+                      VerticalScrollBarVisibility="Auto" 
+                      Padding="0,0,0,20"
+                      ScrollChanged="ScrollViewer_ScrollChanged">
+            
+            <!-- Inner Content Width Constrained to approx 3 Video Columns (3x300 = 900) -->
+            <StackPanel Width="900" HorizontalAlignment="Center" Margin="0,24,0,0">
+                <!-- 1. The Banner (Scrolls away) -->
+                <!-- Rounded Top Corners via OpacityMask -->
+                <!-- Width 884 to match Card Margins indent -->
+                <Grid Margin="8,0">
+                    <Grid.OpacityMask>
+                        <VisualBrush>
+                            <VisualBrush.Visual>
+                                <Border Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=Grid}}"
+                                        Height="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=Grid}}"
+                                        Background="Black"
+                                        CornerRadius="12,12,0,0"/>
+                            </VisualBrush.Visual>
+                        </VisualBrush>
+                    </Grid.OpacityMask>
+                    
+                    <visuals:PageBanner x:Name="PageBannerControl"
+                                        Title="Playlists" 
+                                        Description="Your local library collection."
+                                        AvatarAscii="📂"
+                                        VideoCountText="24 Playlists • 192 Videos"/>
+                </Grid>
 
-        <!-- Page Banner -->
-        <visuals:PageBanner Grid.Row="0" 
-                            Title="Playlists" 
-                            Description="Your local library collection."
-                            AvatarAscii="📂"
-                            VideoCountText="24 Playlists • 192 Videos"/>
+                <!-- 2. Placeholder for the Sticky Toolbar -->
+                <Border Height="{Binding ElementName=StickyToolbar, Path=ActualHeight}" Background="Transparent"/>
 
-        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="20">
-            <StackPanel>
-                <ItemsControl ItemsSource="{Binding Playlists}">
+                <!-- 3. Playlist Grid -->
+                <!-- Margin top 10 separates from toolbar -->
+                <ItemsControl ItemsSource="{Binding Playlists}" Margin="0,10,0,0">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <UniformGrid Columns="2" FirstColumn="0"/>
+                            <!-- Using WrapPanel instead of UniformGrid for better flow with fixed width container -->
+                            <WrapPanel Orientation="Horizontal" ItemWidth="440" ItemHeight="380"/>
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <cards:PlaylistCard Margin="12" Height="380">
+                            <cards:PlaylistCard Margin="12">
                                  <cards:PlaylistCard.InputBindings>
                                     <MouseBinding MouseAction="LeftClick" 
                                                   Command="{Binding DataContext.OpenPlaylistCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
@@ -43,9 +99,9 @@
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
 
-                <!-- Pagination Footer -->
+                <!-- 4. Pagination Footer -->
                 <Border Padding="20" Background="#0F172A" Margin="0,20,0,0" CornerRadius="8">
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                         <Button Content="Previous" 
                                 Command="{Binding PrevPlaylistPageCommand}"
                                 Background="Transparent" Foreground="White" BorderThickness="1" BorderBrush="#334155" Padding="12,6" Margin="0,0,12,0" 
@@ -63,5 +119,44 @@
                 </Border>
             </StackPanel>
         </ScrollViewer>
+
+        <!-- Sticky Toolbar Layer (Floating on top) -->
+        <!-- Width 884 matches the visual width of the Banner -->
+        <Border x:Name="StickyToolbar"
+                Width="884"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Top"
+                CornerRadius="12"
+                Background="{StaticResource BgSecondaryBrush}" 
+                Padding="16,12" 
+                BorderBrush="#333" 
+                BorderThickness="0,0,0,1">
+            <Border.Effect>
+                <DropShadowEffect Color="Black" Opacity="0.3" BlurRadius="10" ShadowDepth="4" Direction="270"/>
+            </Border.Effect>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                
+                <!-- Left: Empty for now / Title? -->
+                <StackPanel Orientation="Horizontal" Grid.Column="0" VerticalAlignment="Center">
+                    <!-- Bare bones placeholder -->
+                </StackPanel>
+
+                <!-- Right: Add Button -->
+                <StackPanel Orientation="Horizontal" Grid.Column="1">
+                     <Button Command="{Binding AddPlaylistCommand}" 
+                            Style="{StaticResource NavButton}" 
+                            Margin="8,0,0,0">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="+" FontSize="16" Margin="0,0,4,2"/>
+                            <TextBlock Text="Add"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </Border>
     </Grid>
 </UserControl>

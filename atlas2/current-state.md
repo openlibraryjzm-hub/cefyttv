@@ -53,15 +53,16 @@ Core architecture (WPF + SQLite + Triple Engine Shell) is robust. The UI has rec
 *   ✅ **Success**: Real data (Titles, Video Counts, Thumbnails) appears in the UI.
 
 ### 3.2 Playlists Page (`PlaylistsView`)
-*   **Banner**: Present and populated.
+*   **Sticky Header**: ✅ Banner scrolls away, minimal toolbar ("+ Add") sticks to top.
+*   **Design**: **Rounded** banner, **centered** 900px layout, **flush** alignment with cards.
 *   **Pagination**: ✅ Added Footer with Next/Prev/Page# controls.
 *   **Interaction**: Navigation works by clicking Thumbnail/Cover Image.
 
 ### 3.3 Videos Page (`VideosView`)
-*   **Banner**: Present and populated.
-*   **Pagination**: ✅ Added Footer with Next/Prev/Page# controls.
-*   **Controls Bar**: ✅ **Folder Selector** is fully functional (Filter/Toggle).
-*   **Interaction**: Selecting a folder color filters the displayed videos to that subset. Mock "Sort" buttons remain visual-only.
+*   **Sticky Header**: ✅ Banner scrolls away, Filter/Actions bar sticks to top.
+*   **Design**: **Rounded** banner, **centered** 900px layout, **flush** alignment with cards.
+*   **Controls Bar**: ✅ **Folder Selector** is fully functional. Added "All", "Unsorted", and "+ Add" buttons.
+*   **Interaction**: Selecting folder filters videos. Mock "Sort" buttons remain visual-only.
 
 ---
 
