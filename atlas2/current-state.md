@@ -60,7 +60,8 @@ Core architecture (WPF + SQLite + Triple Engine Shell) is robust. The UI has rec
 ### 3.3 Videos Page (`VideosView`)
 *   **Banner**: Present and populated.
 *   **Pagination**: ✅ Added Footer with Next/Prev/Page# controls.
-*   **Controls Bar**: Visuals present, functional logic limited.
+*   **Controls Bar**: ✅ **Folder Selector** is fully functional (Filter/Toggle).
+*   **Interaction**: Selecting a folder color filters the displayed videos to that subset. Mock "Sort" buttons remain visual-only.
 
 ---
 

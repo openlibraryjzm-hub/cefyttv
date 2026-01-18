@@ -9,23 +9,51 @@
              
     <UserControl.Resources>
         <Style x:Key="IconButtonStyle" TargetType="Button">
-            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Background" Value="#1AFFFFFF"/> <!-- Glassy Fill -->
             <Setter Property="Foreground" Value="#94A3B8"/>
-            <Setter Property="BorderBrush" Value="Transparent"/>
-            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="BorderBrush" Value="#FF475569"/> <!-- Hard Solid Border (Slate-600) -->
+            <Setter Property="BorderThickness" Value="1.5"/>
+            <Setter Property="Width" Value="32"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="Margin" Value="4,0"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
                         <Border Background="{TemplateBinding Background}" 
                                 BorderBrush="{TemplateBinding BorderBrush}" 
                                 BorderThickness="{TemplateBinding BorderThickness}"
-                                CornerRadius="12">
+                                CornerRadius="16">
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
                                 <Setter Property="Foreground" Value="#38BDF8"/> <!-- Sky-400 -->
-                                <Setter Property="Background" Value="#1E293B"/>
+                                <Setter Property="Background" Value="#33FFFFFF"/>
+                                <Setter Property="BorderBrush" Value="#38BDF8"/> <!-- Highlight border too -->
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="ChevronButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#94A3B8"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Width" Value="24"/>
+            <Setter Property="Height" Value="32"/> <!-- Match Capsule Height -->
+            <Setter Property="Margin" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Foreground" Value="#38BDF8"/> <!-- Sky-400 -->
+                                <Setter Property="Cursor" Value="Hand"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -58,11 +86,11 @@
     </UserControl.Resources>
     
     <!-- 
-         The controller strip is visually 102px tall, but we allow content (The Orb) 
-         to spill over the boundaries using ClipToBounds=False.
-         We vertically center the items relative to the 102px height.
+         The controller strip is visually 200px tall. 
+         We vertical align top and use ClipToBounds=False to allow Orb spill if needed, 
+         though at 200px it fits inside.
     -->
-    <Grid Height="102" VerticalAlignment="Top" ClipToBounds="False">
+    <Grid Height="200" VerticalAlignment="Top" ClipToBounds="False">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="Auto"/> <!-- Orb Center -->
@@ -70,11 +98,12 @@
         </Grid.ColumnDefinitions>
 
         <!-- =========================================================
-             LEFT: PLAYLIST MENU (340x102)
+             LEFT: PLAYLIST MENU
              ========================================================= -->
         <Border Grid.Column="0" 
-                Width="340" Height="102"
+                Width="340" Height="98"
                 HorizontalAlignment="Right"
+                VerticalAlignment="Center"
                 Margin="0,0,20,0"
                 Background="{StaticResource GlassCardBrush}" 
                 BorderBrush="{StaticResource BorderBrush}" BorderThickness="2"
@@ -82,7 +111,7 @@
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>   <!-- Title Area -->
-                    <RowDefinition Height="36"/>  <!-- Bottom Bar -->
+                    <RowDefinition Height="40"/>  <!-- Bottom Bar (Compact) -->
                 </Grid.RowDefinitions>
 
                 <!-- 1. Title Area -->
@@ -95,7 +124,7 @@
                                TextTrimming="CharacterEllipsis"/>
                     <!-- Optional Folder Badge Placeholder -->
                     <Border Background="{StaticResource BgTertiaryBrush}" CornerRadius="4" Padding="6,2" HorizontalAlignment="Center" Margin="0,4,0,0">
-                         <TextBlock Text="{Binding SelectedPlaylist.VideoCountText, FallbackValue=''}" Foreground="{StaticResource TextSecondaryBrush}" FontSize="9" FontWeight="Bold"/>
+                         <TextBlock Text="{Binding SelectedPlaylist.VideoCountText, FallbackValue=''}" Foreground="{StaticResource TextSecondaryBrush}" FontSize="10" FontWeight="Bold"/>
                     </Border>
                 </StackPanel>
 
@@ -104,27 +133,30 @@
                         Background="{StaticResource BgPrimaryBrush}" 
                         BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,1,0,0"
                         CornerRadius="0,0,16,16"
-                        Padding="12,0"
+                        Padding="16,0"
                         WindowChrome.IsHitTestVisibleInChrome="True">
                     <Grid>
                         <!-- Metadata (Left) -->
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
-                            <TextBlock Text="AUTHOR" Foreground="{StaticResource AccentPrimaryBrush}" Opacity="0.8" FontSize="10" FontWeight="Bold"/>
-                            <TextBlock Text=" | " Foreground="{StaticResource TextMutedBrush}" FontSize="10"/>
-                            <TextBlock Text="1.2M" Foreground="{StaticResource AccentPrimaryBrush}" Opacity="0.8" FontSize="10" FontWeight="Bold"/>
+                            <TextBlock Text="AUTHOR" Foreground="{StaticResource AccentPrimaryBrush}" Opacity="0.8" FontSize="11" FontWeight="Bold"/>
+                            <TextBlock Text=" | " Foreground="{StaticResource TextMutedBrush}" FontSize="11"/>
+                            <TextBlock Text="1.2M" Foreground="{StaticResource AccentPrimaryBrush}" Opacity="0.8" FontSize="11" FontWeight="Bold"/>
                         </StackPanel>
 
                         <!-- Navigation Controls (Right) -->
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right">
                             <!-- Prev Playlist -->
-                            <Button Style="{StaticResource IconButtonStyle}" Width="24" Height="24" Content="&lt;"
-                                    Command="{Binding PrevPlaylistCommand}"/>
-                            <!-- Playlist Grid -->
-                            <Button Style="{StaticResource IconButtonStyle}" Width="24" Height="24" Content="#"
-                                    Command="{Binding NavigateCommand}" CommandParameter="playlists"/>
+                            <Button Style="{StaticResource ChevronButtonStyle}" Command="{Binding PrevPlaylistCommand}" ToolTip="Previous Playlist" Margin="0,0,-2,0">
+                                <Path Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}" Data="M15.41,16.09L10.83,11.5L15.41,6.91L14,5.5L8,11.5L14,17.5L15.41,16.09Z" Width="10" Height="10" Stretch="Uniform"/>
+                            </Button>
+                            <!-- Playlist Grid (Central - Bordered) -->
+                            <Button Style="{StaticResource IconButtonStyle}" Command="{Binding NavigateCommand}" CommandParameter="playlists" ToolTip="All Playlists">
+                                <Path Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}" Data="M4,4H8V8H4V4M10,4H14V8H10V4M16,4H20V8H16V4M4,10H8V14H4V10M10,10H14V14H10V10M16,10H20V14H16V10M4,16H8V20H4V16M10,16H14V20H10V16M16,16H20V20H16V16Z" Width="14" Height="14" Stretch="Uniform"/>
+                            </Button>
                             <!-- Next Playlist -->
-                            <Button Style="{StaticResource IconButtonStyle}" Width="24" Height="24" Content="&gt;"
-                                    Command="{Binding NextPlaylistCommand}"/>
+                            <Button Style="{StaticResource ChevronButtonStyle}" Command="{Binding NextPlaylistCommand}" ToolTip="Next Playlist" Margin="-2,0,0,0">
+                                <Path Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}" Data="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z" Width="10" Height="10" Stretch="Uniform"/>
+                            </Button>
                         </StackPanel>
                     </Grid>
                 </Border>
@@ -134,7 +166,7 @@
         <!-- =========================================================
              CENTER: THE ORB (154x154)
              ========================================================= -->
-        <Grid Grid.Column="1" Width="154" Height="154" VerticalAlignment="Top" Margin="0,0,0,0" WindowChrome.IsHitTestVisibleInChrome="True">
+        <Grid Grid.Column="1" Width="154" Height="154" VerticalAlignment="Center" Margin="0,0,0,0" WindowChrome.IsHitTestVisibleInChrome="True">
              <!-- Orb Glow/Shadow -->
              <Ellipse Fill="#00000000" Stroke="{StaticResource AccentPrimaryBrush}" StrokeThickness="0" Width="154" Height="154">
                 <Ellipse.Effect>
@@ -150,35 +182,35 @@
              <Ellipse Width="150" Height="150" Fill="{StaticResource BgSecondaryBrush}" Margin="2"/>
              <TextBlock Text="ORB" Foreground="{StaticResource AccentPrimaryBrush}" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
 
-             <!-- Orb Radial Buttons (Visual Only - Positioned manually for now) -->
-             <!-- 12 o'clock - Upload (Top Center) -->
+             <!-- Orb Radial Buttons -->
+             <!-- Top -->
              <Button Width="28" Height="28" Style="{StaticResource OrbButtonStyle}"  VerticalAlignment="Top" Margin="0,10,0,0">
-                <TextBlock Text="^" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                <Path Fill="Black" Data="M9,16V10H5L12,3L19,10H15V16H9M5,18H19V20H5V18Z" Width="12" Height="12" Stretch="Uniform"/>
              </Button>
 
-             <!-- 3 o'clock - Menu (Right Center) -->
+             <!-- Right -->
              <Button Width="28" Height="28" Style="{StaticResource OrbButtonStyle}" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0">
-                <TextBlock Text="M" FontSize="10" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                <Path Fill="Black" Data="M3,6H21V8H3V6M3,11H21V13H3V11M3,16H21V18H3V16Z" Width="12" Height="12" Stretch="Uniform"/>
              </Button>
              
-             <!-- 9 o'clock - Search (Left Center) -->
+             <!-- Left -->
              <Button Width="28" Height="28" Style="{StaticResource OrbButtonStyle}" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0">
-                <TextBlock Text="?" FontSize="14" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                <Path Fill="Black" Data="M9.5,3A6.5,6.5 0 0,1 16,9.5C16,11.11 15.41,12.59 14.44,13.73L14.71,14H15.5L20.5,19L19,20.5L14,15.5V14.71L13.73,14.44C12.59,15.41 11.11,16 9.5,16A6.5,6.5 0 0,1 3,9.5A6.5,6.5 0 0,1 9.5,3M9.5,5C7,5 5,7 5,9.5C5,12 7,14 9.5,14C12,14 14,12 14,9.5C14,7 12,5 9.5,5Z" Width="12" Height="12" Stretch="Uniform"/>
              </Button>
              
-             <!-- 6 o'clock - Clipping (Bottom Center) -->
+             <!-- Bottom -->
              <Button Width="28" Height="28" Style="{StaticResource OrbButtonStyle}" VerticalAlignment="Bottom" Margin="0,0,0,10">
-                <TextBlock Text="O" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                <Path Fill="Black" Data="M19,3H5C3.89,3 3,3.89 3,5V19C3,20.1 3.9,21 5,21H19C20.1,21 21,20.1 21,19V5C21,3.89 20.1,3 19,3M19,5V19H5V5H19Z" Width="12" Height="12" Stretch="Uniform"/>
              </Button>
-
         </Grid>
 
         <!-- =========================================================
-             RIGHT: VIDEO MENU (340x102)
+             RIGHT: VIDEO MENU
              ========================================================= -->
         <Border Grid.Column="2" 
-                Width="340" Height="102"
+                Width="340" Height="98"
                 HorizontalAlignment="Left"
+                VerticalAlignment="Center"
                 Margin="20,0,0,0"
                 Background="{StaticResource GlassCardBrush}" 
                 BorderBrush="{StaticResource BorderBrush}" BorderThickness="2"
@@ -186,7 +218,7 @@
             <Grid>
                  <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>   <!-- Title Area -->
-                    <RowDefinition Height="36"/>  <!-- Bottom Bar -->
+                    <RowDefinition Height="40"/>  <!-- Bottom Bar (Compact) -->
                 </Grid.RowDefinitions>
 
                 <!-- 1. Title Area -->
@@ -205,35 +237,52 @@
                         BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,1,0,0"
                         CornerRadius="0,0,16,16"
                         Padding="8,0"
-                        WindowChrome.IsHitTestVisibleInChrome="True"> <!-- Tighter padding for more buttons -->
+                        WindowChrome.IsHitTestVisibleInChrome="True">
                     <Grid>
-                        <!-- Nav Controls (Far Left) -->
+                        <!-- Nav Controls (Far Left) - CAPSULE Removed -->
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
                               <!-- Prev Video -->
-                            <Button Style="{StaticResource IconButtonStyle}" Width="24" Height="24" Content="&lt;"
-                                    Command="{Binding PrevVideoCommand}"/>
-                             <!-- Video Grid -->
-                            <Button Style="{StaticResource IconButtonStyle}" Width="24" Height="24" Content="#"
-                                    Command="{Binding NavigateCommand}" CommandParameter="videos"/>
+                            <Button Style="{StaticResource ChevronButtonStyle}" Command="{Binding PrevVideoCommand}" ToolTip="Previous Video" Margin="0,0,-2,0">
+                                <Path Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}" Data="M15.41,16.09L10.83,11.5L15.41,6.91L14,5.5L8,11.5L14,17.5L15.41,16.09Z" Width="10" Height="10" Stretch="Uniform"/>
+                            </Button>
+                             <!-- Video Grid (Bordered) -->
+                            <Button Style="{StaticResource IconButtonStyle}" Command="{Binding NavigateCommand}" CommandParameter="videos" ToolTip="Video Grid">
+                                <Path Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}" Data="M4,4H8V8H4V4M10,4H14V8H10V4M16,4H20V8H16V4M4,10H8V14H4V10M10,10H14V14H10V10M16,10H20V14H16V10M4,16H8V20H4V16M10,16H14V20H10V16M16,16H20V20H16V16Z" Width="14" Height="14" Stretch="Uniform"/>
+                            </Button>
                              <!-- Next Video -->
-                            <Button Style="{StaticResource IconButtonStyle}" Width="24" Height="24" Content="&gt;"
-                                    Command="{Binding NextVideoCommand}"/>
-                             <!-- Play/Folder Cycle -->
-                            <Button Style="{StaticResource IconButtonStyle}" Width="24" Height="24" Content="▶"/>
+                            <Button Style="{StaticResource ChevronButtonStyle}" Command="{Binding NextVideoCommand}" ToolTip="Next Video" Margin="-2,0,0,0">
+                                <Path Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}" Data="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z" Width="10" Height="10" Stretch="Uniform"/>
+                            </Button>
                         </StackPanel>
+
+                         <!-- Play/Pause separate button -->
+                         <Button Style="{StaticResource IconButtonStyle}" ToolTip="Play / Auto-Play" Margin="96,0,0,0" HorizontalAlignment="Left">
+                                <Path Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}" Data="M8,5.14V19.14L19,12.14L8,5.14Z" Width="12" Height="12" Stretch="Uniform"/>
+                         </Button>
+
                         
                         <!-- Tool Controls (Center/Right) -->
                          <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right">
-                             <!-- Shuffle -->
-                            <Button Style="{StaticResource IconButtonStyle}" Width="24" Height="24" Content="S"/>
-                             <!-- Star -->
-                            <Button Style="{StaticResource IconButtonStyle}" Width="24" Height="24" Content="*"/>
-                             <!-- Pin (Priority) -->
-                            <Button Style="{StaticResource IconButtonStyle}" Width="24" Height="24" Content="P"/>
+                             <!-- Star (Swapped) -->
+                            <Button Style="{StaticResource IconButtonStyle}" ToolTip="Star">
+                                <Path Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}" Data="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z" Width="12" Height="12" Stretch="Uniform"/>
+                            </Button>
+                             <!-- Shuffle (Swapped) -->
+                            <Button Style="{StaticResource IconButtonStyle}" ToolTip="Shuffle">
+                                <Path Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}" Data="M14.83,13.41L13.42,14.83L16.59,18H2V20H16.59L13.42,23.17L14.83,24.58L20.41,19L14.83,13.41M4,6.83L5.41,8.24L8.59,11.41L10,10L6.83,6.83L5.41,5.41L4,4M20.41,5L14.83,-0.59L13.42,0.83L16.59,4H2V6H16.59L13.42,9.17L14.83,10.59L20.41,5Z" Width="12" Height="12" Stretch="Uniform"/>
+                            </Button>
+                             <!-- Pin -->
+                            <Button Style="{StaticResource IconButtonStyle}" ToolTip="Pin">
+                                <Path Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}" Data="M16,12V4H17V2H7V4H8V12L6,14V16H11.2V22H12.8V16H18V14L16,12Z" Width="12" Height="12" Stretch="Uniform"/>
+                            </Button>
                              <!-- Like -->
-                            <Button Style="{StaticResource IconButtonStyle}" Width="24" Height="24" Content="L"/>
+                            <Button Style="{StaticResource IconButtonStyle}" ToolTip="Like">
+                                <Path Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}" Data="M23,10C23,8.89 22.1,8 21,8H14.68L15.64,3.43C15.66,3.33 15.67,3.22 15.67,3.11C15.67,2.7 15.5,2.32 15.23,2.05L14.17,1L7.59,7.59C7.22,7.95 7,8.45 7,9V19A2,2 0 0,0 9,21H18C18.83,21 19.54,20.5 19.84,19.78L22.86,12.73C22.95,12.5 23,12.26 23,12V10M1,21H5V9H1V21Z" Width="12" Height="12" Stretch="Uniform"/>
+                            </Button>
                              <!-- More -->
-                            <Button Style="{StaticResource IconButtonStyle}" Width="24" Height="24" Content="..."/>
+                            <Button Style="{StaticResource IconButtonStyle}" ToolTip="More Actions">
+                                <Path Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}" Data="M16,12A2,2 0 0,1 18,10A2,2 0 0,1 20,12A2,2 0 0,1 18,14A2,2 0 0,1 16,12M10,12A2,2 0 0,1 12,10A2,2 0 0,1 14,12A2,2 0 0,1 12,14A2,2 0 0,1 10,12M4,12A2,2 0 0,1 6,10A2,2 0 0,1 8,12A2,2 0 0,1 6,14A2,2 0 0,1 4,12Z" Width="12" Height="12" Stretch="Uniform"/>
+                            </Button>
                         </StackPanel>
                     </Grid>
                 </Border>

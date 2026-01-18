@@ -1,6 +1,49 @@
 # Session Updates
 
+## [Feature] Advanced Player Controller Refinement - 2026-01-18
+We have significantly refined the **Advanced Player Controller**, transforming it into a high-fidelity "Head-Up Display" with a modern orbital aesthetic.
+
+### 🎨 Visual & Layout Upgrades
+1.  **Banner Expansion**:
+    *   Increased the `ReservedHeight` for the controller from `102px` to `200px`.
+    *   This provides a spacious 200px "Floating Canvas" above the content area, allowing the controller elements to be vertically centered and breathe.
+2.  **Menu "Wings"**:
+    *   Implemented a 3-column layout where the **Playlist Menu** (Left) and **Video Menu** (Right) act as "wings" flanking the central Orb.
+    *   Reduced menu height to `98px` (approx 50% of banner height), creating a sleek floating effect.
+    *   Centered these menus vertically to align perfectly with the Orb.
+3.  **Vector Iconography**:
+    *   Replaced all text-based placeholder buttons with **Vector Path Icons** (SVG Data).
+    *   Implemented `IconButtonStyle`:
+        *   **32x32** circular buttons.
+        *   **Glassy Background** (`#1AFFFFFF`) for always-visible touch targets.
+        *   **Solid Slate Border** (`#FF475569`, 1.5px) for a distinct "control pill" look.
+    *   Implemented hover states that light up both the icon and border in Sky Blue (`#38BDF8`).
+4.  **Orbital Navigation**:
+    *   Refined the navigation controls (Prev/Next/Grid) into a tightly packed "Orbital" cluster.
+    *   **Chevron Buttons**: Created a borderless `ChevronButtonStyle` for the Prev/Next arrows, making them float seamlessly alongside the central grid button.
+    *   **Positioning**: Used negative margins to tuck the chevrons tightly against the central circle.
+    *   **Rearrangement**: Swapped the **Shuffle** and **Star** buttons on the video menu for better ergonomic access.
+
 # Session Updates
+
+## [Feature] Colored Folder Functionality - 2026-01-18
+We have implemented the **Colored Folder Functionality** on the Videos page, allowing users to filter the displayed videos by their assigned folder color.
+
+### 🎨 Implementation Details
+1.  **MainViewModel Enhancements**:
+    *   Added `FilterByFolder` command and `SelectedFolderColor` property.
+    *   Refactored `OpenPlaylist` to use a robust `LoadPlaylistVideos` helper method.
+    *   `LoadPlaylistVideos` now respects the `SelectedFolderColor` state, requesting a filtered dataset from `PlaylistService` when a folder is active.
+2.  **VideosView Integration**:
+    *   Expanded the Folder Selector to the full 16-color spectrum (Red -> Pink) matching the original Rust-Tauri app.
+    *   Used `StaticResource` brushes (e.g. `FolderRedBrush`) for consistent theming.
+    *   **Advanced Player Controller**:
+    *   Replaced text-based placeholder buttons with **Segoe MDL2 Assets** icons, offering a polished, native look.
+    *   Updated the Playlist and Video Menus to use specific glyphs (e.g. `\xE892` for Back, `\xE768` for Play).
+    *   Ensured buttons are rounded-pill or circular for a modern aesthetic, maintaining the `102px` banner height layout.
+3.  **Result**:
+    *   Clicking a folder color instantly filters the video grid to show only videos assigned to that color within the current playlist.
+    *   Clicking the same color again toggles the filter off (showing all videos).
 
 ## [Wiring] Full Screen Mode & Sidebar Logic - 2026-01-18
 We have implemented the **Full Screen Mode** logic, allowing the video player to expand and the sidebar to collapse dynamically.
@@ -11,7 +54,7 @@ We have implemented the **Full Screen Mode** logic, allowing the video player to
     *   **Effect**: 
         *   App Shell (Right Panel) collapses to `Visibility.Collapsed`.
         *   Video Player (Left Panel) expands to `Grid.ColumnSpan="2"`.
-2.  **Exit Full Screen**:
+3.  **Exit Full Screen**:
     *   Clicking the **Playlist #** or **Videos #** button in the top `AdvancedPlayerController` strip.
     *   **Effect**:
         *   Restores the App Shell.

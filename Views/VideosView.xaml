@@ -31,14 +31,248 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 
-                <!-- Left: Folder Selector (Mock) -->
-                <StackPanel Orientation="Horizontal" Grid.Column="0">
+                <StackPanel Orientation="Horizontal" Grid.Column="0" VerticalAlignment="Center">
                     <TextBlock Text="Folders:" VerticalAlignment="Center" Foreground="#888" Margin="0,0,12,0"/>
-                    <Border Width="16" Height="16" CornerRadius="8" Background="#EF4444" Margin="4"/>
-                    <Border Width="16" Height="16" CornerRadius="8" Background="#F59E0B" Margin="4"/>
-                    <Border Width="16" Height="16" CornerRadius="8" Background="#10B981" Margin="4"/>
-                    <Border Width="16" Height="16" CornerRadius="8" Background="#3B82F6" Margin="4"/>
-                    <Border Width="16" Height="16" CornerRadius="8" Background="#8B5CF6" Margin="4"/>
+                    
+                    <!-- Red -->
+                    <Button Command="{Binding FilterByFolderCommand}" CommandParameter="red" Margin="2">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border x:Name="bd" Width="16" Height="16" CornerRadius="8" Background="{StaticResource FolderRedBrush}" Cursor="Hand"/>
+                                <ControlTemplate.Triggers>
+                                    <DataTrigger Binding="{Binding SelectedFolderColor}" Value="red">
+                                        <Setter TargetName="bd" Property="BorderThickness" Value="2"/>
+                                        <Setter TargetName="bd" Property="BorderBrush" Value="White"/>
+                                    </DataTrigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+
+                    <!-- Orange -->
+                    <Button Command="{Binding FilterByFolderCommand}" CommandParameter="orange" Margin="2">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border x:Name="bd" Width="16" Height="16" CornerRadius="8" Background="{StaticResource FolderOrangeBrush}" Cursor="Hand"/>
+                                <ControlTemplate.Triggers>
+                                    <DataTrigger Binding="{Binding SelectedFolderColor}" Value="orange">
+                                        <Setter TargetName="bd" Property="BorderThickness" Value="2"/>
+                                        <Setter TargetName="bd" Property="BorderBrush" Value="White"/>
+                                    </DataTrigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+
+                    <!-- Amber -->
+                    <Button Command="{Binding FilterByFolderCommand}" CommandParameter="amber" Margin="2">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border x:Name="bd" Width="16" Height="16" CornerRadius="8" Background="{StaticResource FolderAmberBrush}" Cursor="Hand"/>
+                                <ControlTemplate.Triggers>
+                                    <DataTrigger Binding="{Binding SelectedFolderColor}" Value="amber">
+                                        <Setter TargetName="bd" Property="BorderThickness" Value="2"/>
+                                        <Setter TargetName="bd" Property="BorderBrush" Value="White"/>
+                                    </DataTrigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+
+                    <!-- Yellow -->
+                    <Button Command="{Binding FilterByFolderCommand}" CommandParameter="yellow" Margin="2">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border x:Name="bd" Width="16" Height="16" CornerRadius="8" Background="{StaticResource FolderYellowBrush}" Cursor="Hand"/>
+                                <ControlTemplate.Triggers>
+                                    <DataTrigger Binding="{Binding SelectedFolderColor}" Value="yellow">
+                                        <Setter TargetName="bd" Property="BorderThickness" Value="2"/>
+                                        <Setter TargetName="bd" Property="BorderBrush" Value="White"/>
+                                    </DataTrigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+
+                    <!-- Lime -->
+                    <Button Command="{Binding FilterByFolderCommand}" CommandParameter="lime" Margin="2">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border x:Name="bd" Width="16" Height="16" CornerRadius="8" Background="{StaticResource FolderLimeBrush}" Cursor="Hand"/>
+                                <ControlTemplate.Triggers>
+                                    <DataTrigger Binding="{Binding SelectedFolderColor}" Value="lime">
+                                        <Setter TargetName="bd" Property="BorderThickness" Value="2"/>
+                                        <Setter TargetName="bd" Property="BorderBrush" Value="White"/>
+                                    </DataTrigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+
+                    <!-- Green -->
+                    <Button Command="{Binding FilterByFolderCommand}" CommandParameter="green" Margin="2">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border x:Name="bd" Width="16" Height="16" CornerRadius="8" Background="{StaticResource FolderGreenBrush}" Cursor="Hand"/>
+                                <ControlTemplate.Triggers>
+                                    <DataTrigger Binding="{Binding SelectedFolderColor}" Value="green">
+                                        <Setter TargetName="bd" Property="BorderThickness" Value="2"/>
+                                        <Setter TargetName="bd" Property="BorderBrush" Value="White"/>
+                                    </DataTrigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+
+                    <!-- Emerald -->
+                    <Button Command="{Binding FilterByFolderCommand}" CommandParameter="emerald" Margin="2">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border x:Name="bd" Width="16" Height="16" CornerRadius="8" Background="{StaticResource FolderEmeraldBrush}" Cursor="Hand"/>
+                                <ControlTemplate.Triggers>
+                                    <DataTrigger Binding="{Binding SelectedFolderColor}" Value="emerald">
+                                        <Setter TargetName="bd" Property="BorderThickness" Value="2"/>
+                                        <Setter TargetName="bd" Property="BorderBrush" Value="White"/>
+                                    </DataTrigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+
+                    <!-- Teal -->
+                    <Button Command="{Binding FilterByFolderCommand}" CommandParameter="teal" Margin="2">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border x:Name="bd" Width="16" Height="16" CornerRadius="8" Background="{StaticResource FolderTealBrush}" Cursor="Hand"/>
+                                <ControlTemplate.Triggers>
+                                    <DataTrigger Binding="{Binding SelectedFolderColor}" Value="teal">
+                                        <Setter TargetName="bd" Property="BorderThickness" Value="2"/>
+                                        <Setter TargetName="bd" Property="BorderBrush" Value="White"/>
+                                    </DataTrigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+
+                    <!-- Cyan -->
+                    <Button Command="{Binding FilterByFolderCommand}" CommandParameter="cyan" Margin="2">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border x:Name="bd" Width="16" Height="16" CornerRadius="8" Background="{StaticResource FolderCyanBrush}" Cursor="Hand"/>
+                                <ControlTemplate.Triggers>
+                                    <DataTrigger Binding="{Binding SelectedFolderColor}" Value="cyan">
+                                        <Setter TargetName="bd" Property="BorderThickness" Value="2"/>
+                                        <Setter TargetName="bd" Property="BorderBrush" Value="White"/>
+                                    </DataTrigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+
+                    <!-- Sky -->
+                    <Button Command="{Binding FilterByFolderCommand}" CommandParameter="sky" Margin="2">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border x:Name="bd" Width="16" Height="16" CornerRadius="8" Background="{StaticResource FolderSkyBrush}" Cursor="Hand"/>
+                                <ControlTemplate.Triggers>
+                                    <DataTrigger Binding="{Binding SelectedFolderColor}" Value="sky">
+                                        <Setter TargetName="bd" Property="BorderThickness" Value="2"/>
+                                        <Setter TargetName="bd" Property="BorderBrush" Value="White"/>
+                                    </DataTrigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+
+                    <!-- Blue -->
+                    <Button Command="{Binding FilterByFolderCommand}" CommandParameter="blue" Margin="2">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border x:Name="bd" Width="16" Height="16" CornerRadius="8" Background="{StaticResource FolderBlueBrush}" Cursor="Hand"/>
+                                <ControlTemplate.Triggers>
+                                    <DataTrigger Binding="{Binding SelectedFolderColor}" Value="blue">
+                                        <Setter TargetName="bd" Property="BorderThickness" Value="2"/>
+                                        <Setter TargetName="bd" Property="BorderBrush" Value="White"/>
+                                    </DataTrigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+
+                    <!-- Indigo -->
+                    <Button Command="{Binding FilterByFolderCommand}" CommandParameter="indigo" Margin="2">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border x:Name="bd" Width="16" Height="16" CornerRadius="8" Background="{StaticResource FolderIndigoBrush}" Cursor="Hand"/>
+                                <ControlTemplate.Triggers>
+                                    <DataTrigger Binding="{Binding SelectedFolderColor}" Value="indigo">
+                                        <Setter TargetName="bd" Property="BorderThickness" Value="2"/>
+                                        <Setter TargetName="bd" Property="BorderBrush" Value="White"/>
+                                    </DataTrigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+
+                    <!-- Violet -->
+                    <Button Command="{Binding FilterByFolderCommand}" CommandParameter="violet" Margin="2">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border x:Name="bd" Width="16" Height="16" CornerRadius="8" Background="{StaticResource FolderVioletBrush}" Cursor="Hand"/>
+                                <ControlTemplate.Triggers>
+                                    <DataTrigger Binding="{Binding SelectedFolderColor}" Value="violet">
+                                        <Setter TargetName="bd" Property="BorderThickness" Value="2"/>
+                                        <Setter TargetName="bd" Property="BorderBrush" Value="White"/>
+                                    </DataTrigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+
+                    <!-- Purple -->
+                    <Button Command="{Binding FilterByFolderCommand}" CommandParameter="purple" Margin="2">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border x:Name="bd" Width="16" Height="16" CornerRadius="8" Background="{StaticResource FolderPurpleBrush}" Cursor="Hand"/>
+                                <ControlTemplate.Triggers>
+                                    <DataTrigger Binding="{Binding SelectedFolderColor}" Value="purple">
+                                        <Setter TargetName="bd" Property="BorderThickness" Value="2"/>
+                                        <Setter TargetName="bd" Property="BorderBrush" Value="White"/>
+                                    </DataTrigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+
+                    <!-- Fuchsia -->
+                    <Button Command="{Binding FilterByFolderCommand}" CommandParameter="fuchsia" Margin="2">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border x:Name="bd" Width="16" Height="16" CornerRadius="8" Background="{StaticResource FolderFuchsiaBrush}" Cursor="Hand"/>
+                                <ControlTemplate.Triggers>
+                                    <DataTrigger Binding="{Binding SelectedFolderColor}" Value="fuchsia">
+                                        <Setter TargetName="bd" Property="BorderThickness" Value="2"/>
+                                        <Setter TargetName="bd" Property="BorderBrush" Value="White"/>
+                                    </DataTrigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+
+                    <!-- Pink -->
+                    <Button Command="{Binding FilterByFolderCommand}" CommandParameter="pink" Margin="2">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border x:Name="bd" Width="16" Height="16" CornerRadius="8" Background="{StaticResource FolderPinkBrush}" Cursor="Hand"/>
+                                <ControlTemplate.Triggers>
+                                    <DataTrigger Binding="{Binding SelectedFolderColor}" Value="pink">
+                                        <Setter TargetName="bd" Property="BorderThickness" Value="2"/>
+                                        <Setter TargetName="bd" Property="BorderBrush" Value="White"/>
+                                    </DataTrigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
                 </StackPanel>
 
                 <!-- Right: Sort/Tag -->

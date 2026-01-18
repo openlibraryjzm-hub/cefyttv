@@ -7,24 +7,25 @@
 ---
 
 ## 1. Component Overview
-The **Advanced Player Controller** is the application's primary "Head-Up Display". It sits fixed at the top of the interface, providing global access to media controls, visualization, and navigation.
+The **Advanced Player Controller** is the application's primary "Head-Up Display". It constitutes the top 200px of the interface, providing a spacious and modern canvas for media controls, visualization, and navigation.
 
 **Key Definition:**
 *   **File:** `Controls/Player/AdvancedPlayerController.xaml`
-*   **Height:** 102px (Reserved Space) - *Note: The Orb spills over this height.*
-*   **Layout Strategy:** 3-Column Grid with visual overlap.
+*   **Height:** 200px (Allocated Banner Space)
+*   **Design Style:** "Floating Wings" & "Orbital Navigation"
+*   **Layout Strategy:** 3-Column Grid with vertically centered elements.
 
 ## 2. Visual Architecture
 
-### 2.1 The "Spill" Layout
-Unlike standard WPF layouts that clip content, this controller relies on a specific Z-Indexing strategy to allow the central "Orb" to protrude into the main content area (Row 1).
+### 2.1 The "Floating Canvas" Layout
+The controller occupies a significantly taller space (200px) than traditional title bars. The interface elements (Orb, Menus) are vertically centered within this space, creating a sense of floating above the banner image.
 
 **Implementation Details:**
 ```xml
 <!-- MainWindow.xaml -->
 <Grid>
     <Grid.RowDefinitions>
-        <RowDefinition Height="102"/> <!-- Dedicated Top Row -->
+        <RowDefinition Height="200"/> <!-- Expanded Top Row -->
         <RowDefinition Height="*"/>   <!-- Content Row -->
     </Grid.RowDefinitions>
 
@@ -35,87 +36,97 @@ Unlike standard WPF layouts that clip content, this controller relies on a speci
 
 ```xml
 <!-- AdvancedPlayerController.xaml -->
-<!-- ClipToBounds="False" is CRITICAL to allow the 154px Orb to fit in a 102px Row -->
-<Grid Height="102" VerticalAlignment="Top" ClipToBounds="False">
+<!-- 200px Height provides the canvas for centering -->
+<Grid Height="200" VerticalAlignment="Top" ClipToBounds="False">
 ```
 
 ### 2.2 The 3-Part Grid Structure
-The control itself uses a simple 3-column grid:
+The control uses a 3-column grid to organize its primary sections:
 
-| Column | Width | Purpose |
-| :--- | :--- | :--- |
-| **0 (Left)** | `*` | **Playlist Menu**. Aligned `Right`. |
-| **1 (Center)** | `Auto` | **The Orb**. 154px Fixed Width. |
-| **2 (Right)** | `*` | **Video Menu**. Aligned `Left`. |
+| Column | Width | Element | Dimensions | Alignment |
+| :--- | :--- | :--- | :--- | :--- |
+| **0 (Left)** | `*` | **Playlist Menu** | 340x98px | Right aligned, Vertically Centered |
+| **1 (Center)** | `Auto` | **The Orb** | 154x154px | Fixed, Vertically Centered |
+| **2 (Right)** | `*` | **Video Menu** | 340x98px | Left aligned, Vertically Centered |
+
+This 98px menu height against the 200px container creates significant "breathing room" (approx 50px) above and below each menu, enhancing the floating aesthetic.
 
 ---
 
 ## 3. Control Inventory & Wiring
 
-### 3.1 Playlist Menu (Left)
-*   **Metadata Area**: Displays `SelectedPlaylist.Name` and `SelectedPlaylist.VideoCountText`.
-*   **Navigation Bar**:
-    *   `<` (Previous Playlist): **Wired**. Cycles to previous playlist and auto-plays video.
-    *   `#` (Playlist Grid): **Wired**. Navigates to `PlaylistsView`.
-    *   `>` (Next Playlist): **Wired**. Cycles to next playlist and auto-plays video.
+### 3.1 Playlist Menu (Left Wing)
+*   **Metadata Area**: Displays `SelectedPlaylist.Name` and video count.
+*   **Orbital Navigation**:
+    *   **Layout**: A central circular "Grid" button flanked by two floating chevron arrows.
+    *   `<` (Chevron): **Prev Playlist**. Cycle to previous playlist.
+    *   `#` (Circle): **Playlist Grid** (Navigates to `PlaylistsView`).
+    *   `>` (Chevron): **Next Playlist**. Cycle to next playlist.
 
 ### 3.2 The Orb (Center)
-*   **Central Image**: currently a dark circle placeholder.
+*   **Central Image**: currently a dark circle placeholder (150px).
 *   **Radial Buttons**: 4 buttons positioned absolute/margin based:
-    *   `^` (Top): Upload Image
-    *   `M` (Right): Menu Toggle
-    *   `?` (Left): Search/Help
-    *   `O` (Bottom): Clipping/Spill Toggle
+    *   **Top**: Upload Image
+    *   **Right**: Menu Toggle
+    *   **Left**: Search/Help
+    *   **Bottom**: Clipping/Spill Toggle
 
-### 3.3 Video Menu (Right)
+### 3.3 Video Menu (Right Wing)
 *   **Metadata Area**: Displays `SelectedVideo.Title`.
-*   **Navigation Bar** (Left Cluster):
-    *   `<` (Prev Video): **Wired**. Cycles to previous video in list.
-    *   `#` (Video Grid): **Wired**. Navigates to `VideosView`.
-    *   `>` (Next Video): **Wired**. Cycles to next video in list.
-    *   `▶` (Play/Folder Cycle): *Pending Wiring*.
-*   **Tool Bar** (Right Cluster):
-    *   `S` (Shuffle), `*` (Star), `P` (Pin), `L` (Like), `...` (More).
+*   **Orbital Navigation** (Left Side):
+    *   `<` (Chevron): **Prev Video**.
+    *   `#` (Circle): **Video Grid** (Navigates to `VideosView`).
+    *   `>` (Chevron): **Next Video**.
+*   **Playback Control** (Independent):
+    *   `▶` (Play): Situated to the right of the nav cluster.
+*   **Tool Bar** (Right Side):
+    *   **Shuffle** (Randomize)
+    *   **Star** (Favorite)
+    *   **Pin** (Sticky)
+    *   **Like** (Heart)
+    *   **...** (More Actions)
 
 ---
 
 ## 4. Styling & Resources
 
-### 4.1 Theme Integration (Updated 2026-01-18)
-The controller now uses the GLOBAL resource dictionary (`Colors.xaml`, `Styles.xaml`) for a cohesive **Dark Glass** look.
+### 4.1 Button Styles
+All buttons now use **Vector Paths** (SVG Data) instead of font glyphs for perfectly sharp rendering.
 
-*   **Backgrounds**: Uses `GlassCardBrush` (#CC1e293b) for semi-transparent panels.
-*   **Text**: Uses `TextPrimaryBrush` (Slate-50) and `TextMutedBrush` (Slate-500).
-*   **Accents**: Uses `AccentPrimaryBrush` (Red-500) for highlights.
-
-### 4.2 Local Resources
 *   **`IconButtonStyle`**: 
-    *   Transparent background by default.
-    *   Hover: `BgTertiaryBrush` (Slate-700) background, `AccentPrimaryBrush` text.
+    *   **Shape**: 32x32 Circle (`CornerRadius="16"`).
+    *   **Appearance**: Glassy Background (`#1AFFFFFF`) with a Solid Slate Border (`#FF475569`, 1.5px).
+    *   **Hover**: Border and Icon turn Sky Blue (`#38BDF8`). Background brightens.
+    *   **Usage**: Primary tools (Grid, Shuffle, Star, Pin, Play).
+
+*   **`ChevronButtonStyle`**: 
+    *   **Shape**: 24x32 Rectangular hit target, minimal.
+    *   **Appearance**: Transparent background, Borderless.
+    *   **Content**: Small 10px Chevron Path.
+    *   **Hover**: Path turns Sky Blue (`#38BDF8`).
+    *   **Usage**: Flanking navigation arrows (Prev/Next).
+
 *   **`OrbButtonStyle`**: 
-    *   White background, Dark text.
-    *   Hover: Scale 1.1x zoom effect.
+    *   **Shape**: 28x28 Circle.
+    *   **Appearance**: White background, Dark text/icon.
+    *   **Hover**: Scale transform (Zoom).
+
+### 4.2 Theme Integration
+*   The controller adheres to the cohesive **Dark Glass** look, using `GlassCardBrush` for the menu panels.
 
 ---
 
 ## 5. Technical Implementation (Window Chrome)
 
-Because the application uses a **Custom Window Chrome** (borderless window), this controller occupies the area normally reserved for the Title Bar. This introduces a conflict between "Dragging the Window" and "Clicking Buttons".
-
 ### 5.1 Hit Testing Strategy
-To resolve this, we use the `WindowChrome.IsHitTestVisibleInChrome` attached property.
-*   **Default Behavior**: The 102px top strip is a Drag Zone. Clicks pass through to the Window handler to move the app.
-*   **Interactive Zones**: We apply `WindowChrome.IsHitTestVisibleInChrome="True"` to:
-    *   The `StackPanel`/`Border` containing the **Playlist Navigation Buttons**.
-    *   The `Grid` containing the **Orb** and its buttons.
-    *   The `StackPanel`/`Border` containing the **Video Navigation Buttons**.
-
-**Result**: Users can drag the window by grabbing the empty glass areas (e.g. the Title text) but can still click the buttons confidently.
+To prevent the window drag behavior from interfering with these larger buttons:
+*   `WindowChrome.IsHitTestVisibleInChrome="True"` is applied to the **Bottom Bar** of each menu and the **Orb Container**.
+*   This ensures clicks on buttons register immediately, while the empty glass space around them still allows for dragging the window.
 
 ---
 
 ## 6. Next Steps (Implementation Roadmap)
 
 1.  **Player Bridge Integration**: Wiring the Play/Pause logic to `WebView2`.
-2.  **Icon Integration**: Replace text placeholders (`<`, `S`) with `Path` vectors or an Icon Font (FontAwesome/Material).
-3.  **Audio Visualizer**: Implement the canvas/rendering logic for the ring around the orb.
+2.  **Audio Visualizer**: Implement the canvas/rendering logic for the ring around the orb.
+3.  **Real Data Binding**: Ensure all "Author" and "Count" metadata fields are tied to live ViewModel data.

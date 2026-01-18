@@ -162,7 +162,7 @@ ccc/
     ├── architecture.md         # 🏛️ System Design & Triple Engine Theory
     ├── current-state.md        # 📸 Current Status Snapshot
     ├── README.md               # 🧭 The Index (You are here)
-    ├── documentation-conversion.md # 🗺️ Mapping Legacy (Rust/Tauri) to New (C#) Docs
+    ├── documentation-implementation.md # 🗺️ Mapping Legacy (Rust/Tauri) Features & Documention to New (C#)
     ├── setup.md                # 🛠️ Build & Environment Setup
     ├── session-updates.md      # 📝 Chronological Change Log
     ├── ui-system.md            # 🎨 Design System & Theming

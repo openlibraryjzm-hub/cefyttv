@@ -182,17 +182,86 @@ namespace ccc.ViewModels
         }
 
 
+        [ObservableProperty]
+        private string? _selectedFolderColor;
+
+        [RelayCommand]
+        public async Task FilterByFolder(string color)
+        {
+            if (SelectedFolderColor == color)
+            {
+                SelectedFolderColor = null; // Toggle off
+            }
+            else
+            {
+                SelectedFolderColor = color;
+            }
+
+            if (SelectedPlaylist != null)
+            {
+                await LoadPlaylistVideos(SelectedPlaylist.Id);
+            }
+        }
+
         [RelayCommand]
         public async Task OpenPlaylist(long playlistId)
         {
+            // Reset folder filter when opening a new playlist? 
+            // Usually yes, or keep it if it's global preference. 
+            // For now, let's reset it to avoid confusion.
+            SelectedFolderColor = null;
+
             try
             {
-                // 1. Load data in Service
-                await App.PlaylistService.LoadPlaylistAsync(playlistId);
+                var playlist = _allPlaylistsCache.FirstOrDefault(p => p.Id == playlistId);
+                
+                // Fallback fetch if not in cache
+                if (playlist == null)
+                {
+                    var p = App.PlaylistService.GetAllPlaylistsAsync().Result.FirstOrDefault(x => x.Id == playlistId);
+                    if (p != null)
+                    {
+                        playlist = new PlaylistDisplayItem 
+                        { 
+                            Id = p.Id, 
+                            Name = p.Name, 
+                            Description = p.Description ?? "", 
+                            // VideoCount will be updated after load
+                            ThumbnailUrl = p.CustomThumbnailUrl ?? "https://picsum.photos/300/200" 
+                        };
+                    }
+                }
+
+                if (playlist != null)
+                {
+                    SelectedPlaylist = playlist;
+                    PageTitle = playlist.Name;
+                }
+
+                await LoadPlaylistVideos(playlistId);
+
+                // 3. Navigate
+                System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                {
+                     Navigate("Videos");
+                });
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error opening playlist: {ex.Message}");
+            }
+        }
+
+        private async Task LoadPlaylistVideos(long playlistId)
+        {
+            try
+            {
+                // 1. Load data in Service (with Filter)
+                await App.PlaylistService.LoadPlaylistAsync(playlistId, SelectedFolderColor);
 
                 // 2. Map to ViewModel Collection
                 var items = App.PlaylistService.CurrentPlaylistItems;
-                
+
                 // Switch to UI Thread
                 System.Windows.Application.Current.Dispatcher.Invoke(() =>
                 {
@@ -205,45 +274,28 @@ namespace ccc.ViewModels
                             VideoId = item.VideoId,
                             ThumbnailUrl = item.ThumbnailUrl ?? "/Resources/Images/placeholder.jpg",
                             // Progress/Watched will come from joined data later
-                            ProgressPercentage = 0, 
+                            ProgressPercentage = 0,
                             IsWatched = false
                         });
                     }
-                    
+
+                    // Update Video Count text if we loaded the playlist explicitly
+                    if (SelectedPlaylist != null)
+                    {
+                        SelectedPlaylist.VideoCountText = $"{items.Count} Videos";
+                    }
+
                     // Reset Page
                     CurrentVideoPage = 1;
                     TotalVideoPages = (int)Math.Ceiling(_allVideosCache.Count / (double)ItemsPerPage);
                     if (TotalVideoPages < 1) TotalVideoPages = 1;
 
                     UpdateDisplayedVideos(); // This populates 'Videos'
-
-                    // 3. Navigate
-                    Navigate("Videos");
-                    
-                    var playlist = _allPlaylistsCache.FirstOrDefault(p => p.Id == playlistId); // check cache first
-                    // fallback to service query if cache missed (unlikely if flow is consistent)
-                    var pName = playlist?.Name ?? "Playlist";
-                    var pDesc = playlist?.Description ?? "";
-                    
-                    if (playlist != null)
-                    {
-                        SelectedPlaylist = playlist;
-                        PageTitle = pName;
-                    }
-                    else
-                    {
-                        // Fallback fetch if not in cache
-                         var p = App.PlaylistService.GetAllPlaylistsAsync().Result.FirstOrDefault(x => x.Id == playlistId);
-                         if (p != null) {
-                             SelectedPlaylist = new PlaylistDisplayItem { Id = p.Id, Name = p.Name, Description = p.Description ?? "", VideoCountText = $"{items.Count} Videos" };
-                             PageTitle = p.Name;
-                         }
-                    }
                 });
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Error opening playlist: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error loading playlist videos: {ex.Message}");
             }
         }
 
