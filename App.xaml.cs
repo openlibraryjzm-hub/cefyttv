@@ -22,6 +22,7 @@ public partial class App : System.Windows.Application
     public static Services.ConfigService ConfigService { get; private set; } = null!;
     public static Services.NavigationService NavigationService { get; private set; } = null!;
     public static Services.FolderService FolderService { get; private set; } = null!;
+    public static Services.TabService TabService { get; private set; } = null!;
 
     protected override async void OnStartup(StartupEventArgs e)
     {
@@ -37,6 +38,8 @@ public partial class App : System.Windows.Application
         NavigationService = new Services.NavigationService();
         PlaylistService = new Services.PlaylistService(SqliteService);
         FolderService = new Services.FolderService(SqliteService, ConfigService);
+        TabService = new Services.TabService();
+        await TabService.LoadConfigAsync();
 
         // Initialize CefSharp settings
         var settings = new CefSharp.Wpf.CefSettings();

@@ -101,7 +101,15 @@ Defined in `Resources/Styles.xaml`.
 *   **Toolbar**: Uses `ScrollChanged` event to adjust `Margin.Top`, creating a "Stick to Banner then Stick to Top" effect.
 *   **Dimensions**: 
     *   **Container**: `Width="900"`, centered.
+    *   **Container**: `Width="900"`, centered.
     *   **Banner/Toolbar**: `Width="884"` (flush with card visual edges).
+
+### 5.5 App Banner System
+*   **UnifiedBannerBackground**: Custom control that implements the "Infinite Scroll" parallax effect.
+*   **Deployment**: 
+    *   **Player Bar**: Fills the top 200px of the window behind the Glassy Interface.
+    *   **Page Headers**: Used as the backdrop for the `PageBanner` control on every page (Playlists, History, Likes, etc.).
+    *   **Source**: Loads `assets/banner.PNG` (User Content).
 
 ---
 

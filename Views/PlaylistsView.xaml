@@ -6,6 +6,7 @@
              xmlns:local="clr-namespace:ccc.Views"
              xmlns:visuals="clr-namespace:ccc.Controls.Visuals"
              xmlns:cards="clr-namespace:ccc.Controls.Cards"
+             xmlns:Microsoft.Xaml.Behaviors="http://schemas.microsoft.com/xaml/behaviors"
              mc:Ignorable="d" 
              d:DesignHeight="720" d:DesignWidth="1080"
              Background="#121212">
@@ -71,7 +72,8 @@
                                         Title="Playlists" 
                                         Description="Your local library collection."
                                         AvatarAscii="📂"
-                                        VideoCountText="24 Playlists • 192 Videos"/>
+                                        VideoCountText="24 Playlists • 192 Videos"
+                                        BannerImage="pack://siteoforigin:,,,/assets/banner.PNG"/>
                 </Grid>
 
                 <!-- 2. Placeholder for the Sticky Toolbar -->
@@ -140,9 +142,41 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 
-                <!-- Left: Empty for now / Title? -->
+                <!-- Left: Tabs & Preset Selector -->
                 <StackPanel Orientation="Horizontal" Grid.Column="0" VerticalAlignment="Center">
-                    <!-- Bare bones placeholder -->
+                    <!-- Preset Selector Main Button -->
+                     <ComboBox ItemsSource="{Binding TabPresets}" 
+                               SelectedItem="{Binding SelectedPreset}"
+                               DisplayMemberPath="Name"
+                               Width="120"
+                               Height="32"
+                               Margin="0,0,16,0"
+                               Style="{StaticResource NavComboBox}">
+                            <Microsoft.Xaml.Behaviors:Interaction.Triggers>
+                                <Microsoft.Xaml.Behaviors:EventTrigger EventName="SelectionChanged">
+                                    <Microsoft.Xaml.Behaviors:InvokeCommandAction Command="{Binding ChangeTabPresetCommand}" 
+                                          CommandParameter="{Binding SelectedItem, RelativeSource={RelativeSource AncestorType=ComboBox}}"/>
+                                </Microsoft.Xaml.Behaviors:EventTrigger>
+                            </Microsoft.Xaml.Behaviors:Interaction.Triggers>
+                     </ComboBox>
+
+                    <!-- Horizontal Tab List (Determined by Preset) -->
+                    <ItemsControl ItemsSource="{Binding ActiveTabs}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Button Content="{Binding Name}" 
+                                        Command="{Binding DataContext.SelectTabCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                        CommandParameter="{Binding Id}"
+                                        Style="{StaticResource NavButton}"
+                                        Margin="0,0,8,0"/>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
                 </StackPanel>
 
                 <!-- Right: Add Button -->

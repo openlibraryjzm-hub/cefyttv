@@ -17,7 +17,8 @@
                             Title="Support" 
                             Description="Help and documentation."
                             AvatarAscii="🐱"
-                            VideoCountText="Atlas Wiki"/>
+                            VideoCountText="Atlas Wiki"
+                            BannerImage="pack://siteoforigin:,,,/assets/banner.PNG"/>
 
         <ScrollViewer Grid.Row="1" Padding="40">
             <StackPanel MaxWidth="800" HorizontalAlignment="Left">

@@ -17,7 +17,8 @@
                             Title="Settings" 
                             Description="Customize your experience."
                             AvatarAscii="⚙️"
-                            VideoCountText="v2.0.0"/>
+                            VideoCountText="v2.0.0"
+                            BannerImage="pack://siteoforigin:,,,/assets/banner.PNG"/>
 
         <ScrollViewer Grid.Row="1" Padding="40">
             <StackPanel MaxWidth="800" HorizontalAlignment="Left">

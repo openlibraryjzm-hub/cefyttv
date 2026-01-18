@@ -11,6 +11,7 @@ namespace ccc.Services.Database
         public DbSet<PlaylistItem> PlaylistItems { get; set; }
         public DbSet<VideoProgress> VideoProgress { get; set; }
         public DbSet<WatchHistory> WatchHistory { get; set; }
+        public DbSet<LikedVideo> LikedVideos { get; set; }
         public DbSet<VideoFolderAssignment> VideoFolderAssignments { get; set; }
         public DbSet<StuckFolder> StuckFolders { get; set; }
         public DbSet<FolderMetadata> FolderMetadata { get; set; }
@@ -87,6 +88,12 @@ namespace ccc.Services.Database
             // --- Video Progress ---
             // Unique Constraint: video_id
             modelBuilder.Entity<VideoProgress>()
+                .HasIndex(v => v.VideoId)
+                .IsUnique();
+
+            // --- Liked Videos ---
+            // Unique Constraint: video_id
+            modelBuilder.Entity<LikedVideo>()
                 .HasIndex(v => v.VideoId)
                 .IsUnique();
         }

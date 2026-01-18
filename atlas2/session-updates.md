@@ -1,5 +1,58 @@
 # Session Updates
 
+# Session Updates
+
+## [Feature] Likes & History - 2026-01-19
+We have successfully implemented the **Watch History** and **Liked Videos** systems, providing users with persistent tracking of their activity and favorites.
+
+### 💾 Watch History System
+1.  **Architecture**:
+    *   **Persistent Storage**: User history is now stored in the `watch_history` SQLite table, persisting across app restarts.
+    *   **Smart Deduping**: Re-watching a video doesn't create duplicate entries; it updates the `WatchedAt` timestamp, moving the video to the top of the history stack.
+    *   **Limit**: Automatically fetches the last 100 entries.
+2.  **UI Integration**:
+    *   **History View**: Replacing the dummy data, the History page now renders live data from the database.
+    *   **Relative Time**: Implemented human-readable timestamps (e.g., "Just now", "5 minutes ago", "2 days ago").
+    *   **Interactive Cards**: Clicking any card in the History list immediately plays that video.
+3.  **Automatic Tracking**:
+    *   Wired into `PlayVideoCommand`: Every successful video playback triggers an async write to the database.
+
+### ❤️ Liked Videos System
+1.  **Architecture**:
+    *   **Database Schema**: Created `liked_videos` table (VideoID, URL, Title, Thumbnail, Date) with a unique constraint on VideoID.
+    *   **Safety Fix**: Implemented a `CREATE TABLE IF NOT EXISTS` migration in `SqliteService` to patch existing user databases without data loss.
+    *   **Toggle Logic**: The system handles "Toggle" behavior (Add if new, Remove if existing) in a single atomic transaction.
+2.  **UI Wiring**:
+    *   **Player Controller**: The **Heart Icon** in the top "Video Menu" is now fully functional. Clicking it toggles the like status for the currently playing video.
+    *   **Likes View**: A dedicated page displaying a grid of all liked videos.
+    *   **Playback**: Like the history page, clicking a Liked Video card instantly plays it.
+
+## [Infrastructure] Tab Presets - 2026-01-19
+We have established the foundation for **Tab Presets**, allowing the application sidebar to be dynamically reconfigured.
+
+### ⚙️ Configuration System
+1.  **`tabs.json`**: Implemented a JSON-based configuration file to define available tabs and presets.
+2.  **`TabService`**: Created a dedicated service to load/save this configuration and manage the active preset state.
+3.  **ViewModel Integration**: 
+    *   `MainViewModel` now loads tab configs on startup.
+    *   Exposed `ActiveTabs` collection which binds to the UI.
+4.  **UI Controls**:
+    *   Added a **Preset Dropdown** to the `PlaylistsView` sticky toolbar.
+    *   Added a horizontal list of **Tab Pills** to the same toolbar.
+    *   *Note*: While the UI and Data plumbing are complete, the actual filtering logic (filtering playlists by the selected tab) is the next scheduled task.
+
+## [Style] Custom Page Banners - 2026-01-18
+We have integrated a custom banner image system into the application, ensuring the user's provided artwork (`banner.PNG`) is displayed prominently across the experience.
+
+### 🎨 Visual Upgrades
+1.  **Unified Banner Integration**:
+    *   Moved the user-provided `banner.PNG` to `assets/banner.PNG` (content file).
+    *   Updated the **Top Player Controller** (`AdvancedPlayerController.xaml`) to use `UnifiedBannerBackground` with the custom image, filling the 200px header space with the scrolling effect.
+    *   Updated **All Page Views** (Playlists, Videos, History, Likes, Pins, Settings, Support) to pass the custom banner image to their respective `PageBanner` controls, ensuring consistent branding across the entire application.
+2.  **Implementation Details**:
+    *   Used `pack://siteoforigin:,,,/assets/banner.PNG` to reliably reference the content file in XAML.
+    *   Ensured the top banner layer sits behind the "floating wings" of the player controller but provides a rich backdrop.
+
 ## [UI] Playlist Page Card Improvements - 2026-01-18
 We have refined the layout and sizing of the playlist cards on the **Playlists Page** to improve visual impact and alignment.
 

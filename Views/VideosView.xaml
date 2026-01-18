@@ -70,7 +70,8 @@
                                         Title="All Videos" 
                                         Description="Your complete local library."
                                         AvatarAscii="📹"
-                                        VideoCountText="1,243 Videos"/>
+                                        VideoCountText="1,243 Videos"
+                                        BannerImage="pack://siteoforigin:,,,/assets/banner.PNG"/>
                 </Grid>
                 
                 <!-- 2. Placeholder for the Sticky Toolbar -->

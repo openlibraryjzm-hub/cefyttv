@@ -51,6 +51,12 @@ The control uses a 3-column grid to organize its primary sections:
 
 This 98px menu height against the 200px container creates significant "breathing room" (approx 50px) above and below each menu, enhancing the floating aesthetic.
 
+### 2.3 Banner Background
+To provide a rich visual anchor, the controller now incorporates a scrolling background layer:
+*   **Component**: `UnifiedBannerBackground`.
+*   **Source**: `/assets/banner.PNG` (User Custom Banner).
+*   **Behavior**: Sits behind the Glass Menus and Orb, providing visual texture and continuity with the Page Banners.
+
 ---
 
 ## 3. Control Inventory & Wiring

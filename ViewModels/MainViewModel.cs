@@ -22,6 +22,7 @@ namespace ccc.ViewModels
     {
         public string Title { get; set; } = "";
         public string VideoId { get; set; } = "";
+        public string VideoUrl { get; set; } = "";
         public string ThumbnailUrl { get; set; } = "";
         public int ProgressPercentage { get; set; }
         public bool HasProgress => ProgressPercentage > 0;
@@ -32,6 +33,7 @@ namespace ccc.ViewModels
     public class HistoryDisplayItem
     {
         public string Title { get; set; } = "";
+        public string VideoId { get; set; } = "";
         public string ThumbnailUrl { get; set; } = "";
         public string RelativeTime { get; set; } = "";
         public int ProgressPercentage { get; set; }
@@ -60,21 +62,33 @@ namespace ccc.ViewModels
         [ObservableProperty]
         private VideoDisplayItem? _selectedVideo;
 
+        // Tabs Config
+        [ObservableProperty]
+        private ObservableCollection<ccc.Models.Config.TabDefinition> _activeTabs = new();
+
+        [ObservableProperty]
+        private ObservableCollection<ccc.Models.Config.TabPreset> _tabPresets = new();
+
+        [ObservableProperty]
+        private ccc.Models.Config.TabPreset? _selectedPreset;
+
         // Collections
         [ObservableProperty]
         private ObservableCollection<PlaylistDisplayItem> _playlists = new();
 
         [ObservableProperty]
-        private ObservableCollection<VideoDisplayItem> _videos = new();
+        private ObservableCollection<VideoDisplayItem> _videos = new(); // Current page videos
 
         [ObservableProperty]
-        private ObservableCollection<VideoDisplayItem> _likedVideos = new();
+        private ObservableCollection<VideoDisplayItem> _likedVideos = new(); // Re-use VideoDisplayItem for likes
 
         [ObservableProperty]
         private ObservableCollection<VideoDisplayItem> _pinnedVideos = new();
 
         [ObservableProperty]
         private ObservableCollection<HistoryDisplayItem> _historyItems = new();
+
+        private List<VideoDisplayItem> _allVideosCache = new(); // Flattened playlist items for pagination
 
         public MainViewModel()
         {
@@ -134,6 +148,51 @@ namespace ccc.ViewModels
 
             // 2. Dummy Data for other views (until wired up)
             System.Windows.Application.Current.Dispatcher.Invoke(PopulateDummyDetailData);
+
+            await LoadTabsAsync();
+            await LoadHistoryAsync();
+        }
+
+        private async Task LoadHistoryAsync()
+        {
+            try
+            {
+                var history = await App.SqliteService.GetWatchHistoryAsync(100);
+                
+                System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                {
+                    HistoryItems.Clear();
+                    foreach (var h in history)
+                    {
+                        HistoryItems.Add(new HistoryDisplayItem
+                        {
+                            Title = h.Title ?? "Unknown Video",
+                            VideoId = h.VideoId,
+                            ThumbnailUrl = h.ThumbnailUrl ?? "https://picsum.photos/300/169",
+                            RelativeTime = GetRelativeTime(h.WatchedAt),
+                            ProgressPercentage = 0 // Needs to join with VideoProgress later
+                        });
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error loading history: {ex.Message}");
+            }
+        }
+
+        private string GetRelativeTime(string isoString)
+        {
+            if (DateTime.TryParse(isoString, out var date))
+            {
+                var span = DateTime.UtcNow - date;
+                if (span.TotalMinutes < 1) return "Just now";
+                if (span.TotalMinutes < 60) return $"{(int)span.TotalMinutes} minutes ago";
+                if (span.TotalHours < 24) return $"{(int)span.TotalHours} hours ago";
+                if (span.TotalDays < 7) return $"{(int)span.TotalDays} days ago";
+                return date.ToShortDateString();
+            }
+            return "";
         }
 
         private void PopulateDummyDetailData()
@@ -168,17 +227,8 @@ namespace ccc.ViewModels
                 });
             }
 
-            // History
-            for (int i = 1; i <= 20; i++)
-            {
-                HistoryItems.Add(new HistoryDisplayItem
-                {
-                    Title = $"Recently Watched {i}",
-                    ThumbnailUrl = $"https://picsum.photos/300/169?random={400+i}",
-                    RelativeTime = $"{i * 10} minutes ago",
-                    ProgressPercentage = 100 - (i * 2)
-                });
-            }
+             // History
+             // Loaded from DB now
         }
 
 
@@ -272,6 +322,7 @@ namespace ccc.ViewModels
                         {
                             Title = item.Title ?? "Unknown Title",
                             VideoId = item.VideoId,
+                            VideoUrl = item.VideoUrl,
                             ThumbnailUrl = item.ThumbnailUrl ?? "/Resources/Images/placeholder.jpg",
                             // Progress/Watched will come from joined data later
                             ProgressPercentage = 0,
@@ -314,6 +365,20 @@ namespace ccc.ViewModels
                         SelectedVideo = v;
                     }
                 }
+
+                // Record History
+                if (SelectedVideo != null)
+                {
+                    Task.Run(async () => 
+                    {
+                        await App.SqliteService.AddToWatchHistoryAsync(
+                            SelectedVideo.VideoUrl,
+                            SelectedVideo.VideoId,
+                            SelectedVideo.Title,
+                            SelectedVideo.ThumbnailUrl
+                        );
+                    });
+                }
             }
         }
 
@@ -344,10 +409,13 @@ namespace ccc.ViewModels
                 case "history":
                     CurrentView = new HistoryView();
                     PageTitle = "History";
+                    // Refresh History Data
+                    Task.Run(LoadHistoryAsync);
                     break;
                 case "likes":
                     CurrentView = new LikesView();
-                    PageTitle = "Likes";
+                    PageTitle = "Liked Videos";
+                    Task.Run(LoadLikesAsync);
                     break;
                 case "pins":
                     CurrentView = new PinsView();
@@ -398,7 +466,6 @@ namespace ccc.ViewModels
         // Pagination State
         private const int ItemsPerPage = 50;
         private List<PlaylistDisplayItem> _allPlaylistsCache = new();
-        private List<VideoDisplayItem> _allVideosCache = new();
 
         [ObservableProperty]
         private int _currentPlaylistPage = 1;
@@ -545,6 +612,97 @@ namespace ccc.ViewModels
             {
                 PlayVideo(prev.VideoId);
             }
+        }
+        [RelayCommand]
+        public void ChangeTabPreset(ccc.Models.Config.TabPreset preset)
+        {
+            if (preset == null) return;
+            
+            SelectedPreset = preset;
+            App.TabService.SaveConfigAsync(new ccc.Models.Config.TabConfig
+            {
+                ActivePresetId = preset.Id,
+                // Preserve other data manually since we don't have full state in one object here (simplified)
+                // In a real app we'd keep the whole Config object alive
+            });
+
+            // Update displayed tabs
+            ActiveTabs.Clear();
+            var tabs = App.TabService.GetTabsForPreset(preset.Id);
+            foreach (var t in tabs) ActiveTabs.Add(t);
+        }
+
+        [RelayCommand]
+        public void SelectTab(string tabId)
+        {
+             //Logic to filter playlists by tabId would go here
+             //For now, just visual selection
+        }
+
+        [RelayCommand]
+        public async Task ToggleLike()
+        {
+            if (SelectedVideo == null) return;
+
+            await App.SqliteService.ToggleLikeAsync(
+                SelectedVideo.VideoId,
+                SelectedVideo.VideoUrl,
+                SelectedVideo.Title,
+                SelectedVideo.ThumbnailUrl
+            );
+            
+            // If we are on the likes page, refresh immediately
+            if (CurrentView is Views.LikesView)
+            {
+                await LoadLikesAsync();
+            }
+        }
+
+        private async Task LoadLikesAsync()
+        {
+            try
+            {
+                var likes = await App.SqliteService.GetLikedVideosAsync(1000);
+                
+                System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                {
+                    LikedVideos.Clear();
+                    foreach (var l in likes)
+                    {
+                        LikedVideos.Add(new VideoDisplayItem
+                        {
+                            Title = l.Title ?? "Unknown Video",
+                            VideoId = l.VideoId,
+                            VideoUrl = l.VideoUrl,
+                            ThumbnailUrl = l.ThumbnailUrl ?? "/Resources/Images/placeholder.jpg",
+                            ProgressPercentage = 0,
+                            IsWatched = false
+                        });
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error loading likes: {ex.Message}");
+            }
+        }
+
+        private async Task LoadTabsAsync()
+        {
+             var config = await App.TabService.LoadConfigAsync();
+             
+             // Load Presets
+             TabPresets.Clear();
+             foreach(var p in config.Presets) TabPresets.Add(p);
+
+             // Load Active Preset
+             SelectedPreset = TabPresets.FirstOrDefault(p => p.Id == config.ActivePresetId) ?? TabPresets.FirstOrDefault();
+
+             // Load Tabs
+             if (SelectedPreset != null)
+             {
+                 ChangeTabPreset(SelectedPreset);
+             }
         }
     }
 }

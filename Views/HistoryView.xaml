@@ -18,7 +18,8 @@
                             Title="History" 
                             Description="Resume where you left off."
                             AvatarAscii="🕒"
-                            VideoCountText="Last 100 watched"/>
+                            VideoCountText="Last 100 watched"
+                            BannerImage="pack://siteoforigin:,,,/assets/banner.PNG"/>
 
         <ScrollViewer Grid.Row="1" Padding="20">
             <ItemsControl ItemsSource="{Binding HistoryItems}">
@@ -29,7 +30,13 @@
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <cards:HistoryCard Margin="0,8"/>
+                        <cards:HistoryCard Margin="0,8">
+                            <cards:HistoryCard.InputBindings>
+                                <MouseBinding MouseAction="LeftClick"
+                                              Command="{Binding DataContext.PlayVideoCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                              CommandParameter="{Binding VideoId}"/>
+                            </cards:HistoryCard.InputBindings>
+                        </cards:HistoryCard>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>

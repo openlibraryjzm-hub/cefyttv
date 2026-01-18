@@ -17,6 +17,31 @@ namespace ccc.Services.Database
         {
             using var context = new AppDbContext();
             await context.Database.EnsureCreatedAsync();
+
+            // Manually ensure new tables exist for schema updates on existing DBs
+            await context.Database.ExecuteSqlRawAsync(@"
+                CREATE TABLE IF NOT EXISTS ""liked_videos"" (
+                    ""id"" INTEGER NOT NULL CONSTRAINT ""PK_liked_videos"" PRIMARY KEY AUTOINCREMENT,
+                    ""video_id"" TEXT NOT NULL,
+                    ""video_url"" TEXT NOT NULL,
+                    ""title"" TEXT NULL,
+                    ""thumbnail_url"" TEXT NULL,
+                    ""liked_at"" TEXT NOT NULL
+                );
+            ");
+            
+            // Re-create index (IF NOT EXISTS syntax for indexes depends on sqlite version, 
+            // safer to suppress error or check separately, but commonly users have modern sqlite).
+            // Simplest way for 'ensure' is to catch specific error or check sys table, 
+            // but for now let's just try creation and ignore 'already exists' error strictly for the index if needed.
+            // Actually, simplified approach:
+            try 
+            {
+                await context.Database.ExecuteSqlRawAsync(@"
+                    CREATE UNIQUE INDEX IF NOT EXISTS ""IX_liked_videos_video_id"" ON ""liked_videos"" (""video_id"");
+                ");
+            } 
+            catch { /* Index might exist */ }
         }
 
         // --- Playlist Operations ---
@@ -185,15 +210,31 @@ namespace ccc.Services.Database
          public async Task AddToWatchHistoryAsync(string videoUrl, string videoId, string? title, string? thumbnailUrl)
          {
              using var context = new AppDbContext();
-             var record = new WatchHistory
+             
+             // Check for existing
+             var existing = await context.WatchHistory
+                 .FirstOrDefaultAsync(h => h.VideoId == videoId);
+
+             if (existing != null)
              {
-                 VideoUrl = videoUrl,
-                 VideoId = videoId,
-                 Title = title,
-                 ThumbnailUrl = thumbnailUrl,
-                 WatchedAt = DateTime.UtcNow.ToString("o")
-             };
-             context.WatchHistory.Add(record);
+                 // Move to top by updating timestamp
+                 existing.WatchedAt = DateTime.UtcNow.ToString("o");
+                 if (title != null) existing.Title = title;
+                 if (thumbnailUrl != null) existing.ThumbnailUrl = thumbnailUrl;
+             }
+             else
+             {
+                var record = new WatchHistory
+                {
+                    VideoUrl = videoUrl,
+                    VideoId = videoId,
+                    Title = title,
+                    ThumbnailUrl = thumbnailUrl,
+                    WatchedAt = DateTime.UtcNow.ToString("o")
+                };
+                context.WatchHistory.Add(record);
+             }
+
              await context.SaveChangesAsync();
          }
 
@@ -251,6 +292,50 @@ namespace ccc.Services.Database
              using var context = new AppDbContext();
              return await context.VideoProgress
                 .FirstOrDefaultAsync(p => p.VideoId == videoId);
+         }
+
+         // --- Likes ---
+         public async Task<bool> ToggleLikeAsync(string videoId, string videoUrl, string? title, string? thumbnail)
+         {
+             using var context = new AppDbContext();
+             var existing = await context.LikedVideos.FirstOrDefaultAsync(l => l.VideoId == videoId);
+             
+             if (existing != null)
+             {
+                 context.LikedVideos.Remove(existing);
+                 await context.SaveChangesAsync();
+                 return false; // Removed (Unlike)
+             }
+             else
+             {
+                 var like = new LikedVideo
+                 {
+                     VideoId = videoId,
+                     VideoUrl = videoUrl,
+                     Title = title,
+                     ThumbnailUrl = thumbnail,
+                     LikedAt = DateTime.UtcNow.ToString("o")
+                 };
+                 context.LikedVideos.Add(like);
+                 await context.SaveChangesAsync();
+                 return true; // Added (Like)
+             }
+         }
+
+         public async Task<bool> IsVideoLikedAsync(string videoId)
+         {
+             using var context = new AppDbContext();
+             return await context.LikedVideos.AnyAsync(l => l.VideoId == videoId);
+         }
+
+         public async Task<List<LikedVideo>> GetLikedVideosAsync(int limit = 1000)
+         {
+             using var context = new AppDbContext();
+             return await context.LikedVideos
+                 .OrderByDescending(l => l.LikedAt)
+                 .Take(limit)
+                 .AsNoTracking()
+                 .ToListAsync();
          }
     }
 }

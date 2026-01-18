@@ -18,7 +18,8 @@
                             Title="Pinned Videos" 
                             Description="Quick access to priority content."
                             AvatarAscii="📌"
-                            VideoCountText="12 Pins"/>
+                            VideoCountText="12 Pins"
+                            BannerImage="pack://siteoforigin:,,,/assets/banner.PNG"/>
 
         <ScrollViewer Grid.Row="1" Padding="20">
             <ItemsControl ItemsSource="{Binding PinnedVideos}">
