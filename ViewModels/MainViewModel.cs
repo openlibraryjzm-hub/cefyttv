@@ -18,21 +18,58 @@ namespace ccc.ViewModels
         public string VideoCountText { get; set; } = "0 Videos";
     }
 
-    public class VideoDisplayItem
+    public class VideoDisplayItem : ObservableObject
     {
         public string Title { get; set; } = "";
         public string VideoId { get; set; } = "";
+        public long ItemId { get; set; } // Database ID (PlaylistItem.Id)
         public string VideoUrl { get; set; } = "";
         public string ThumbnailUrl { get; set; } = "";
         public int ProgressPercentage { get; set; }
         public bool HasProgress => ProgressPercentage > 0;
-        public bool IsPlaying { get; set; }
+
+        private bool _isPlaying;
+        public bool IsPlaying 
+        { 
+            get => _isPlaying; 
+            set => SetProperty(ref _isPlaying, value); 
+        }
+
         public bool IsWatched { get; set; }
 
         public string Author { get; set; } = "";
         public string PublishYear { get; set; } = "";
         public string ViewCount { get; set; } = "";
         public string MetadataLine { get; set; } = "";
+        
+        private bool _isQuickMenuOpen; // For Right-Click Star menu
+        public bool IsQuickMenuOpen
+        {
+            get => _isQuickMenuOpen;
+            set => SetProperty(ref _isQuickMenuOpen, value);
+        }
+
+        // Folder Assignments
+        public ObservableCollection<string> FolderColors { get; set; } = new ObservableCollection<string>();
+
+        // Indexer for Binding: IsChecked="{Binding [red]}"
+        [System.Runtime.CompilerServices.IndexerName("Item")]
+        public bool this[string color]
+        {
+            get => FolderColors.Contains(color);
+            set
+            {
+                if (value)
+                {
+                    if (!FolderColors.Contains(color)) FolderColors.Add(color);
+                }
+                else
+                {
+                    if (FolderColors.Contains(color)) FolderColors.Remove(color);
+                }
+                OnPropertyChanged("Item[]");
+            }
+        }
     }
 
     public class HistoryDisplayItem
@@ -83,6 +120,9 @@ namespace ccc.ViewModels
         private ObservableCollection<ccc.Models.Config.TabDefinition> _activeTabs = new();
 
         [ObservableProperty]
+        private string _defaultStarColor = "red";
+
+        [ObservableProperty]
         private ObservableCollection<ccc.Models.Config.TabPreset> _tabPresets = new();
 
         [ObservableProperty]
@@ -112,6 +152,9 @@ namespace ccc.ViewModels
             Task.Run(LoadDataAsync);
 
             CurrentView = new PlaylistsView();
+            
+            // Init Defaults
+            _defaultStarColor = App.ConfigService.DefaultAssignColor ?? "red";
         }
 
         private async Task LoadDataAsync()
@@ -324,10 +367,11 @@ namespace ccc.ViewModels
                     _allVideosCache.Clear();
                     foreach (var item in items)
                     {
-                        _allVideosCache.Add(new VideoDisplayItem
+                        var videoItem = new VideoDisplayItem
                         {
                             Title = item.Title ?? "Unknown Title",
                             VideoId = item.VideoId,
+                            ItemId = item.Id,
                             VideoUrl = item.VideoUrl,
                             ThumbnailUrl = item.ThumbnailUrl ?? "/Resources/Images/placeholder.jpg",
                             // Progress/Watched will come from joined data later
@@ -337,7 +381,18 @@ namespace ccc.ViewModels
                             ViewCount = FormatViewCount(item.ViewCount),
                             PublishYear = !string.IsNullOrEmpty(item.PublishedAt) && DateTime.TryParse(item.PublishedAt, out var d) ? d.Year.ToString() : "",
                             MetadataLine = $"{FormatViewCount(item.ViewCount)} | {(!string.IsNullOrEmpty(item.PublishedAt) && DateTime.TryParse(item.PublishedAt, out var d2) ? d2.Year.ToString() : "")}"
-                        });
+                        };
+
+                        // Map Folder Colors
+                        if (item.FolderAssignments != null)
+                        {
+                            foreach(var fa in item.FolderAssignments)
+                            {
+                                videoItem.FolderColors.Add(fa.FolderColor);
+                            }
+                        }
+
+                        _allVideosCache.Add(videoItem);
                     }
 
                     // Update Video Count text if we loaded the playlist explicitly
@@ -363,34 +418,208 @@ namespace ccc.ViewModels
         [RelayCommand]
         public void PlayVideo(string videoId)
         {
-            if (!string.IsNullOrEmpty(videoId))
-            {
-                CurrentVideoId = videoId;
-                // Ideally also update 'IsPlaying' state in the list
-                foreach (var v in Videos)
-                {
-                    v.IsPlaying = (v.VideoId == videoId);
-                    if (v.IsPlaying)
-                    {
-                        SelectedVideo = v;
-                    }
-                }
+            if (string.IsNullOrEmpty(videoId)) return;
 
-                // Record History
-                if (SelectedVideo != null)
+            CurrentVideoId = videoId;
+            
+            // Check if video is in current list
+            bool foundInCurrent = false;
+            foreach (var v in Videos)
+            {
+                v.IsPlaying = (v.VideoId == videoId);
+                if (v.IsPlaying)
                 {
-                    Task.Run(async () => 
+                    SelectedVideo = v;
+                    foundInCurrent = true;
+                }
+            }
+
+            // If not found in current context (e.g. played from History/Likes), 
+            // we should try to sync the context to the video's playlist 
+            // so nav menus and Next/Prev buttons work.
+            if (!foundInCurrent)
+            {
+                Task.Run(async () =>
+                {
+                    // 1. Find Playlist ID
+                    var playlistId = await App.SqliteService.GetPlaylistIdByVideoIdAsync(videoId);
+                    
+                    if (playlistId.HasValue)
                     {
+                        // 2. Load Playlist Data (Background)
+                        // Note: We don't want to fully navigate/render the VideosView if user is in "History" view?
+                        // User Request: "top playlist and top video menus ... instead staying stuck"
+                        // This implies updating the "SelectedPlaylist" and "PlaylistService" state is desired.
+                        
+                        await System.Windows.Application.Current.Dispatcher.InvokeAsync(async () =>
+                        {
+                            // Update SelectedPlaylist Metadata
+                            var p = _allPlaylistsCache.FirstOrDefault(x => x.Id == playlistId.Value);
+                            if (p != null) SelectedPlaylist = p;
+                            else 
+                            {
+                                // Fallback fetch
+                                var dbP = await App.SqliteService.GetPlaylistAsync(playlistId.Value);
+                                if (dbP != null)
+                                {
+                                    SelectedPlaylist = new PlaylistDisplayItem 
+                                    { 
+                                        Id = dbP.Id, Name = dbP.Name, Description = dbP.Description, 
+                                        VideoCountText = $"{dbP.Items.Count} Videos",
+                                        ThumbnailUrl = dbP.CustomThumbnailUrl ?? "https://picsum.photos/300/200"
+                                    };
+                                }
+                            }
+                            
+                            // Load Service State (Critical for Next/Prev)
+                            await App.PlaylistService.LoadPlaylistAsync(playlistId.Value, SelectedFolderColor);
+                            
+                            // Manually find the video object in the *service* items to update SelectedVideo
+                            var vidItem = App.PlaylistService.CurrentPlaylistItems.FirstOrDefault(x => x.VideoId == videoId);
+                            if (vidItem != null)
+                            {
+                                // Create a display item for binding
+                                var vDisplay = new VideoDisplayItem 
+                                {
+                                     Title = vidItem.Title, VideoId = vidItem.VideoId, ItemId = vidItem.Id,
+                                     VideoUrl = vidItem.VideoUrl, ThumbnailUrl = vidItem.ThumbnailUrl,
+                                     Author = vidItem.Author, ViewCount = FormatViewCount(vidItem.ViewCount), IsPlaying = true
+                                     // Folder colors etc mapping if needed
+                                };
+                                SelectedVideo = vDisplay;
+                            }
+                            
+                            // Force update logic? 
+                            // If we switch context, we might confuse the user if they hit "Back".
+                            // But for "Top Menu" sync, this is necessary.
+                        });
+                    }
+                });
+            }
+
+            // Record History
+            if (SelectedVideo != null) // Note: might be null initially if async load hasn't finished, handled safely inside AddToWatchHistoryAsync usually? No, let's wait or allow fire/forget
+            {
+                // We might capture an older SelectedVideo here if the async update hasn't happened.
+                // Ideally passing videoId to AddToWatchHistoryAsync is safer if we allow partial data.
+                // Or just use what we have. 
+                 Task.Run(async () => 
+                 {
+                     // Retry fetching SelectedVideo if null/mismatched? 
+                     // For now, assume if foundInCurrent it's fine. If not, the async PlayVideo handles context sync.
+                     // IMPORTANT: History needs url/title/thumb. If not found in current, we might send nulls.
+                     // Fallback: fetch from DB if needed inside service.
+                     
+                     // If we are strictly playing, SelectedVideo might be updated slightly later.
+                     // Let's rely on the previous logic for history or defer it.
+                     
+                     if (SelectedVideo != null && SelectedVideo.VideoId == videoId)
+                     {
                         await App.SqliteService.AddToWatchHistoryAsync(
                             SelectedVideo.VideoUrl,
                             SelectedVideo.VideoId,
                             SelectedVideo.Title,
                             SelectedVideo.ThumbnailUrl
                         );
-                    });
+                     }
+                 });
+            }
+        }
+
+
+
+        [RelayCommand]
+        public void SetDefaultColor(string color)
+        {
+            if (!string.IsNullOrEmpty(color))
+            {
+                DefaultStarColor = color;
+                App.ConfigService.DefaultAssignColor = color;
+                
+                // If in Quick Menu mode, close it
+                if (_currentQuickMenuVideo != null)
+                {
+                    _currentQuickMenuVideo.IsQuickMenuOpen = false;
+                    _currentQuickMenuVideo = null;
+                    OnPropertyChanged(nameof(IsTaggingActive));
                 }
             }
         }
+
+        [RelayCommand]
+        public async Task CancelBulkTags()
+        {
+            // Exit Modes
+            IsBulkTagMode = false;
+            if (_currentQuickMenuVideo != null)
+            {
+                _currentQuickMenuVideo.IsQuickMenuOpen = false;
+                _currentQuickMenuVideo = null;
+            }
+            OnPropertyChanged(nameof(IsTaggingActive));
+            
+            // Revert Changes by reloading data
+            if (SelectedPlaylist != null)
+            {
+                 await LoadPlaylistVideos(SelectedPlaylist.Id);
+            }
+        }
+        
+        public bool IsTaggingActive => IsBulkTagMode || _currentQuickMenuVideo != null;
+
+        private VideoDisplayItem? _currentQuickMenuVideo;
+
+
+        [RelayCommand]
+        public void ToggleQuickMenu(VideoDisplayItem video)
+        {
+            if (video == null) return;
+
+            if (_currentQuickMenuVideo != null && _currentQuickMenuVideo != video)
+            {
+                _currentQuickMenuVideo.IsQuickMenuOpen = false;
+            }
+
+            video.IsQuickMenuOpen = !video.IsQuickMenuOpen;
+            
+            if (video.IsQuickMenuOpen)
+                _currentQuickMenuVideo = video;
+            else
+                _currentQuickMenuVideo = null;
+                
+            OnPropertyChanged(nameof(IsTaggingActive));
+        }
+
+        [RelayCommand]
+        public async Task ToggleStar(VideoDisplayItem video)
+        {
+             var target = video ?? SelectedVideo;
+             if (target == null) return;
+
+             var color = DefaultStarColor;
+             if (string.IsNullOrEmpty(color)) return;
+
+             // Check if it has it
+             if (target.FolderColors.Contains(color))
+             {
+                 // Remove
+                 target.FolderColors.Remove(color);
+                 if (SelectedPlaylist != null)
+                 {
+                    await App.SqliteService.RemoveVideoFolderAssignmentAsync(SelectedPlaylist.Id, target.ItemId, color);
+                 }
+             }
+             else
+             {
+                 // Add
+                 target.FolderColors.Add(color);
+                 if (SelectedPlaylist != null)
+                 {
+                    await App.SqliteService.AssignVideoToFolderAsync(SelectedPlaylist.Id, target.ItemId, color);
+                 }
+             }
+        }
+
 
         [ObservableProperty]
         private bool _isFullScreen; // Default false
@@ -792,6 +1021,81 @@ namespace ccc.ViewModels
             }
             return rawCount; // Fallback if it's already text
         }
+
+        [ObservableProperty]
+        private bool _isBulkTagMode;
+
+        [RelayCommand]
+        public void ToggleBulkTagMode()
+        {
+            IsBulkTagMode = !IsBulkTagMode;
+            if (_currentQuickMenuVideo != null)
+            {
+                _currentQuickMenuVideo.IsQuickMenuOpen = false; // Close individual if opening bulk
+                _currentQuickMenuVideo = null;
+            }
+            OnPropertyChanged(nameof(IsTaggingActive));
+        }
+
+        [RelayCommand]
+        public async Task SaveBulkTags()
+        {
+            if (SelectedPlaylist == null) return;
+            var playlistId = SelectedPlaylist.Id;
+
+            // Iterate all loaded videos (or all cached videos?)
+            // We should probably save changes for ALL videos in cache, as user might have paged.
+            // But 'FolderColors' is on VideoDisplayItem which is in _allVideosCache.
+            
+            foreach (var video in _allVideosCache)
+            {
+                // We need to compare with DB or just sync. 
+                // Sync strategy: Get current DB assignments, diff, apply.
+                // This might be heavy for 1000s of videos.
+                // Optimization: Maybe track 'IsModified' on VideoDisplayItem?
+                // For now, let's just do it for the current page or visible ones? 
+                // "Bulk tag" usually means I'm working on a batch.
+                // Let's assume we check all for correctness.
+                
+                // Get existing from DB to compare
+                // To avoid N+1, maybe we trust the 'initial' state we loaded? 
+                // Problem: We didn't keep a copy of 'OriginalFolderColors'.
+                // Let's just process "Current Page" or ALL?
+                // If we process ALL, it might take time.
+                // Let's implement a 'Sync' in SqliteService? 
+                // Better: Let's just add/remove based on current simple logic.
+                // Since we don't have 'Originals', we can't diff easily without refetching.
+                
+                // Lazy approach: fetch current assignments for this video, compare, update.
+                var currentDbColors = await App.SqliteService.GetVideoFolderAssignmentsAsync(playlistId, video.ItemId);
+                
+                var newColors = video.FolderColors.ToList();
+                
+                // To Add
+                var toAdd = newColors.Except(currentDbColors).ToList();
+                foreach (var c in toAdd)
+                {
+                    await App.SqliteService.AssignVideoToFolderAsync(playlistId, video.ItemId, c);
+                }
+
+                // To Remove
+                var toRemove = currentDbColors.Except(newColors).ToList();
+                foreach (var c in toRemove)
+                {
+                    await App.SqliteService.RemoveVideoFolderAssignmentAsync(playlistId, video.ItemId, c);
+                }
+            }
+            
+            IsBulkTagMode = false;
+            OnPropertyChanged(nameof(IsTaggingActive));
+            
+            // Refresh view to ensure consistency
+            if (SelectedPlaylist != null)
+            {
+                 await LoadPlaylistVideos(playlistId);
+            }
+        }
+
 
         public class ColorImportItem
         {

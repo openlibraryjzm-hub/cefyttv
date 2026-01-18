@@ -111,6 +111,17 @@ Defined in `Resources/Styles.xaml`.
     *   **Page Headers**: Used as the backdrop for the `PageBanner` control on every page (Playlists, History, Likes, etc.).
     *   **Source**: Loads `assets/banner.PNG` (User Content).
 
+### 5.6 Tagging Interface
+*   **4x4 Color Grid**: Used for Quick Assign (Right-Click Star) and Bulk Tagging.
+*   **Visual Indicators**:
+    *   **White Dot**: A centered white dot overlay on a color cell indicates it is the current **Default Assign Color**.
+    *   **Checkmark**: Indicates the video is currently assigned to that folder (Selection State).
+*   **Interactions**:
+    *   **Left-Click**: Toggle assignment to that color.
+    *   **Right-Click (Cell)**: Sets that color as Default. In Quick Menu, this also auto-closes the menu.
+*   **Sticky Actions**:
+    *   "Cancel" button appears (Red) on the sticky toolbar when any tagging action is active.
+
 ---
 
 ## 6. Controls & Widgets

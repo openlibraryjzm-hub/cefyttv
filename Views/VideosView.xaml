@@ -400,7 +400,39 @@
                 <!-- Right: Sort/Tag/Add -->
                 <StackPanel Orientation="Horizontal" Grid.Column="1">
                     <Button Content="Sort: Default" Style="{StaticResource NavButton}" Foreground="White"/>
-                    <Button Content="Bulk Tag" Style="{StaticResource NavButton}" Margin="8,0,0,0"/>
+                    <!-- Cancel Button (Only in Tagging Mode) -->
+                    <Button Margin="8,0,0,0" 
+                            Command="{Binding CancelBulkTagsCommand}"
+                            Background="#D32F2F" Content="Cancel">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource NavButton}">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Setter Property="Background" Value="#D32F2F"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsTaggingActive}" Value="True">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+
+                    <Button Margin="8,0,0,0">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource NavButton}">
+                                <Setter Property="Content" Value="Bulk Tag"/>
+                                <Setter Property="Command" Value="{Binding ToggleBulkTagModeCommand}"/>
+                                <Style.Triggers>
+                                    <!-- If Tagging is Active (Bulk OR Quick Menu), function as Save -->
+                                    <DataTrigger Binding="{Binding IsTaggingActive}" Value="True">
+                                        <Setter Property="Command" Value="{Binding SaveBulkTagsCommand}"/>
+                                        <Setter Property="Content" Value="Save Tags"/>
+                                        <Setter Property="Background" Value="{StaticResource FolderGreenBrush}"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
                     
                     <!-- Add Button -->
                     <Button Command="{Binding OpenImportModalCommand}" 

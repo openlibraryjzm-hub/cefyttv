@@ -2,6 +2,97 @@
 
 # Session Updates
 
+## [Feature] Player Shortcuts via Right-Click - 2026-01-19
+We have added convenient shortcuts to the **Advanced Player Controller** to quickly navigate to relevant library pages.
+
+### 🖱️ New Actions
+*   **Right-Click "Video Grid" (#) Button**: Navigates directly to the **History View**.
+*   **Right-Click "Pin" Button**: Navigates directly to the **Pins View** (does not toggle pin).
+*   **Right-Click "Like" (Heart) Button**: Navigates directly to the **Likes View** (does not toggle like).
+
+### 📺 Fullscreen Behavior
+*   If you trigger any of these right-click actions while in **Fullscreen Mode**, the application will automatically exit fullscreen and switch to **Split View**, presenting the requested page immediately.
+
+## [Feature] Contextual Navigation Sync - 2026-01-19
+We have fixed the issue where the Player Controller would remain "stuck" when playing videos from History, Likes, or Pins.
+
+### 🧠 Logic Refusal
+*   **Automatic Context Switching**: 
+    *   When you play a video from outside of a playlist (e.g., History), the application now automatically detects the video's parent playlist.
+    *   The **Top Player Menus** (Left: Playlist, Right: Video) effectively "jump" to that playlist context without navigating you away from your current view.
+    *   This ensures that **Next** and **Previous** buttons logically cycle through the video's original playlist, maintaining a seamless playback flow.
+    *   If a video belongs to multiple playlists or none, it handles fallback elegantly.
+
+### 🛠️ Technical Details
+*   **SqliteService**: Added `GetPlaylistIdByVideoIdAsync` to support reverse-lookup of contexts.
+*   **MainViewModel**: Updated `PlayVideo` to perform a background context check and sync the `SelectedPlaylist` and `PlaylistService` state if a mismatch is detected.
+
+## [Feature] Tagging Refinements - 2026-01-19
+We have refined the **Bulk Tag** and **Quick Assign** workflows with enhanced visual feedback and control.
+
+### 🎨 Visual Enhancements
+*   **Default Color Indicator**: The 16-color grid now displays a **White Dot** in the center of the color cell that matches your current **Default Assign Color**. This provides immediate visual confirmation of your default setting.
+
+### 🕹️ Interaction Improvements
+*   **Individual Quick Menu**:
+    *   **Close Button**: Added a **Red X** button to the top-right of the individual video's 4x4 grid overlay, allowing easy closure without saving changes.
+    *   **Right-Click Action**: Right-clicking a color in the individual grid now sets it as the default color **AND automatically closes** the grid, streamlining the workflow.
+*   **Cancel Functionality**:
+    *   Added a red **"Cancel"** button to the sticky toolbar.
+    *   This button appears whenever **Tagging Mode** is active (either global Bulk Mode OR an individual Quick Menu is open).
+    *   Clicking Cancel reverts all pending changes (by reloading the view) and exits the tagging mode.
+*   **Unified Sticky Bar**: The "Save Tags" and "Cancel" buttons now appear if *any* tagging activity is detected (global or individual), ensuring consistent control.
+
+### 🛠️ Technical Logic
+*   **Converters**: Created `ColorMatchToVisibilityConverter` to drive the white dot visibility.
+*   **ViewModel**: Introduced `IsTaggingActive` property to unify state management across Bulk and Quick modes. Added `CancelBulkTagsCommand`.
+
+## [Feature] Quick Assign Star - 2026-01-19
+We have implemented the **Quick Assign Star** functionality, streamlining video organization.
+
+### ⭐ Quick Assign Workflow
+1.  **Star Button**: 
+    *   Located in the top-right of every Video Thumbnail.
+    *   **Left-Click**: Instantly toggles the video's assignment to your **Default Folder**.
+    *   **Right-Click**: Opens the **Quick Tag Menu** (4x4 Color Grid) for that specific video only.
+2.  **Setting a Default**:
+    *   **Right-Click** any color cell in the 4x4 Grid (works in both Bulk Mode and Quick Menu).
+    *   This sets that color as your global **Default Assign Color** (persisted to config).
+3.  **Visual Feedback**:
+    *   The Star button serves as a quick shortcut for your most-used folder.
+    *   The Quick Menu allows precise tagging without entering full Bulk Mode.
+
+### 🛠️ Technical Details
+*   **Config**: Added `DefaultAssignColor` to `ConfigService` for persistence.
+*   **Interaction**: Implemented Right-Click logic (`MouseBinding`) on both the Star Button and Grid Cells.
+*   **Fixes**: 
+    *   Resolved an XML validation error caused by a duplicate closing tag in `VideoCard.xaml`.
+    *   Resolved a compilation error caused by a duplicate `_defaultStarColor` property in `MainViewModel.cs`.
+
+## [Feature] Bulk Video Tagging - 2026-01-19
+We have implemented a powerful **Bulk Tagging System** for the Videos page, allowing rapid organization of content.
+
+### 🏷️ Bulk Tag Mode
+1.  **Toggle Workflow**:
+    *   Clicking **"Bulk Tag"** on the sticky toolbar enters **Tag Mode**.
+    *   The button transforms into a Green **"Save Tags"** action.
+2.  **Visual Interface**:
+    *   Every video thumbnail is overlaid with a semi-transparent **4x4 Color Grid**.
+    *   The grid displays all 16 folder colors, matching the system palette (Red -> Pink).
+    *   Active tags are highlighted with a solid border / full opacity.
+3.  **Interaction**:
+    *   Users can click multiple color cells across multiple videos to toggle assignments.
+    *   State is tracked in-memory via a smart `Indexer` binding on `VideoDisplayItem`.
+4.  **Save & Commit**:
+    *   Clicking **"Save Tags"** commits all changes to the database.
+    *   The system efficiently calculates deltas (Add/Remove) for each video and updates the `VideoFolderAssignment` table.
+    *   The view refreshes automatically to reflect the new state.
+
+### 🛠️ Technical Details
+*   **Infrastructure**: Updated `SqliteService` to support efficient Folder Assignment queries (Include) and removals.
+*   **MVVM**: Implemented `IsBulkTagMode` state and `SaveBulkTagsCommand` in `MainViewModel`.
+*   **Data Binding**: Upgraded `VideoDisplayItem` to `ObservableObject` with a custom Indexer (`this[color]`) to allow clean Two-Way binding with the XAML ToggleButtons.
+
 ## [Feature] Likes, History & Pins - 2026-01-19
 We have successfully implemented the **Watch History**, **Liked Videos**, and **Pinned Videos** systems, providing users with persistent tracking of their activity and favorites.
 

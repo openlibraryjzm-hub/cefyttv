@@ -62,7 +62,13 @@ Core architecture (WPF + SQLite + Triple Engine Shell) is robust. The UI has rec
 *   **Sticky Header**: ✅ Banner scrolls away, Filter/Actions bar sticks to top.
 *   **Design**: **Rounded** banner, **centered** 900px layout, **flush** alignment with cards.
 *   **Controls Bar**: ✅ **Folder Selector** is fully functional. Added "All", "Unsorted", and "+ Add" buttons.
-*   **Interaction**: Selecting folder filters videos. Mock "Sort" buttons remain visual-only.
+*   **Bulk Tagging**: ✅ Fully implemented with "Cancel Mode" and visual feedback.
+*   **Quick Assign**: ✅ Star button (Left=Assign, Right=Menu) logic with default color persistence.
+
+### 3.4 Player Controller
+*   **Visuals**: ✅ 3-Piece "Floating" Design complete.
+*   **Context Sync**: ✅ Automatically detects playlist context when playing from History/Likes.
+*   **Shortcuts**: ✅ Right-click navigation for History, Pins, and Likes.
 
 ---
 

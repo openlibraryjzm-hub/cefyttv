@@ -86,11 +86,13 @@ To provide a rich visual anchor, the controller now incorporates a scrolling bac
 *   **Playback Control** (Independent):
     *   `▶` (Play): Situated to the right of the nav cluster.
 *   **Tool Bar** (Right Side):
+*   **Tool Bar** (Right Side):
     *   **Shuffle** (Randomize)
     *   **Star** (Favorite)
-    *   **Pin** (Sticky)
-    *   **Like** (Heart)
+    *   **Pin** (Sticky) -> **Right-Click**: Navigate to Pins Page.
+    *   **Like** (Heart) -> **Right-Click**: Navigate to Likes Page.
     *   **...** (More Actions)
+    *   **Video Grid Button (#)** -> **Right-Click**: Navigate to History Page.
 
 ---
 
@@ -131,7 +133,24 @@ To prevent the window drag behavior from interfering with these larger buttons:
 
 ---
 
-## 6. Next Steps (Implementation Roadmap)
+## 6. Functional Behaviors
+
+### 6.1 Contextual Navigation Sync
+*   **Problem**: Playing a video from a non-playlist source (History, Likes, Pins) traditionally breaks the "Next/Prev" flow because the player doesn't know the context.
+*   **Solution**: The controller now performs an automatic **Playlist Reverse-Lookup**. 
+    *   When a video loads, if it belongs to a playlist, the **Left Menu** and **Right Menu** automatically snap to that playlist's context.
+    *   This ensures `Next` and `Prev` buttons correctly cycle through the video's original playlist, even if you started playback from the History page.
+
+### 6.2 View Navigation Shortcuts
+*   Several buttons offer secondary navigation actions via **Right-Click**:
+    *   **Video Grid Button**: Go to History.
+    *   **Pin Button**: Go to Pins.
+    *   **Like Button**: Go to Likes.
+*   **Fullscreen Handling**: If triggered while in Fullscreen, the app automatically exits to Split View to display the requested page.
+
+---
+
+## 7. Next Steps (Implementation Roadmap)
 
 1.  **Player Bridge Integration**: Wiring the Play/Pause logic to `WebView2`.
 2.  **Audio Visualizer**: Implement the canvas/rendering logic for the ring around the orb.

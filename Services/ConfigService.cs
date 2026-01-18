@@ -71,6 +71,12 @@ namespace ccc.Services
             set { _config.UserAvatar = value; _ = SaveAsync(); }
         }
         
+        public string? DefaultAssignColor
+        {
+            get => _config.DefaultAssignColor;
+            set { _config.DefaultAssignColor = value; _ = SaveAsync(); }
+        }
+
         // Add other properties as needed from configStore
     }
 
@@ -83,5 +89,6 @@ namespace ccc.Services
         public string? CustomBannerImage { get; set; }
         public string? CustomPageBannerImage { get; set; }
         public bool IsSpillEnabled { get; set; } = true;
+        public string? DefaultAssignColor { get; set; } = "red"; // Default to red
     }
 }

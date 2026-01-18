@@ -44,6 +44,324 @@
                                  IsWatched="{Binding IsWatched}"
                                  CornerRadius="12,12,0,0"/>
 
+            <!-- Bulk Tag Overlay -->
+            <Grid Grid.Row="0" Panel.ZIndex="10">
+                <Grid.Style>
+                    <Style TargetType="Grid">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                             <DataTrigger Binding="{Binding DataContext.IsBulkTagMode, RelativeSource={RelativeSource AncestorType=Window}}" Value="True">
+                                 <Setter Property="Visibility" Value="Visible"/>
+                             </DataTrigger>
+                             <DataTrigger Binding="{Binding IsQuickMenuOpen}" Value="True">
+                                 <Setter Property="Visibility" Value="Visible"/>
+                             </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
+                <Border Background="#CC000000" CornerRadius="12,12,0,0">
+                    <UniformGrid Rows="4" Columns="4" Margin="12">
+                        <UniformGrid.Resources>
+                            <Style TargetType="ToggleButton">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="ToggleButton">
+                                            <Border x:Name="bd" Margin="4" CornerRadius="4" Background="{TemplateBinding Background}" Opacity="0.3" BorderThickness="0" Cursor="Hand"/>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsChecked" Value="True">
+                                                    <Setter TargetName="bd" Property="Opacity" Value="1.0"/>
+                                                    <Setter TargetName="bd" Property="BorderThickness" Value="2"/>
+                                                    <Setter TargetName="bd" Property="BorderBrush" Value="White"/>
+                                                </Trigger>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter TargetName="bd" Property="Opacity" Value="0.8"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        
+                        </UniformGrid.Resources>
+                        
+                        <!-- Row 1 -->
+                        <ToggleButton Background="{StaticResource FolderRedBrush}" IsChecked="{Binding [red]}">
+                             <ToggleButton.Content>
+                                  <Ellipse Width="6" Height="6" Fill="White">
+                                      <Ellipse.Visibility>
+                                          <MultiBinding Converter="{StaticResource ColorMatchToVisibilityConverter}">
+                                              <Binding Source="red"/>
+                                              <Binding Path="DataContext.DefaultStarColor" RelativeSource="{RelativeSource AncestorType=Window}"/>
+                                          </MultiBinding>
+                                      </Ellipse.Visibility>
+                                  </Ellipse>
+                             </ToggleButton.Content>
+                             <ToggleButton.InputBindings>
+                                  <MouseBinding MouseAction="RightClick" Command="{Binding DataContext.SetDefaultColorCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="red"/>
+                             </ToggleButton.InputBindings>
+                        </ToggleButton>
+                        <ToggleButton Background="{StaticResource FolderOrangeBrush}" IsChecked="{Binding [orange]}">
+                             <ToggleButton.Content>
+                                  <Ellipse Width="6" Height="6" Fill="White">
+                                      <Ellipse.Visibility>
+                                          <MultiBinding Converter="{StaticResource ColorMatchToVisibilityConverter}">
+                                              <Binding Source="orange"/>
+                                              <Binding Path="DataContext.DefaultStarColor" RelativeSource="{RelativeSource AncestorType=Window}"/>
+                                          </MultiBinding>
+                                      </Ellipse.Visibility>
+                                  </Ellipse>
+                             </ToggleButton.Content>
+                             <ToggleButton.InputBindings>
+                                  <MouseBinding MouseAction="RightClick" Command="{Binding DataContext.SetDefaultColorCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="orange"/>
+                             </ToggleButton.InputBindings>
+                        </ToggleButton>
+                        <ToggleButton Background="{StaticResource FolderAmberBrush}" IsChecked="{Binding [amber]}">
+                             <ToggleButton.Content>
+                                  <Ellipse Width="6" Height="6" Fill="White">
+                                      <Ellipse.Visibility>
+                                          <MultiBinding Converter="{StaticResource ColorMatchToVisibilityConverter}">
+                                              <Binding Source="amber"/>
+                                              <Binding Path="DataContext.DefaultStarColor" RelativeSource="{RelativeSource AncestorType=Window}"/>
+                                          </MultiBinding>
+                                      </Ellipse.Visibility>
+                                  </Ellipse>
+                             </ToggleButton.Content>
+                             <ToggleButton.InputBindings>
+                                  <MouseBinding MouseAction="RightClick" Command="{Binding DataContext.SetDefaultColorCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="amber"/>
+                             </ToggleButton.InputBindings>
+                        </ToggleButton>
+                        <ToggleButton Background="{StaticResource FolderYellowBrush}" IsChecked="{Binding [yellow]}">
+                             <ToggleButton.Content>
+                                  <Ellipse Width="6" Height="6" Fill="White">
+                                      <Ellipse.Visibility>
+                                          <MultiBinding Converter="{StaticResource ColorMatchToVisibilityConverter}">
+                                              <Binding Source="yellow"/>
+                                              <Binding Path="DataContext.DefaultStarColor" RelativeSource="{RelativeSource AncestorType=Window}"/>
+                                          </MultiBinding>
+                                      </Ellipse.Visibility>
+                                  </Ellipse>
+                             </ToggleButton.Content>
+                             <ToggleButton.InputBindings>
+                                  <MouseBinding MouseAction="RightClick" Command="{Binding DataContext.SetDefaultColorCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="yellow"/>
+                             </ToggleButton.InputBindings>
+                        </ToggleButton>
+
+                        <!-- Row 2 -->
+                        <ToggleButton Background="{StaticResource FolderLimeBrush}" IsChecked="{Binding [lime]}">
+                             <ToggleButton.Content>
+                                  <Ellipse Width="6" Height="6" Fill="White">
+                                      <Ellipse.Visibility>
+                                          <MultiBinding Converter="{StaticResource ColorMatchToVisibilityConverter}">
+                                              <Binding Source="lime"/>
+                                              <Binding Path="DataContext.DefaultStarColor" RelativeSource="{RelativeSource AncestorType=Window}"/>
+                                          </MultiBinding>
+                                      </Ellipse.Visibility>
+                                  </Ellipse>
+                             </ToggleButton.Content>
+                             <ToggleButton.InputBindings>
+                                  <MouseBinding MouseAction="RightClick" Command="{Binding DataContext.SetDefaultColorCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="lime"/>
+                             </ToggleButton.InputBindings>
+                        </ToggleButton>
+                        <ToggleButton Background="{StaticResource FolderGreenBrush}" IsChecked="{Binding [green]}">
+                             <ToggleButton.Content>
+                                  <Ellipse Width="6" Height="6" Fill="White">
+                                      <Ellipse.Visibility>
+                                          <MultiBinding Converter="{StaticResource ColorMatchToVisibilityConverter}">
+                                              <Binding Source="green"/>
+                                              <Binding Path="DataContext.DefaultStarColor" RelativeSource="{RelativeSource AncestorType=Window}"/>
+                                          </MultiBinding>
+                                      </Ellipse.Visibility>
+                                  </Ellipse>
+                             </ToggleButton.Content>
+                             <ToggleButton.InputBindings>
+                                  <MouseBinding MouseAction="RightClick" Command="{Binding DataContext.SetDefaultColorCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="green"/>
+                             </ToggleButton.InputBindings>
+                        </ToggleButton>
+                        <ToggleButton Background="{StaticResource FolderEmeraldBrush}" IsChecked="{Binding [emerald]}">
+                             <ToggleButton.Content>
+                                  <Ellipse Width="6" Height="6" Fill="White">
+                                      <Ellipse.Visibility>
+                                          <MultiBinding Converter="{StaticResource ColorMatchToVisibilityConverter}">
+                                              <Binding Source="emerald"/>
+                                              <Binding Path="DataContext.DefaultStarColor" RelativeSource="{RelativeSource AncestorType=Window}"/>
+                                          </MultiBinding>
+                                      </Ellipse.Visibility>
+                                  </Ellipse>
+                             </ToggleButton.Content>
+                             <ToggleButton.InputBindings>
+                                  <MouseBinding MouseAction="RightClick" Command="{Binding DataContext.SetDefaultColorCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="emerald"/>
+                             </ToggleButton.InputBindings>
+                        </ToggleButton>
+                        <ToggleButton Background="{StaticResource FolderTealBrush}" IsChecked="{Binding [teal]}">
+                             <ToggleButton.Content>
+                                  <Ellipse Width="6" Height="6" Fill="White">
+                                      <Ellipse.Visibility>
+                                          <MultiBinding Converter="{StaticResource ColorMatchToVisibilityConverter}">
+                                              <Binding Source="teal"/>
+                                              <Binding Path="DataContext.DefaultStarColor" RelativeSource="{RelativeSource AncestorType=Window}"/>
+                                          </MultiBinding>
+                                      </Ellipse.Visibility>
+                                  </Ellipse>
+                             </ToggleButton.Content>
+                             <ToggleButton.InputBindings>
+                                  <MouseBinding MouseAction="RightClick" Command="{Binding DataContext.SetDefaultColorCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="teal"/>
+                             </ToggleButton.InputBindings>
+                        </ToggleButton>
+
+                        <!-- Row 3 -->
+                        <ToggleButton Background="{StaticResource FolderCyanBrush}" IsChecked="{Binding [cyan]}">
+                             <ToggleButton.Content>
+                                  <Ellipse Width="6" Height="6" Fill="White">
+                                      <Ellipse.Visibility>
+                                          <MultiBinding Converter="{StaticResource ColorMatchToVisibilityConverter}">
+                                              <Binding Source="cyan"/>
+                                              <Binding Path="DataContext.DefaultStarColor" RelativeSource="{RelativeSource AncestorType=Window}"/>
+                                          </MultiBinding>
+                                      </Ellipse.Visibility>
+                                  </Ellipse>
+                             </ToggleButton.Content>
+                             <ToggleButton.InputBindings>
+                                  <MouseBinding MouseAction="RightClick" Command="{Binding DataContext.SetDefaultColorCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="cyan"/>
+                             </ToggleButton.InputBindings>
+                        </ToggleButton>
+                        <ToggleButton Background="{StaticResource FolderSkyBrush}" IsChecked="{Binding [sky]}">
+                             <ToggleButton.Content>
+                                  <Ellipse Width="6" Height="6" Fill="White">
+                                      <Ellipse.Visibility>
+                                          <MultiBinding Converter="{StaticResource ColorMatchToVisibilityConverter}">
+                                              <Binding Source="sky"/>
+                                              <Binding Path="DataContext.DefaultStarColor" RelativeSource="{RelativeSource AncestorType=Window}"/>
+                                          </MultiBinding>
+                                      </Ellipse.Visibility>
+                                  </Ellipse>
+                             </ToggleButton.Content>
+                             <ToggleButton.InputBindings>
+                                  <MouseBinding MouseAction="RightClick" Command="{Binding DataContext.SetDefaultColorCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="sky"/>
+                             </ToggleButton.InputBindings>
+                        </ToggleButton>
+                        <ToggleButton Background="{StaticResource FolderBlueBrush}" IsChecked="{Binding [blue]}">
+                             <ToggleButton.Content>
+                                  <Ellipse Width="6" Height="6" Fill="White">
+                                      <Ellipse.Visibility>
+                                          <MultiBinding Converter="{StaticResource ColorMatchToVisibilityConverter}">
+                                              <Binding Source="blue"/>
+                                              <Binding Path="DataContext.DefaultStarColor" RelativeSource="{RelativeSource AncestorType=Window}"/>
+                                          </MultiBinding>
+                                      </Ellipse.Visibility>
+                                  </Ellipse>
+                             </ToggleButton.Content>
+                             <ToggleButton.InputBindings>
+                                  <MouseBinding MouseAction="RightClick" Command="{Binding DataContext.SetDefaultColorCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="blue"/>
+                             </ToggleButton.InputBindings>
+                        </ToggleButton>
+                        <ToggleButton Background="{StaticResource FolderIndigoBrush}" IsChecked="{Binding [indigo]}">
+                             <ToggleButton.Content>
+                                  <Ellipse Width="6" Height="6" Fill="White">
+                                      <Ellipse.Visibility>
+                                          <MultiBinding Converter="{StaticResource ColorMatchToVisibilityConverter}">
+                                              <Binding Source="indigo"/>
+                                              <Binding Path="DataContext.DefaultStarColor" RelativeSource="{RelativeSource AncestorType=Window}"/>
+                                          </MultiBinding>
+                                      </Ellipse.Visibility>
+                                  </Ellipse>
+                             </ToggleButton.Content>
+                             <ToggleButton.InputBindings>
+                                  <MouseBinding MouseAction="RightClick" Command="{Binding DataContext.SetDefaultColorCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="indigo"/>
+                             </ToggleButton.InputBindings>
+                        </ToggleButton>
+
+                        <!-- Row 4 -->
+                        <ToggleButton Background="{StaticResource FolderVioletBrush}" IsChecked="{Binding [violet]}">
+                             <ToggleButton.Content>
+                                  <Ellipse Width="6" Height="6" Fill="White">
+                                      <Ellipse.Visibility>
+                                          <MultiBinding Converter="{StaticResource ColorMatchToVisibilityConverter}">
+                                              <Binding Source="violet"/>
+                                              <Binding Path="DataContext.DefaultStarColor" RelativeSource="{RelativeSource AncestorType=Window}"/>
+                                          </MultiBinding>
+                                      </Ellipse.Visibility>
+                                  </Ellipse>
+                             </ToggleButton.Content>
+                             <ToggleButton.InputBindings>
+                                  <MouseBinding MouseAction="RightClick" Command="{Binding DataContext.SetDefaultColorCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="violet"/>
+                             </ToggleButton.InputBindings>
+                        </ToggleButton>
+                        <ToggleButton Background="{StaticResource FolderPurpleBrush}" IsChecked="{Binding [purple]}">
+                             <ToggleButton.Content>
+                                  <Ellipse Width="6" Height="6" Fill="White">
+                                      <Ellipse.Visibility>
+                                          <MultiBinding Converter="{StaticResource ColorMatchToVisibilityConverter}">
+                                              <Binding Source="purple"/>
+                                              <Binding Path="DataContext.DefaultStarColor" RelativeSource="{RelativeSource AncestorType=Window}"/>
+                                          </MultiBinding>
+                                      </Ellipse.Visibility>
+                                  </Ellipse>
+                             </ToggleButton.Content>
+                             <ToggleButton.InputBindings>
+                                  <MouseBinding MouseAction="RightClick" Command="{Binding DataContext.SetDefaultColorCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="purple"/>
+                             </ToggleButton.InputBindings>
+                        </ToggleButton>
+                        <ToggleButton Background="{StaticResource FolderFuchsiaBrush}" IsChecked="{Binding [fuchsia]}">
+                             <ToggleButton.Content>
+                                  <Ellipse Width="6" Height="6" Fill="White">
+                                      <Ellipse.Visibility>
+                                          <MultiBinding Converter="{StaticResource ColorMatchToVisibilityConverter}">
+                                              <Binding Source="fuchsia"/>
+                                              <Binding Path="DataContext.DefaultStarColor" RelativeSource="{RelativeSource AncestorType=Window}"/>
+                                          </MultiBinding>
+                                      </Ellipse.Visibility>
+                                  </Ellipse>
+                             </ToggleButton.Content>
+                             <ToggleButton.InputBindings>
+                                  <MouseBinding MouseAction="RightClick" Command="{Binding DataContext.SetDefaultColorCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="fuchsia"/>
+                             </ToggleButton.InputBindings>
+                        </ToggleButton>
+                        <ToggleButton Background="{StaticResource FolderPinkBrush}" IsChecked="{Binding [pink]}">
+                             <ToggleButton.Content>
+                                  <Ellipse Width="6" Height="6" Fill="White">
+                                      <Ellipse.Visibility>
+                                          <MultiBinding Converter="{StaticResource ColorMatchToVisibilityConverter}">
+                                              <Binding Source="pink"/>
+                                              <Binding Path="DataContext.DefaultStarColor" RelativeSource="{RelativeSource AncestorType=Window}"/>
+                                          </MultiBinding>
+                                      </Ellipse.Visibility>
+                                  </Ellipse>
+                             </ToggleButton.Content>
+                             <ToggleButton.InputBindings>
+                                  <MouseBinding MouseAction="RightClick" Command="{Binding DataContext.SetDefaultColorCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="pink"/>
+                             </ToggleButton.InputBindings>
+                        </ToggleButton>
+                    </UniformGrid>
+                </Border>
+                
+                <!-- Close Button (Red X) - Only visible for Individual Quick Menu -->
+                <Button VerticalAlignment="Top" HorizontalAlignment="Right" Margin="-8,-8,0,0" Width="24" Height="24"
+                        Command="{Binding DataContext.ToggleQuickMenuCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                        CommandParameter="{Binding}"
+                        Panel.ZIndex="20">
+                     <Button.Style>
+                         <Style TargetType="Button">
+                             <Setter Property="Template">
+                                 <Setter.Value>
+                                     <ControlTemplate TargetType="Button">
+                                         <Grid>
+                                             <Ellipse Fill="Red" Stroke="White" StrokeThickness="2"/>
+                                             <Path Data="M8,8 L16,16 M16,8 L8,16" Stroke="White" StrokeThickness="2" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                         </Grid>
+                                     </ControlTemplate>
+                                 </Setter.Value>
+                             </Setter>
+                             <Setter Property="Visibility" Value="Collapsed"/> <!-- Default Collapsed -->
+                             <Style.Triggers>
+                                 <DataTrigger Binding="{Binding IsQuickMenuOpen}" Value="True">
+                                     <Setter Property="Visibility" Value="Visible"/>
+                                 </DataTrigger>
+                             </Style.Triggers>
+                         </Style>
+                     </Button.Style>
+                </Button>
+            </Grid>
+
             <!-- Content Area -->
             <StackPanel Grid.Row="1" Margin="12,8">
                 <!-- Title -->
@@ -73,9 +391,17 @@
                              Width="28" Height="28" Margin="0,0,4,0">
                          <Path Fill="White" Data="M16,12V4H17V2H7V4H8V12L6,14V16H11.2V22H12.8V16H18V14L16,12Z" Width="12" Height="12" Stretch="Uniform"/>
                      </Button>
-                     <!-- Star Button placeholder -->
-                     <Button Style="{StaticResource InvisibleBtn}" Width="24" Height="24">
-                         <TextBlock Text="⭐" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                     <!-- Star Button -->
+                     <Button Style="{StaticResource InvisibleBtn}" Width="24" Height="24"
+                             Command="{Binding DataContext.ToggleStarCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                             CommandParameter="{Binding}"
+                             ToolTip="Assign to Default Folder (Right-Click to Set)">
+                          <Button.InputBindings>
+                               <MouseBinding MouseAction="RightClick" 
+                                             Command="{Binding DataContext.ToggleQuickMenuCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                             CommandParameter="{Binding}"/>
+                          </Button.InputBindings>
+                          <TextBlock Text="⭐" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                      </Button>
                  </StackPanel>
              </Grid>

@@ -162,9 +162,11 @@ namespace ccc.Services.Database
             using var context = new AppDbContext();
             return await context.PlaylistItems
                 .Where(i => i.PlaylistId == playlistId)
+                .Include(i => i.FolderAssignments)
                 .OrderBy(i => i.Position)
                 .AsNoTracking()
                 .ToListAsync();
+
         }
 
         public async Task<bool> RemoveVideoFromPlaylistAsync(long playlistId, long itemId)
@@ -201,6 +203,19 @@ namespace ccc.Services.Database
             return assignment.Id;
         }
 
+        public async Task<bool> RemoveVideoFolderAssignmentAsync(long playlistId, long itemId, string folderColor)
+        {
+            using var context = new AppDbContext();
+            var assignment = await context.VideoFolderAssignments
+                .FirstOrDefaultAsync(a => a.PlaylistId == playlistId && a.ItemId == itemId && a.FolderColor == folderColor);
+            
+            if (assignment == null) return false;
+
+            context.VideoFolderAssignments.Remove(assignment);
+            await context.SaveChangesAsync();
+            return true;
+        }
+
         public async Task<List<string>> GetVideoFolderAssignmentsAsync(long playlistId, long itemId)
         {
             using var context = new AppDbContext();
@@ -227,9 +242,11 @@ namespace ccc.Services.Database
              using var context = new AppDbContext();
              return await context.PlaylistItems
                 .Where(i => i.PlaylistId == playlistId && !i.FolderAssignments.Any())
+                .Include(i => i.FolderAssignments)
                 .OrderBy(i => i.Position)
                 .AsNoTracking()
                 .ToListAsync();
+
         }
 
          // --- History ---
@@ -406,6 +423,15 @@ namespace ccc.Services.Database
                  .Take(limit)
                  .AsNoTracking()
                  .ToListAsync();
+         }
+         public async Task<long?> GetPlaylistIdByVideoIdAsync(string videoId)
+         {
+             using var context = new AppDbContext();
+             var item = await context.PlaylistItems
+                 .AsNoTracking()
+                 .FirstOrDefaultAsync(i => i.VideoId == videoId);
+                 
+             return item?.PlaylistId;
          }
     }
 }
