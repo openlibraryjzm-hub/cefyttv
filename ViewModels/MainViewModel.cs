@@ -192,10 +192,14 @@ namespace ccc.ViewModels
                     {
                         await OpenPlaylist(playlists.First().Id);
                         
-                        // Wait for OpenPlaylist to populate Videos, then play first
+                        // Wait for OpenPlaylist to populate Videos, then play from restored index
                         if (_allVideosCache.Any())
                         {
-                            PlayVideo(_allVideosCache[0].VideoId);
+                            var index = App.PlaylistService.CurrentVideoIndex;
+                            if (index >= 0 && index < _allVideosCache.Count)
+                                await PlayVideo(_allVideosCache[index].VideoId);
+                            else
+                                await PlayVideo(_allVideosCache[0].VideoId);
                         }
                     }
                 });
@@ -302,6 +306,21 @@ namespace ccc.ViewModels
             }
         }
 
+        // --- Sorting ---
+        public static PlaylistService.SortMode[] SortModes => (PlaylistService.SortMode[])Enum.GetValues(typeof(PlaylistService.SortMode));
+
+        [ObservableProperty]
+        private PlaylistService.SortMode _currentSortMode = PlaylistService.SortMode.Default;
+
+        partial void OnCurrentSortModeChanged(PlaylistService.SortMode value)
+        {
+             if (SelectedPlaylist != null)
+             {
+                 // Trigger reload when selection changes
+                 Task.Run(() => LoadPlaylistVideos(SelectedPlaylist.Id));
+             }
+        }
+
         [RelayCommand]
         public async Task OpenPlaylist(long playlistId)
         {
@@ -355,8 +374,8 @@ namespace ccc.ViewModels
         {
             try
             {
-                // 1. Load data in Service (with Filter)
-                await App.PlaylistService.LoadPlaylistAsync(playlistId, SelectedFolderColor);
+                // 1. Load data in Service (with Filter and Sort)
+                await App.PlaylistService.LoadPlaylistAsync(playlistId, SelectedFolderColor, CurrentSortMode);
 
                 // 2. Map to ViewModel Collection
                 var items = App.PlaylistService.CurrentPlaylistItems;
@@ -415,10 +434,17 @@ namespace ccc.ViewModels
             }
         }
 
+        [ObservableProperty]
+        private double _currentVideoStartTime;
+
         [RelayCommand]
-        public void PlayVideo(string videoId)
+        public async Task PlayVideo(string videoId)
         {
             if (string.IsNullOrEmpty(videoId)) return;
+
+            // Fetch progress and set BEFORE setting VideoId (which triggers load)
+            var progress = await App.SqliteService.GetVideoProgressAsync(videoId);
+            CurrentVideoStartTime = progress?.LastProgress ?? 0;
 
             CurrentVideoId = videoId;
             
@@ -431,6 +457,8 @@ namespace ccc.ViewModels
                 {
                     SelectedVideo = v;
                     foundInCurrent = true;
+                    // Persist state
+                    Task.Run(async () => await App.PlaylistService.UpdateLastWatched(videoId));
                 }
             }
 
@@ -473,6 +501,8 @@ namespace ccc.ViewModels
                             
                             // Load Service State (Critical for Next/Prev)
                             await App.PlaylistService.LoadPlaylistAsync(playlistId.Value, SelectedFolderColor);
+                            // Persist this video as the current one for this playlist
+                            await App.PlaylistService.UpdateLastWatched(videoId);
                             
                             // Manually find the video object in the *service* items to update SelectedVideo
                             var vidItem = App.PlaylistService.CurrentPlaylistItems.FirstOrDefault(x => x.VideoId == videoId);
@@ -809,9 +839,14 @@ namespace ccc.ViewModels
             await OpenPlaylist(_allPlaylistsCache[nextIndex].Id);
             
             // Auto-play
+            // Auto-play from restored index
             if (_allVideosCache.Any())
             {
-                PlayVideo(_allVideosCache[0].VideoId);
+                var index = App.PlaylistService.CurrentVideoIndex;
+                if (index >= 0 && index < _allVideosCache.Count)
+                    await PlayVideo(_allVideosCache[index].VideoId);
+                else
+                    await PlayVideo(_allVideosCache[0].VideoId);
             }
         }
 
@@ -828,34 +863,39 @@ namespace ccc.ViewModels
             await OpenPlaylist(_allPlaylistsCache[prevIndex].Id);
 
             // Auto-play
+            // Auto-play from restored index
             if (_allVideosCache.Any())
             {
-                PlayVideo(_allVideosCache[0].VideoId);
+                var index = App.PlaylistService.CurrentVideoIndex;
+                if (index >= 0 && index < _allVideosCache.Count)
+                    await PlayVideo(_allVideosCache[index].VideoId);
+                else
+                    await PlayVideo(_allVideosCache[0].VideoId);
             }
         }
 
         [RelayCommand]
-        public void NextVideo()
+        public async Task NextVideo()
         {
             var next = App.PlaylistService.NextVideo();
             if (next != null)
             {
-                PlayVideo(next.VideoId);
+                await PlayVideo(next.VideoId);
             }
         }
 
         [RelayCommand]
-        public void PrevVideo()
+        public async Task PrevVideo()
         {
             var prev = App.PlaylistService.PreviousVideo();
             if (prev != null)
             {
-                PlayVideo(prev.VideoId);
+                await PlayVideo(prev.VideoId);
             }
         }
 
         [RelayCommand]
-        public void ShuffleVideo()
+        public async Task ShuffleVideo()
         {
             if (!_allVideosCache.Any()) return;
 
@@ -863,7 +903,7 @@ namespace ccc.ViewModels
             var index = random.Next(_allVideosCache.Count);
             var video = _allVideosCache[index];
             
-            PlayVideo(video.VideoId);
+            await PlayVideo(video.VideoId);
         }
         [RelayCommand]
         public void ChangeTabPreset(ccc.Models.Config.TabPreset preset)

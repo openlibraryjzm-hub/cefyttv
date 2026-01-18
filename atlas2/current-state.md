@@ -23,8 +23,11 @@ Core architecture (WPF + SQLite + Triple Engine Shell) is robust. The UI has rec
 
 ### 2.1 Main Window Structure
 *   **Top Strip (Rows 0, Height 102px)**: Dedicated "Advanced Player Controller" space.
-    *   **Center**: The Orb (Visual placeholder present).
-    *   **Left**: Playlist Menu (Active Data Binding).
+    *   **Container**: `Width="900"`, centered.
+    *   **Banner/Toolbar**: `Width="884"` (flush with card visual edges).
+*   **Sorting Dropdown**:
+    *   Style: `NavComboBox` (Choice Chip styling).
+    *   Options: Default (Random), Chronological, Progress (Asc), Progress (Desc).
     *   **Right**: Video Menu (Active Data Binding).
     *   **Interactivity**: 
         *   ✅ **Navigation Arrows**: Functional (Cycle Playlist/Video).
@@ -51,6 +54,7 @@ Core architecture (WPF + SQLite + Triple Engine Shell) is robust. The UI has rec
 ### 3.1 Database Integration
 *   ✅ **Success**: `Playlists` and `Videos` tables migrated successfully.
 *   ✅ **Success**: Real data (Titles, Video Counts, Thumbnails) appears in the UI.
+*   ✅ **Persistence**: `video_progress` and `last_watched_video_id` are actively tracked and updated.
 
 ### 3.2 Playlists Page (`PlaylistsView`)
 *   **Sticky Header**: ✅ Banner scrolls away, minimal toolbar ("+ Add") sticks to top.
@@ -62,6 +66,7 @@ Core architecture (WPF + SQLite + Triple Engine Shell) is robust. The UI has rec
 *   **Sticky Header**: ✅ Banner scrolls away, Filter/Actions bar sticks to top.
 *   **Design**: **Rounded** banner, **centered** 900px layout, **flush** alignment with cards.
 *   **Controls Bar**: ✅ **Folder Selector** is fully functional. Added "All", "Unsorted", and "+ Add" buttons.
+*   **Sorting**: ✅ **Dropdown Menu** added with options: Default (Random), Chronological, Progress (Asc), Progress (Desc).
 *   **Bulk Tagging**: ✅ Fully implemented with "Cancel Mode" and visual feedback.
 *   **Quick Assign**: ✅ Star button (Left=Assign, Right=Menu) logic with default color persistence.
 
@@ -75,9 +80,7 @@ Core architecture (WPF + SQLite + Triple Engine Shell) is robust. The UI has rec
 ## 4. Known Issues & Missing Functionality
 
 1.  **Media Control Wiring**: Play/Pause/Stop buttons on the Controller are not yet wired to the WebView2/MPV engines (requires Bridge).
-2.  **Filter Logic**: Sort/Filter dropdowns on Videos page are visual only.
-3.  **Visual Polish**: Hover glow effects on cards could be smoother.
-4.  **Browser**: CefSharp integration is wired but needs specific features (Tabs, Address Bar) enabled in UI.
+2.  **Browser**: CefSharp integration is wired but needs specific features (Tabs, Address Bar) enabled in UI.
 
 ## 5. Summary State
 *   **Database**: Loaded & Connected.

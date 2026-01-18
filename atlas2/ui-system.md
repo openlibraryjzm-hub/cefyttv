@@ -103,6 +103,7 @@ Defined in `Resources/Styles.xaml`.
     *   **Container**: `Width="900"`, centered.
     *   **Container**: `Width="900"`, centered.
     *   **Banner/Toolbar**: `Width="884"` (flush with card visual edges).
+    *   **Sorting Dropdown**: Matches `NavComboBox` style (Choice Chip appearance). Options: Default (Random), Chronological, Progress.
 
 ### 5.5 App Banner System
 *   **UnifiedBannerBackground**: Custom control that implements the "Infinite Scroll" parallax effect.

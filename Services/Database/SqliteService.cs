@@ -53,8 +53,25 @@ namespace ccc.Services.Database
                 await context.Database.ExecuteSqlRawAsync(@"
                     CREATE UNIQUE INDEX IF NOT EXISTS ""IX_pinned_videos_video_id"" ON ""pinned_videos"" (""video_id"");
                 ");
+
+                // Migration: Add LastWatchedVideoId to Playlists if not exists
+                // Note: SQLite does not support IF NOT EXISTS for ADD COLUMN directly in standard SQL, 
+                // but checking pragma or just catching error is common. 
+                // Since we are inside a try block that suppresses index errors, let's try strict approach or separate try.
+                // We'll separate it to ensure index errors don't skip this.
             } 
             catch { /* Index might exist */ }
+
+            try
+            {
+                await context.Database.ExecuteSqlRawAsync(@"
+                    ALTER TABLE playlists ADD COLUMN last_watched_video_id TEXT NULL;
+                ");
+            }
+            catch 
+            {
+                // Column likely exists
+            }
         }
 
         // --- Playlist Operations ---
@@ -94,6 +111,14 @@ namespace ccc.Services.Database
                 .FirstOrDefaultAsync(p => p.Id == id);
         }
 
+        public async Task<Playlist?> GetPlaylistMetadataAsync(long id)
+        {
+            using var context = new AppDbContext();
+            return await context.Playlists
+                .AsNoTracking()
+                .FirstOrDefaultAsync(p => p.Id == id);
+        }
+
         public async Task<bool> UpdatePlaylistAsync(long id, string? name, string? description, string? customAscii)
         {
             using var context = new AppDbContext();
@@ -108,6 +133,29 @@ namespace ccc.Services.Database
             
             await context.SaveChangesAsync();
             return true;
+        }
+
+        public async Task<bool> UpdatePlaylistLastWatchedAsync(long id, string videoId)
+        {
+            using var context = new AppDbContext();
+            // Attach purely for update to avoid fetching everything
+            var playlist = new Playlist { Id = id };
+            context.Playlists.Attach(playlist);
+            
+            playlist.LastWatchedVideoId = videoId;
+            // playlist.UpdatedAt = DateTime.UtcNow.ToString("o"); // Optional: do we want to bump timestamp for just playback? Maybe not.
+
+            context.Entry(playlist).Property(p => p.LastWatchedVideoId).IsModified = true;
+            
+            try
+            {
+                await context.SaveChangesAsync();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         public async Task<bool> DeletePlaylistAsync(long id)
@@ -335,6 +383,35 @@ namespace ccc.Services.Database
              using var context = new AppDbContext();
              return await context.VideoProgress
                 .FirstOrDefaultAsync(p => p.VideoId == videoId);
+         }
+
+         public async Task<Dictionary<string, double>> GetVideoProgressMapAsync(List<string> videoIds)
+         {
+             using var context = new AppDbContext();
+             // Chunking might be needed for very large lists (SQLite limit is 999 vars), 
+             // but let's assume reasonable page size or handle simple cases first.
+             // If videoIds > 500, we should chunk.
+             
+             var result = new Dictionary<string, double>();
+             
+             // Simple chunking
+             const int ChunkSize = 500;
+             for (int i = 0; i < videoIds.Count; i += ChunkSize)
+             {
+                 var chunk = videoIds.Skip(i).Take(ChunkSize).ToList();
+                 var progresses = await context.VideoProgress
+                                       .Where(p => chunk.Contains(p.VideoId))
+                                       .Select(p => new { p.VideoId, p.ProgressPercentage })
+                                       .ToListAsync();
+                 
+                 foreach (var p in progresses)
+                 {
+                     if (!result.ContainsKey(p.VideoId))
+                        result[p.VideoId] = p.ProgressPercentage;
+                 }
+             }
+             
+             return result;
          }
 
          // --- Likes ---

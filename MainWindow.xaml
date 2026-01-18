@@ -63,7 +63,9 @@
 
             <!-- Player Placeholder (Left Half) -->
             <player:WebViewYouTubeControls Grid.Column="0" 
-                                            VideoId="{Binding CurrentVideoId}">
+                                            VideoId="{Binding CurrentVideoId}"
+                                            StartTime="{Binding CurrentVideoStartTime}"
+                                            VideoEndedCommand="{Binding NextVideoCommand}">
                 <player:WebViewYouTubeControls.Style>
                     <Style TargetType="UserControl">
                         <Style.Triggers>

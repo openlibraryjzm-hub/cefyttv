@@ -33,6 +33,9 @@ namespace ccc.Models.Entities
         [Column("custom_thumbnail_url")]
         public string? CustomThumbnailUrl { get; set; }
 
+        [Column("last_watched_video_id")]
+        public string? LastWatchedVideoId { get; set; }
+
         // Navigation Properties
         public virtual ICollection<PlaylistItem> Items { get; set; } = new List<PlaylistItem>();
         public virtual ICollection<VideoFolderAssignment> FolderAssignments { get; set; } = new List<VideoFolderAssignment>();

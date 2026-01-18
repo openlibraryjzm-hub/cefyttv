@@ -28,6 +28,7 @@ Stores the high-level collections.
 | `description` | `TEXT` | `Nullable` | Optional user description. |
 | `created_at` | `TEXT` | `Required` | ISO 8601 Timestamp. |
 | `updated_at` | `TEXT` | `Required` | ISO 8601 Timestamp. |
+| `last_watched_video_id` | `TEXT` | `Nullable` | ID of the last video played (Resume point). |
 | `custom_ascii` | `TEXT` | `Nullable` | ASCII Art decoration. |
 | `custom_thumbnail_url` | `TEXT` | `Nullable` | Override image. |
 

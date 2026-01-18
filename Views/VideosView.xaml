@@ -399,7 +399,10 @@
 
                 <!-- Right: Sort/Tag/Add -->
                 <StackPanel Orientation="Horizontal" Grid.Column="1">
-                    <Button Content="Sort: Default" Style="{StaticResource NavButton}" Foreground="White"/>
+                    <ComboBox ItemsSource="{Binding SortModes}" 
+                              SelectedValue="{Binding CurrentSortMode}"
+                              Style="{StaticResource NavComboBox}"
+                              Width="160"/>
                     <!-- Cancel Button (Only in Tagging Mode) -->
                     <Button Margin="8,0,0,0" 
                             Command="{Binding CancelBulkTagsCommand}"

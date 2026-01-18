@@ -2,6 +2,49 @@
 
 # Session Updates
 
+## [Feature] Video Autoplay - 2026-01-19
+We have implemented the **Video Autoplay** functionality, ensuring seamless playback continuity within playlists.
+
+### 🔄 Autoplay Logic
+1.  **Detection**:
+    *   The `WebViewYouTubeControls` now listens for the **YouTube Player State Change** event.
+    *   When the player reports state `0` (Ended), it dispatches a "VIDEO_ENDED" message to the host application via WebView2's secure messaging channel.
+2.  **Action**:
+    *   The application receives this message and triggers the `NextVideoCommand` in `MainViewModel`.
+    *   This automatically advances the player to the next video in the current playlist context.
+
+## [Feature] Persistent Playlist State - 2026-01-19
+We have implemented persistent state tracking for playlists, ensuring the application remembers exactly where you left off.
+
+### 💾 Resume Logic
+1.  **Database Update**:
+    *   Added `last_watched_video_id` column to the `playlists` table.
+    *   Updated `SqliteService` to perform a lightweight localized update whenever a video starts playing (`UpdatePlaylistLastWatchedAsync`).
+2.  **Navigation Intelligence**:
+    *   **Initial Load**: When the app starts, it resumes the first playlist from its last watched video, not the beginning.
+    *   **Switching Playlists**: Using `NextPlaylist` / `PrevPlaylist` (or clicking a card) now consults the stored `last_watched_video_id`.
+    *   **Fallback**: If no history exists, it defaults gracefully to the first video.
+
+## [Feature] Watch Progress Tracking - 2026-01-19
+We have implemented granular video progress tracking, ensuring intrinsic resume capability for every video.
+
+### ⏱️ Progress Logic
+1.  **Tracker**: The `player.html` now runs a simplified heartbeat (every 3s) while playing, sending `PROGRESS:time|duration` to the host.
+2.  **Persistence**: The host (`WebViewYouTubeControls`) catches these updates and efficiently upserts them to the `video_progress` table via `SqliteService`.
+3.  **Resume**:
+    *   `MainViewModel.PlayVideo` creates a `CurrentVideoStartTime` context before loading the video.
+    *   The player control injects this start time into the YouTube player (`loadVideoById(..., startSeconds)`).
+4.  **Auto-Reset**: If a video finishes (`VIDEO_ENDED`), the progress is explicitly reset to `0`, ensuring the next viewing starts fresh rather than being trapped at the end.
+
+## [Feature] Playlist Sorting - 2026-01-19
+You can now dynamically sort the videos in any playlist using the sort dropdown menu in the sticky toolbar.
+
+### 🔀 Sort Modes
+*   **Default**: Completely random shuffle (fresh experience every time).
+*   **Chronological**: Original order (as added to the playlist).
+*   **Progress (Asc)**: Shows videos you haven't started (or barely started) first.
+*   **Progress (Desc)**: Shows videos you were recently watching or are close to finishing first.
+
 ## [Feature] Player Shortcuts via Right-Click - 2026-01-19
 We have added convenient shortcuts to the **Advanced Player Controller** to quickly navigate to relevant library pages.
 

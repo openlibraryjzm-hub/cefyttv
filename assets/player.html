@@ -55,10 +55,13 @@
                     'origin': 'https://app.local' // Important for API security
                 },
                 events: {
-                    'onReady': onPlayerReady
+                    'onReady': onPlayerReady,
+                    'onStateChange': onPlayerStateChange
                 }
             });
         }
+
+        var progressInterval;
 
         // --- 4. Player Ready Event ---
         function onPlayerReady(event) {
@@ -67,25 +70,71 @@
 
             // If we received a request while loading, handle it now
             if (pendingVideoId) {
-                loadAppVideo(pendingVideoId);
+                // If pending has start time, use it
+                if (typeof pendingVideoId === 'object') {
+                    loadAppVideo(pendingVideoId.videoId, pendingVideoId.startTime);
+                } else {
+                    loadAppVideo(pendingVideoId);
+                }
                 pendingVideoId = null;
             }
         }
 
+        function onPlayerStateChange(event) {
+            // YT.PlayerState.PLAYING is 1
+            if (event.data === 1) {
+                startProgressTracking();
+            } else {
+                stopProgressTracking();
+            }
+
+            // YT.PlayerState.ENDED is 0
+            if (event.data === 0) {
+                stopProgressTracking();
+                if (window.chrome && window.chrome.webview) {
+                    window.chrome.webview.postMessage("VIDEO_ENDED");
+                }
+            }
+        }
+
+        function startProgressTracking() {
+            stopProgressTracking();
+            progressInterval = setInterval(function () {
+                if (player && player.getCurrentTime) {
+                    var currentTime = player.getCurrentTime();
+                    var duration = player.getDuration();
+                    if (window.chrome && window.chrome.webview) {
+                        // Format: PROGRESS:currentTime|duration
+                        window.chrome.webview.postMessage("PROGRESS:" + currentTime + "|" + duration);
+                    }
+                }
+            }, 3000); // Update every 3 seconds
+        }
+
+        function stopProgressTracking() {
+            if (progressInterval) {
+                clearInterval(progressInterval);
+                progressInterval = null;
+            }
+        }
+
         // --- 5. Global Function called by C# Host ---
-        // Usage: await webView.CoreWebView2.ExecuteScriptAsync("loadAppVideo('NEW_ID')");
-        window.loadAppVideo = function (videoId) {
+        // Usage: await webView.CoreWebView2.ExecuteScriptAsync("loadAppVideo('NEW_ID', startSeconds)");
+        window.loadAppVideo = function (videoId, startSeconds) {
             if (!videoId) return;
 
             if (isPlayerReady && player && player.loadVideoById) {
-                console.log("Loading Video via JS API: " + videoId);
-                player.loadVideoById(videoId);
+                console.log("Loading Video via JS API: " + videoId + " at " + startSeconds);
+                var loadObj = {
+                    'videoId': videoId
+                };
+                if (startSeconds) {
+                    loadObj['startSeconds'] = startSeconds;
+                }
+                player.loadVideoById(loadObj);
             } else {
                 console.log("Player not ready, queuing: " + videoId);
-                pendingVideoId = videoId;
-                // If API isn't ready yet, it will use this ID when creating the player or in onPlayerReady
-                // However, if we just swapped the ID variable before creation, it's safer.
-                if (!player) initialVideoId = videoId;
+                pendingVideoId = { videoId: videoId, startTime: startSeconds };
             }
         };
     </script>
