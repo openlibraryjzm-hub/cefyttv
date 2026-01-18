@@ -33,6 +33,8 @@ We have implemented the **Full Screen Mode** logic, allowing the video player to
     *   **Container**: Wrapped root Grid in a bordered container with rounded corners to mimic the modern Glass UI.
 *   **Interactive Chrome**: Resolved hit-testing issues in the custom chrome.
     *   **Fix**: Applied `WindowChrome.IsHitTestVisibleInChrome="True"` to specific interactive zones (Navigation Buttons, Orb) within the `AdvancedPlayerController`, allowing window drag on empty spaces while preserving button clicks.
+*   **Layout Fix**: Resolved `PlaylistsView` rendering issue.
+    *   **Fix**: Added missing `<RowDefinition Height="Auto"/>` for the pagination footer, correcting an issue where the footer overlayed or collapsed the main content.
 
 ## [Wiring] Advanced Player Controller & Visual Upgrade - 2026-01-18
 We have successfully implemented the **Navigation Logic** for the advanced top controller and given the application a significant visual overhaul.
