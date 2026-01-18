@@ -1,7 +1,7 @@
 # Advanced Player Controller (C# Implementation)
 
 **Last Updated:** 2026-01-18
-**Status:** UI Wired (Navigation Logic) / Visuals Updated
+**Status:** Wired (Full Visuals & Navigation) / Interactive
 **Parent Document:** [Architecture](architecture.md)
 
 ---
@@ -98,7 +98,23 @@ The controller now uses the GLOBAL resource dictionary (`Colors.xaml`, `Styles.x
 
 ---
 
-## 5. Next Steps (Implementation Roadmap)
+## 5. Technical Implementation (Window Chrome)
+
+Because the application uses a **Custom Window Chrome** (borderless window), this controller occupies the area normally reserved for the Title Bar. This introduces a conflict between "Dragging the Window" and "Clicking Buttons".
+
+### 5.1 Hit Testing Strategy
+To resolve this, we use the `WindowChrome.IsHitTestVisibleInChrome` attached property.
+*   **Default Behavior**: The 102px top strip is a Drag Zone. Clicks pass through to the Window handler to move the app.
+*   **Interactive Zones**: We apply `WindowChrome.IsHitTestVisibleInChrome="True"` to:
+    *   The `StackPanel`/`Border` containing the **Playlist Navigation Buttons**.
+    *   The `Grid` containing the **Orb** and its buttons.
+    *   The `StackPanel`/`Border` containing the **Video Navigation Buttons**.
+
+**Result**: Users can drag the window by grabbing the empty glass areas (e.g. the Title text) but can still click the buttons confidently.
+
+---
+
+## 6. Next Steps (Implementation Roadmap)
 
 1.  **Player Bridge Integration**: Wiring the Play/Pause logic to `WebView2`.
 2.  **Icon Integration**: Replace text placeholders (`<`, `S`) with `Path` vectors or an Icon Font (FontAwesome/Material).

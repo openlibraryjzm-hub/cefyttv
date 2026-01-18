@@ -24,6 +24,10 @@ The application startup is non-trivial because it involves initializing heavywei
 1.  `MainViewModel` Constructor.
 2.  Database Connection Check (`EnsureCreated`).
 3.  Load Initial Data (e.g. Last Played Video).
+4.  **Auto-Play Initialization**:
+    *   `LoadDataAsync`: Fetches all Playlists.
+    *   Selects first Playlist.
+    *   Loads first Video and triggers `PlayVideoCommand`.
 
 ---
 

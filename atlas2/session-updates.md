@@ -2,6 +2,38 @@
 
 # Session Updates
 
+## [Wiring] Full Screen Mode & Sidebar Logic - 2026-01-18
+We have implemented the **Full Screen Mode** logic, allowing the video player to expand and the sidebar to collapse dynamically.
+
+### ↔️ Interaction Logic
+1.  **Enter Full Screen**:
+    *   Clicking the **'X'** (Close) button on the top-right of the `TopNavBar`.
+    *   **Effect**: 
+        *   App Shell (Right Panel) collapses to `Visibility.Collapsed`.
+        *   Video Player (Left Panel) expands to `Grid.ColumnSpan="2"`.
+2.  **Exit Full Screen**:
+    *   Clicking the **Playlist #** or **Videos #** button in the top `AdvancedPlayerController` strip.
+    *   **Effect**:
+        *   Restores the App Shell.
+        *   Navigates immediately to the requested view (`Playlists` or `Videos`).
+
+### 🛠️ Implementation
+### 🛠️ Implementation
+*   **ViewModel**: Added `IsFullScreen` observable property to `MainViewModel`.
+*   **Triggers**: Used `DataTrigger` in `MainWindow.xaml` to drive layout changes based on the boolean state, avoiding complex code-behind.
+*   **Auto-Play on Start**: Logic added to `LoadDataAsync` to automatically load the first playlist and play its first video on application startup.
+*   **Navigation Performance**: Optimized `Navigate()` to check `CurrentView` type before instantiation, preventing redundant view recreation when switching back from Full Screen mode.
+*   **Pagination Support**: Implemented pagination (50 items/page) for both `PlaylistsView` and `VideosView`.
+    *   **Logic**: Cached full datasets in ViewModel and exposed sliced ObservableCollections to the UI.
+    *   **Controls**: Added Next/Prev page buttons and "Page X of Y" indicators to grid footers.
+    *   **Optimization**: Player cycling (`NextVideo`/`PrevVideo`) now correctly iterates the full playlist via Service, not just the displayed page.
+*   **Chrome-less Window**: Configured the main window to be transparent and borderless.
+    *   **Window**: Set `WindowStyle="None"` and `AllowsTransparency="True"` for custom non-client area.
+    *   **Controls**: Wired `WindowCaptionControls` (Min/Max/Close) to standard System Commands in code-behind.
+    *   **Container**: Wrapped root Grid in a bordered container with rounded corners to mimic the modern Glass UI.
+*   **Interactive Chrome**: Resolved hit-testing issues in the custom chrome.
+    *   **Fix**: Applied `WindowChrome.IsHitTestVisibleInChrome="True"` to specific interactive zones (Navigation Buttons, Orb) within the `AdvancedPlayerController`, allowing window drag on empty spaces while preserving button clicks.
+
 ## [Wiring] Advanced Player Controller & Visual Upgrade - 2026-01-18
 We have successfully implemented the **Navigation Logic** for the advanced top controller and given the application a significant visual overhaul.
 

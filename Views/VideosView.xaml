@@ -13,6 +13,7 @@
             <RowDefinition Height="Auto"/> <!-- Banner -->
             <RowDefinition Height="Auto"/> <!-- Toolbar -->
             <RowDefinition Height="*"/>    <!-- Content -->
+            <RowDefinition Height="Auto"/> <!-- Footer -->
         </Grid.RowDefinitions>
 
         <!-- Banner -->
@@ -69,5 +70,24 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
         </ScrollViewer>
+
+        <!-- Pagination Footer -->
+        <Border Grid.Row="3" Padding="20" Background="#0F172A">
+             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button Content="Previous" 
+                        Command="{Binding PrevVideoPageCommand}"
+                        Background="Transparent" Foreground="White" BorderThickness="1" BorderBrush="#334155" Padding="12,6" Margin="0,0,12,0" 
+                        Style="{StaticResource InvisibleBtn}"/>
+                
+                <TextBlock Text="{Binding VideoPageText}" 
+                           Foreground="#94A3B8"
+                           VerticalAlignment="Center" Margin="12,0"/>
+
+                <Button Content="Next" 
+                        Command="{Binding NextVideoPageCommand}"
+                         Background="Transparent" Foreground="White" BorderThickness="1" BorderBrush="#334155" Padding="12,6" Margin="12,0,0,0" 
+                        Style="{StaticResource InvisibleBtn}"/>
+            </StackPanel>
+        </Border>
     </Grid>
 </UserControl>

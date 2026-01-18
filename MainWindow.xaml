@@ -7,14 +7,25 @@
         xmlns:vm="clr-namespace:ccc.ViewModels"
         xmlns:views="clr-namespace:ccc.Views"
         xmlns:ctrl="clr-namespace:ccc.Controls"
+        xmlns:chrome="clr-namespace:ccc.Controls.Chrome"
         xmlns:lists="clr-namespace:ccc.Controls.Lists"
         xmlns:nav="clr-namespace:ccc.Controls.Navigation"
         xmlns:player="clr-namespace:ccc.Controls.Player"
 
         xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
         mc:Ignorable="d"
-        Title="Atlas 2.0" Height="720" Width="1280"
-        Background="{StaticResource BgPrimaryBrush}"> 
+        Title="Atlas 2.0" Height="730" Width="1280"
+        WindowStyle="SingleBorderWindow"
+        ResizeMode="CanResize"
+        Background="{StaticResource BgPrimaryBrush}">
+    
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="102"
+                      ResizeBorderThickness="8"
+                      GlassFrameThickness="0"
+                      CornerRadius="0"
+                      UseAeroCaptionButtons="False"/>
+    </WindowChrome.WindowChrome>
 
     <Window.DataContext>
         <vm:MainViewModel/>
@@ -34,6 +45,14 @@
 
         <!-- Top Strip: Advanced Player Controller -->
         <player:AdvancedPlayerController Grid.Row="0" Panel.ZIndex="100"/>
+        
+        <!-- Window Controls (Overlay) -->
+        <StackPanel Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Top" Panel.ZIndex="200"
+                    Margin="0,0,8,0" WindowChrome.IsHitTestVisibleInChrome="True">
+                <chrome:WindowCaptionControls MinimizeCommand="{x:Static SystemCommands.MinimizeWindowCommand}"
+                                            MaximizeCommand="{x:Static SystemCommands.MaximizeWindowCommand}"
+                                            CloseCommand="{x:Static SystemCommands.CloseWindowCommand}"/> 
+        </StackPanel>
 
         <!-- Main Content Area: Split View -->
         <Grid Grid.Row="1">
@@ -44,10 +63,30 @@
 
             <!-- Player Placeholder (Left Half) -->
             <player:WebViewYouTubeControls Grid.Column="0" 
-                                           VideoId="{Binding CurrentVideoId}"/>
+                                            VideoId="{Binding CurrentVideoId}">
+                <player:WebViewYouTubeControls.Style>
+                    <Style TargetType="UserControl">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsFullScreen}" Value="True">
+                                <Setter Property="Grid.ColumnSpan" Value="2"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </player:WebViewYouTubeControls.Style>
+            </player:WebViewYouTubeControls>
 
             <!-- App Shell (Right Half) -->
             <Grid Grid.Column="1" Background="{StaticResource BgPrimaryBrush}">
+                <Grid.Style>
+                    <Style TargetType="Grid">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsFullScreen}" Value="True">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
+                
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/> <!-- Top Nav Bar -->
                     <RowDefinition Height="*"/>    <!-- View Content -->

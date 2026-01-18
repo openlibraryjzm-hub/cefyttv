@@ -104,7 +104,8 @@
                         Background="{StaticResource BgPrimaryBrush}" 
                         BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,1,0,0"
                         CornerRadius="0,0,16,16"
-                        Padding="12,0">
+                        Padding="12,0"
+                        WindowChrome.IsHitTestVisibleInChrome="True">
                     <Grid>
                         <!-- Metadata (Left) -->
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
@@ -133,7 +134,7 @@
         <!-- =========================================================
              CENTER: THE ORB (154x154)
              ========================================================= -->
-        <Grid Grid.Column="1" Width="154" Height="154" VerticalAlignment="Top" Margin="0,0,0,0">
+        <Grid Grid.Column="1" Width="154" Height="154" VerticalAlignment="Top" Margin="0,0,0,0" WindowChrome.IsHitTestVisibleInChrome="True">
              <!-- Orb Glow/Shadow -->
              <Ellipse Fill="#00000000" Stroke="{StaticResource AccentPrimaryBrush}" StrokeThickness="0" Width="154" Height="154">
                 <Ellipse.Effect>
@@ -203,7 +204,8 @@
                         Background="{StaticResource BgPrimaryBrush}" 
                         BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,1,0,0"
                         CornerRadius="0,0,16,16"
-                        Padding="8,0"> <!-- Tighter padding for more buttons -->
+                        Padding="8,0"
+                        WindowChrome.IsHitTestVisibleInChrome="True"> <!-- Tighter padding for more buttons -->
                     <Grid>
                         <!-- Nav Controls (Far Left) -->
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">

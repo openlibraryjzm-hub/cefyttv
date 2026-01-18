@@ -89,3 +89,20 @@ Defined in `Resources/Styles.xaml`.
 ### 5.2 Responsive logic
 *   Currently functional for `1920x1080`+.
 *   Future: Use `GridSplitter` to allow resizing the Player/Library ratio.
+
+### 5.3 Window Chrome
+*   **Style**: `WindowStyle="SingleBorderWindow"` with `GlassFrameThickness="0"`.
+*   **Behavior**: Custom chrome handles Maximize correctly (respects Taskbar).
+*   **Hit-Testing**: Specific interactive zones (Buttons) use `IsHitTestVisibleInChrome="True"` to override drag behavior.
+
+---
+
+## 6. Controls & Widgets
+
+### 6.1 Pagination
+*   **Strategy**: Client-side slicing of cached full datasets.
+*   **Page Size**: 50 Items.
+*   **Components**: 
+    *   Footer Bar in `PlaylistsView` / `VideosView`.
+    *   Controls: Prev (`<`), Next (`>`), Status Text (`Page X of Y`).
+

@@ -91,12 +91,12 @@ namespace ccc.ViewModels
             {
                 var playlists = await App.PlaylistService.GetAllPlaylistsAsync();
                 
-                System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                System.Windows.Application.Current.Dispatcher.Invoke(async () =>
                 {
-                    Playlists.Clear();
+                    _allPlaylistsCache.Clear();
                     foreach (var p in playlists)
                     {
-                        Playlists.Add(new PlaylistDisplayItem
+                        _allPlaylistsCache.Add(new PlaylistDisplayItem
                         {
                             Id = p.Id,
                             Name = p.Name,
@@ -104,6 +104,26 @@ namespace ccc.ViewModels
                             VideoCountText = $"{p.Items.Count} Videos",
                             ThumbnailUrl = p.CustomThumbnailUrl ?? "https://picsum.photos/300/200" // Fallback
                         });
+                    }
+
+                    // Reset Page
+                    CurrentPlaylistPage = 1;
+                    TotalPlaylistPages = (int)Math.Ceiling(_allPlaylistsCache.Count / (double)ItemsPerPage);
+                    if (TotalPlaylistPages < 1) TotalPlaylistPages = 1;
+                    
+                    UpdateDisplayedPlaylists();
+
+
+                    // Auto-play Logic: Open the first playlist if available
+                    if (playlists.Any())
+                    {
+                        await OpenPlaylist(playlists.First().Id);
+                        
+                        // Wait for OpenPlaylist to populate Videos, then play first
+                        if (_allVideosCache.Any())
+                        {
+                            PlayVideo(_allVideosCache[0].VideoId);
+                        }
                     }
                 });
             }
@@ -119,20 +139,8 @@ namespace ccc.ViewModels
         private void PopulateDummyDetailData()
         {
              // Videos (General)
-            for (int i = 1; i <= 50; i++)
-            {
-                var progress = (i * 7) % 100;
-                Videos.Add(new VideoDisplayItem
-                {
-                    Title = $"Video Title {i}: The Amazing Exploration",
-                    VideoId = $"VID-{i:000}",
-                    ThumbnailUrl = $"https://picsum.photos/300/169?random={100+i}",
-                    ProgressPercentage = progress,
-                    IsWatched = progress > 85,
-                    IsPlaying = i == 2
-                });
-            }
-            // ... (Rest of dummy data kept for UI stability)
+            // ... (Detail data loading if needed for other views)
+            // For now leaving dummy data population for other views, but Playlists/Videos are real.
             
             // Liked Videos
             for (int i = 1; i <= 15; i++)
@@ -188,10 +196,10 @@ namespace ccc.ViewModels
                 // Switch to UI Thread
                 System.Windows.Application.Current.Dispatcher.Invoke(() =>
                 {
-                    Videos.Clear();
+                    _allVideosCache.Clear();
                     foreach (var item in items)
                     {
-                        Videos.Add(new VideoDisplayItem
+                        _allVideosCache.Add(new VideoDisplayItem
                         {
                             Title = item.Title ?? "Unknown Title",
                             VideoId = item.VideoId,
@@ -202,24 +210,34 @@ namespace ccc.ViewModels
                         });
                     }
                     
+                    // Reset Page
+                    CurrentVideoPage = 1;
+                    TotalVideoPages = (int)Math.Ceiling(_allVideosCache.Count / (double)ItemsPerPage);
+                    if (TotalVideoPages < 1) TotalVideoPages = 1;
+
+                    UpdateDisplayedVideos(); // This populates 'Videos'
+
                     // 3. Navigate
                     Navigate("Videos");
-                    var playlist = App.PlaylistService.GetAllPlaylistsAsync().Result.FirstOrDefault(p => p.Id == playlistId);
+                    
+                    var playlist = _allPlaylistsCache.FirstOrDefault(p => p.Id == playlistId); // check cache first
+                    // fallback to service query if cache missed (unlikely if flow is consistent)
+                    var pName = playlist?.Name ?? "Playlist";
+                    var pDesc = playlist?.Description ?? "";
+                    
                     if (playlist != null)
                     {
-                        SelectedPlaylist = new PlaylistDisplayItem
-                        {
-                            Id = playlist.Id,
-                            Name = playlist.Name,
-                            Description = playlist.Description ?? "",
-                            VideoCountText = $"{items.Count} Videos",
-                            ThumbnailUrl = playlist.CustomThumbnailUrl ?? "https://picsum.photos/300/200"
-                        };
-                        PageTitle = playlist.Name;
+                        SelectedPlaylist = playlist;
+                        PageTitle = pName;
                     }
                     else
                     {
-                        PageTitle = "Playlist";
+                        // Fallback fetch if not in cache
+                         var p = App.PlaylistService.GetAllPlaylistsAsync().Result.FirstOrDefault(x => x.Id == playlistId);
+                         if (p != null) {
+                             SelectedPlaylist = new PlaylistDisplayItem { Id = p.Id, Name = p.Name, Description = p.Description ?? "", VideoCountText = $"{items.Count} Videos" };
+                             PageTitle = p.Name;
+                         }
                     }
                 });
             }
@@ -247,18 +265,28 @@ namespace ccc.ViewModels
             }
         }
 
+        [ObservableProperty]
+        private bool _isFullScreen; // Default false
+
+        // ... existing properties ...
+
         [RelayCommand]
         public void Navigate(string destination)
         {
+            // Always exit fullscreen when navigating explicitly
+            IsFullScreen = false;
+
             PageTitle = destination; // Fallback title
             switch (destination.ToLower())
             {
                 case "playlists":
-                    CurrentView = new PlaylistsView();
+                    if (CurrentView is not PlaylistsView) 
+                        CurrentView = new PlaylistsView();
                     PageTitle = "Playlists";
                     break;
                 case "videos":
-                    CurrentView = new VideosView();
+                    if (CurrentView is not VideosView)
+                        CurrentView = new VideosView();
                     // PageTitle = "Videos"; // Let caller set specific title if needed
                     break;
                 case "history":
@@ -293,79 +321,178 @@ namespace ccc.ViewModels
         }
 
         [RelayCommand]
-        public void GoBack() { /* TODO */ }
+        public void GoBack() 
+        {
+            // Simple back logic for now - just go to playlists if nowhere else
+            Navigate("playlists");
+        }
 
         [RelayCommand]
-        public void CloseSidebar() { /* TODO */ }
+        public void CloseSidebar() 
+        {
+            // Enter Full Screen Mode
+            IsFullScreen = true;
+        }
 
         [RelayCommand]
         public void NavigateToBrowser()
         {
             PageTitle = "Web Browser";
             IsBrowserVisible = true;
+            IsFullScreen = false; // Ensure UI is normal
             OnPropertyChanged(nameof(IsLibraryVisible));
+        }
+
+        // Pagination State
+        private const int ItemsPerPage = 50;
+        private List<PlaylistDisplayItem> _allPlaylistsCache = new();
+        private List<VideoDisplayItem> _allVideosCache = new();
+
+        [ObservableProperty]
+        private int _currentPlaylistPage = 1;
+
+        [ObservableProperty]
+        private int _totalPlaylistPages = 1;
+        
+        [ObservableProperty]
+        private string _playlistPageText = "Page 1 of 1";
+
+        [ObservableProperty]
+        private int _currentVideoPage = 1;
+
+        [ObservableProperty]
+        private int _totalVideoPages = 1;
+
+        [ObservableProperty]
+        private string _videoPageText = "Page 1 of 1";
+
+
+        [RelayCommand]
+        public void NextPlaylistPage()
+        {
+            if (CurrentPlaylistPage < TotalPlaylistPages)
+            {
+                CurrentPlaylistPage++;
+                UpdateDisplayedPlaylists();
+            }
+        }
+
+        [RelayCommand]
+        public void PrevPlaylistPage()
+        {
+            if (CurrentPlaylistPage > 1)
+            {
+                CurrentPlaylistPage--;
+                UpdateDisplayedPlaylists();
+            }
+        }
+
+        [RelayCommand]
+        public void NextVideoPage()
+        {
+            if (CurrentVideoPage < TotalVideoPages)
+            {
+                CurrentVideoPage++;
+                UpdateDisplayedVideos();
+            }
+        }
+
+        [RelayCommand]
+        public void PrevVideoPage()
+        {
+            if (CurrentVideoPage > 1)
+            {
+                CurrentVideoPage--;
+                UpdateDisplayedVideos();
+            }
+        }
+
+        private void UpdateDisplayedPlaylists()
+        {
+            var pagedItems = _allPlaylistsCache
+                .Skip((CurrentPlaylistPage - 1) * ItemsPerPage)
+                .Take(ItemsPerPage)
+                .ToList();
+
+            System.Windows.Application.Current.Dispatcher.Invoke(() =>
+            {
+                Playlists.Clear();
+                foreach (var item in pagedItems) Playlists.Add(item);
+                PlaylistPageText = $"Page {CurrentPlaylistPage} of {TotalPlaylistPages}";
+            });
+        }
+
+        private void UpdateDisplayedVideos()
+        {
+            var pagedItems = _allVideosCache
+                .Skip((CurrentVideoPage - 1) * ItemsPerPage)
+                .Take(ItemsPerPage)
+                .ToList();
+
+            System.Windows.Application.Current.Dispatcher.Invoke(() =>
+            {
+                Videos.Clear();
+                foreach (var item in pagedItems) Videos.Add(item);
+                VideoPageText = $"Page {CurrentVideoPage} of {TotalVideoPages}";
+            });
         }
 
         [RelayCommand]
         public async Task NextPlaylist()
         {
-            if (SelectedPlaylist == null || !Playlists.Any()) return;
+            if (SelectedPlaylist == null || !_allPlaylistsCache.Any()) return;
 
-            var currentIndex = Playlists.IndexOf(Playlists.FirstOrDefault(p => p.Id == SelectedPlaylist.Id));
+            var currentIndex = _allPlaylistsCache.FindIndex(p => p.Id == SelectedPlaylist.Id);
             if (currentIndex == -1) return;
 
-            var nextIndex = (currentIndex + 1) % Playlists.Count; // Cycle
+            var nextIndex = (currentIndex + 1) % _allPlaylistsCache.Count; // Cycle
             
-            await OpenPlaylist(Playlists[nextIndex].Id);
+            await OpenPlaylist(_allPlaylistsCache[nextIndex].Id);
             
-            // Auto-play first video of the new playlist
-            if (Videos.Any())
+            // Auto-play
+            if (_allVideosCache.Any())
             {
-                PlayVideo(Videos[0].VideoId);
+                PlayVideo(_allVideosCache[0].VideoId);
             }
         }
 
         [RelayCommand]
         public async Task PrevPlaylist()
         {
-            if (SelectedPlaylist == null || !Playlists.Any()) return;
+            if (SelectedPlaylist == null || !_allPlaylistsCache.Any()) return;
 
-            var currentIndex = Playlists.IndexOf(Playlists.FirstOrDefault(p => p.Id == SelectedPlaylist.Id));
+            var currentIndex = _allPlaylistsCache.FindIndex(p => p.Id == SelectedPlaylist.Id);
             if (currentIndex == -1) return;
 
-            var prevIndex = (currentIndex - 1 + Playlists.Count) % Playlists.Count; // Cycle
+            var prevIndex = (currentIndex - 1 + _allPlaylistsCache.Count) % _allPlaylistsCache.Count; // Cycle
             
-            await OpenPlaylist(Playlists[prevIndex].Id);
+            await OpenPlaylist(_allPlaylistsCache[prevIndex].Id);
 
-            // Auto-play first video of the new playlist
-            if (Videos.Any())
+            // Auto-play
+            if (_allVideosCache.Any())
             {
-                PlayVideo(Videos[0].VideoId);
+                PlayVideo(_allVideosCache[0].VideoId);
             }
         }
 
         [RelayCommand]
         public void NextVideo()
         {
-            if (SelectedVideo == null || !Videos.Any()) return;
-
-            var currentIndex = Videos.IndexOf(Videos.FirstOrDefault(v => v.VideoId == SelectedVideo.VideoId));
-            if (currentIndex == -1) return;
-
-            var nextIndex = (currentIndex + 1) % Videos.Count; // Cycle
-            PlayVideo(Videos[nextIndex].VideoId);
+            var next = App.PlaylistService.NextVideo();
+            if (next != null)
+            {
+                PlayVideo(next.VideoId);
+            }
         }
 
         [RelayCommand]
         public void PrevVideo()
         {
-             if (SelectedVideo == null || !Videos.Any()) return;
-
-            var currentIndex = Videos.IndexOf(Videos.FirstOrDefault(v => v.VideoId == SelectedVideo.VideoId));
-             if (currentIndex == -1) return;
-
-            var prevIndex = (currentIndex - 1 + Videos.Count) % Videos.Count; // Cycle
-            PlayVideo(Videos[prevIndex].VideoId);
+            var prev = App.PlaylistService.PreviousVideo();
+            if (prev != null)
+            {
+                PlayVideo(prev.VideoId);
+            }
         }
     }
 }
