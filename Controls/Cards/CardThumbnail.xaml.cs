@@ -65,5 +65,13 @@ namespace ccc.Controls.Cards
             get { return (bool)GetValue(IsWatchedProperty); }
             set { SetValue(IsWatchedProperty, value); }
         }
+        public static readonly DependencyProperty ImageStretchProperty =
+            DependencyProperty.Register("ImageStretch", typeof(Stretch), typeof(CardThumbnail), new PropertyMetadata(Stretch.UniformToFill));
+
+        public Stretch ImageStretch
+        {
+            get { return (Stretch)GetValue(ImageStretchProperty); }
+            set { SetValue(ImageStretchProperty, value); }
+        }
     }
 }

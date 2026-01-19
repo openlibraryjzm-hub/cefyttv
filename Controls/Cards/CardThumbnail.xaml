@@ -10,7 +10,7 @@
         <Border CornerRadius="{Binding CornerRadius, RelativeSource={RelativeSource AncestorType=UserControl}}" 
                 ClipToBounds="True">
             <Image Source="{Binding Source, RelativeSource={RelativeSource AncestorType=UserControl}}" 
-                   Stretch="UniformToFill"/>
+                   Stretch="{Binding ImageStretch, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
         </Border>
 
         <!-- Hover Overlay -->

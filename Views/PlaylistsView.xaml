@@ -9,7 +9,7 @@
              xmlns:Microsoft.Xaml.Behaviors="http://schemas.microsoft.com/xaml/behaviors"
              mc:Ignorable="d" 
              d:DesignHeight="720" d:DesignWidth="1080"
-             Background="#121212">
+             Background="#E0F2FE">
     <UserControl.Resources>
         <Style TargetType="ScrollBar">
             <Setter Property="Background" Value="Transparent"/>
@@ -17,19 +17,19 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="ScrollBar">
-                        <Grid Background="Transparent">
+                        <Grid Background="#1AE0F2FE">
                             <Track x:Name="PART_Track" IsDirectionReversed="true">
                                 <Track.Thumb>
                                     <Thumb>
                                         <Thumb.Template>
                                             <ControlTemplate TargetType="Thumb">
-                                                <Border x:Name="bd" Background="#1E293B" CornerRadius="5" Margin="2"/>
+                                                <Border x:Name="bd" Background="#66052F4A" CornerRadius="5" Margin="2"/>
                                                 <ControlTemplate.Triggers>
                                                     <Trigger Property="IsMouseOver" Value="True">
-                                                        <Setter TargetName="bd" Property="Background" Value="#334155"/>
+                                                        <Setter TargetName="bd" Property="Background" Value="#A0052F4A"/>
                                                     </Trigger>
                                                     <Trigger Property="IsDragging" Value="True">
-                                                        <Setter TargetName="bd" Property="Background" Value="#475569"/>
+                                                        <Setter TargetName="bd" Property="Background" Value="#FF052F4A"/>
                                                     </Trigger>
                                                 </ControlTemplate.Triggers>
                                             </ControlTemplate>
@@ -85,7 +85,7 @@
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <!-- Using WrapPanel instead of UniformGrid for better flow with fixed width container -->
-                            <WrapPanel Orientation="Horizontal" ItemWidth="440" ItemHeight="380"/>
+                            <WrapPanel Orientation="Horizontal" ItemWidth="440" ItemHeight="320"/>
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
@@ -129,7 +129,7 @@
                 HorizontalAlignment="Center"
                 VerticalAlignment="Top"
                 CornerRadius="12"
-                Background="{StaticResource BgSecondaryBrush}" 
+                Background="#BAE6FD" 
                 Padding="16,12" 
                 BorderBrush="#333" 
                 BorderThickness="0,0,0,1">
