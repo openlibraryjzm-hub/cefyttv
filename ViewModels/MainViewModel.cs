@@ -169,6 +169,10 @@ namespace ccc.ViewModels
         partial void OnOrbOffsetYChanged(double value) => App.ConfigService.OrbOffsetY = value;
 
         [ObservableProperty]
+        private bool _isSpillEnabled;
+        partial void OnIsSpillEnabledChanged(bool value) => App.ConfigService.IsSpillEnabled = value;
+
+        [ObservableProperty]
         private bool _spillTopLeft;
         partial void OnSpillTopLeftChanged(bool value) => App.ConfigService.SpillTopLeft = value;
 
@@ -198,6 +202,7 @@ namespace ccc.ViewModels
             _orbScale = App.ConfigService.OrbScale;
             _orbOffsetX = App.ConfigService.OrbOffsetX;
             _orbOffsetY = App.ConfigService.OrbOffsetY;
+            _isSpillEnabled = App.ConfigService.IsSpillEnabled;
             _spillTopLeft = App.ConfigService.SpillTopLeft;
             _spillTopRight = App.ConfigService.SpillTopRight;
             _spillBottomLeft = App.ConfigService.SpillBottomLeft;
@@ -211,9 +216,9 @@ namespace ccc.ViewModels
 
         private async Task LoadDataAsync()
         {
-            // 1. Playlists (Real Data)
             try
             {
+                // 1. Playlists (Real Data)
                 var playlists = await App.PlaylistService.GetAllPlaylistsAsync();
                 
                 System.Windows.Application.Current.Dispatcher.Invoke(async () =>
@@ -238,34 +243,49 @@ namespace ccc.ViewModels
                     
                     UpdateDisplayedPlaylists();
 
-
-                    // Auto-play Logic: Open the first playlist if available
-                    if (playlists.Any())
+                    // Auto-play Logic: Prefer Last Watched, then First Playlist
+                    var lastWatched = await App.SqliteService.GetWatchHistoryAsync(1);
+                    if (lastWatched.Any())
                     {
-                        await OpenPlaylist(playlists.First().Id);
-                        
-                        // Wait for OpenPlaylist to populate Videos, then play from restored index
-                        if (_allVideosCache.Any())
+                        var last = lastWatched.First();
+                        // Open the playlist containing this video? Or just play it?
+                        // For now, let's try to OpenPlaylist for its playlist, then PlayVideo.
+                        var playlistId = await App.SqliteService.GetPlaylistIdByVideoIdAsync(last.VideoId);
+                        if (playlistId != null && playlistId > 0)
                         {
-                            var index = App.PlaylistService.CurrentVideoIndex;
-                            if (index >= 0 && index < _allVideosCache.Count)
-                                await PlayVideo(_allVideosCache[index].VideoId);
-                            else
-                                await PlayVideo(_allVideosCache[0].VideoId);
+                            await OpenPlaylist(playlistId.Value);
+                            await PlayVideo(last.VideoId);
+                        }
+                        else
+                        {
+                            // If orphaned, fallback
+                             if (playlists.Any()) await OpenPlaylist(playlists.First().Id);
                         }
                     }
+                    else if (playlists.Any())
+                    {
+                        await OpenPlaylist(playlists.First().Id);
+                    }
                 });
+
+                // 2. Dummy Data for other views (until wired up)
+                System.Windows.Application.Current.Dispatcher.Invoke(PopulateDummyDetailData);
+
+                await LoadTabsAsync();
+                // await LoadHistoryAsync(); // Moving out of Try block if needed, or keep inside
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Error loading playlists: {ex.Message}");
+                System.Windows.MessageBox.Show($"Critical Error Loading Data: {ex.Message}\n\nStack: {ex.StackTrace}", "Startup Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
             }
-
-            // 2. Dummy Data for other views (until wired up)
-            System.Windows.Application.Current.Dispatcher.Invoke(PopulateDummyDetailData);
-
-            await LoadTabsAsync();
-            await LoadHistoryAsync();
+            
+            // Load History safely outside or keep inside? 
+            // Better to keep independent.
+            try 
+            {
+                 await LoadHistoryAsync();
+            } 
+            catch { /* Ignore history load fail */ }
         }
 
         private async Task LoadHistoryAsync()
@@ -1144,18 +1164,21 @@ namespace ccc.ViewModels
         {
              var config = await App.TabService.LoadConfigAsync();
              
-             // Load Presets
-             TabPresets.Clear();
-             foreach(var p in config.Presets) TabPresets.Add(p);
-
-             // Load Active Preset
-             SelectedPreset = TabPresets.FirstOrDefault(p => p.Id == config.ActivePresetId) ?? TabPresets.FirstOrDefault();
-
-             // Load Tabs
-             if (SelectedPreset != null)
+             System.Windows.Application.Current.Dispatcher.Invoke(() =>
              {
-                 ChangeTabPreset(SelectedPreset);
-             }
+                 // Load Presets
+                 TabPresets.Clear();
+                 foreach(var p in config.Presets) TabPresets.Add(p);
+
+                 // Load Active Preset
+                 SelectedPreset = TabPresets.FirstOrDefault(p => p.Id == config.ActivePresetId) ?? TabPresets.FirstOrDefault();
+
+                 // Load Tabs
+                 if (SelectedPreset != null)
+                 {
+                     ChangeTabPreset(SelectedPreset);
+                 }
+             });
         }
         private string FormatViewCount(string? rawCount)
         {

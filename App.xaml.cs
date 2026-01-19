@@ -26,9 +26,7 @@ public partial class App : System.Windows.Application
 
     protected override async void OnStartup(StartupEventArgs e)
     {
-        base.OnStartup(e);
-
-        // Initialize Services
+        // Initialize Services (MUST be done before base.OnStartup loads MainWindow)
         ConfigService = new Services.ConfigService();
         await ConfigService.LoadAsync();
 
@@ -54,5 +52,9 @@ public partial class App : System.Windows.Application
         settings.CefCommandLineArgs.Add("disable-gpu-shader-disk-cache", "1");
 
         CefSharp.Cef.Initialize(settings);
+        
+        // Launch Window NOW that services are ready
+        base.OnStartup(e);
+        new MainWindow().Show();
     }
 }

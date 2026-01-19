@@ -39,7 +39,6 @@ namespace ccc.Services
         public async Task SaveAsync()
         {
             var json = JsonSerializer.Serialize(_config, new JsonSerializerOptions { WriteIndented = true });
-            await File.ReadAllTextAsync(_configPath); // WAIT, WriteAllTextAsync
              await File.WriteAllTextAsync(_configPath, json);
         }
 
@@ -101,6 +100,12 @@ namespace ccc.Services
         {
             get => _config.OrbOffsetY;
             set { _config.OrbOffsetY = value; _ = SaveAsync(); }
+        }
+
+        public bool IsSpillEnabled
+        {
+            get => _config.IsSpillEnabled;
+            set { _config.IsSpillEnabled = value; _ = SaveAsync(); }
         }
 
         public bool SpillTopLeft

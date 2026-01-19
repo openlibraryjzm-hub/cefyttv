@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:visuals="clr-namespace:ccc.Controls.Visuals"
+             xmlns:converters="clr-namespace:ccc.Converters"
              mc:Ignorable="d" 
              d:DesignHeight="720" d:DesignWidth="1000">
 
@@ -93,7 +94,46 @@
                                     <TextBlock Text="Select corners to un-mask (allow image to spill):" Foreground="#64748b" FontSize="12" Margin="0,0,0,16"/>
 
                                     <!-- Quadrant Selector -->
+                                    <!-- Spillover Master Toggle -->
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
+                                        <ToggleButton IsChecked="{Binding IsSpillEnabled}" 
+                                                      Content="{Binding IsSpillEnabled, Converter={converters:BoolToStringConverter True='Spillover: ON', False='Spillover: OFF'}}"
+                                                      Width="140" Height="32"
+                                                      Background="#334155" Foreground="White" BorderThickness="0">
+                                            <ToggleButton.Style>
+                                                <Style TargetType="ToggleButton">
+                                                    <Setter Property="Template">
+                                                        <Setter.Value>
+                                                            <ControlTemplate TargetType="ToggleButton">
+                                                                <Border Background="{TemplateBinding Background}" CornerRadius="6">
+                                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                                </Border>
+                                                                <ControlTemplate.Triggers>
+                                                                    <Trigger Property="IsChecked" Value="True">
+                                                                        <Setter Property="Background" Value="#0EA5E9"/> <!-- Sky-500 -->
+                                                                    </Trigger>
+                                                                </ControlTemplate.Triggers>
+                                                            </ControlTemplate>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </Style>
+                                            </ToggleButton.Style>
+                                        </ToggleButton>
+                                    </StackPanel>
+
+                                    <!-- Quadrant Selector -->
                                     <Border BorderBrush="#334155" BorderThickness="2" CornerRadius="12" Width="200" Height="200" HorizontalAlignment="Left">
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsSpillEnabled}" Value="True">
+                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+                                        
                                         <Grid>
                                             <Grid.RowDefinitions>
                                                 <RowDefinition Height="*"/>

@@ -4,12 +4,14 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:visuals="clr-namespace:ccc.Controls.Visuals"
+             xmlns:converters="clr-namespace:ccc.Converters"
              mc:Ignorable="d" 
              d:DesignHeight="150" d:DesignWidth="1280"
              ClipToBounds="False">
              
     <UserControl.Resources>
-        <visuals:OrbSpillMaskConverter x:Key="OrbSpillMaskConverter"/>
+        <converters:OrbSpillGeometryConverter x:Key="OrbSpillGeometryConverter"/>
+
 
         <!-- Sky Theme Brushes -->
         <SolidColorBrush x:Key="SkyMenuBg" Color="#F2E0F2FE"/> <!-- 95% Opacity Sky-100 -->
@@ -212,55 +214,64 @@
              <Ellipse Width="154" Height="154" Fill="{StaticResource SkyControlBarBg}" Stroke="{StaticResource SkyBorder}" StrokeThickness="0">
              </Ellipse>
              
-             <!-- Image Container with Spill Mask (Expanded to 500x500 for massive spill) -->
-             <Grid Width="500" Height="500" Margin="0" HorizontalAlignment="Center" VerticalAlignment="Center">
+             <!-- The Orb Container (154x154) 
+                  ClipToBounds=False allows the mask (which extends beyond 0-1) 
+                  to reveal pixels outside this box. -->
+             <Grid Width="154" Height="154" Margin="0" HorizontalAlignment="Center" VerticalAlignment="Center">
                  
-                 <!-- The Mask (Circle + Quadrants) -->
-                 <Grid.OpacityMask>
-                     <MultiBinding Converter="{StaticResource OrbSpillMaskConverter}">
-                         <Binding Path="SpillTopLeft"/>
-                         <Binding Path="SpillTopRight"/>
-                         <Binding Path="SpillBottomLeft"/>
-                         <Binding Path="SpillBottomRight"/>
-                     </MultiBinding>
-                 </Grid.OpacityMask>
+                 <!-- The Image Layer -->
+                 <!-- The Image Layer -->
+                 <Grid Width="154" Height="154">
+                     <Grid.Clip>
+                         <MultiBinding Converter="{StaticResource OrbSpillGeometryConverter}">
+                             <Binding Path="IsSpillEnabled"/>
+                             <Binding Path="SpillTopLeft"/>
+                             <Binding Path="SpillTopRight"/>
+                             <Binding Path="SpillBottomLeft"/>
+                             <Binding Path="SpillBottomRight"/>
+                         </MultiBinding>
+                     </Grid.Clip>
 
-                 <!-- The Image itself -->
-                 <Image Source="{Binding OrbImagePath, TargetNullValue='pack://siteoforigin:,,,/assets/orb.png', FallbackValue='pack://siteoforigin:,,,/assets/orb.png'}"
-                        Stretch="UniformToFill"
-                        RenderTransformOrigin="0.5,0.5">
-                     <Image.RenderTransform>
-                         <TransformGroup>
-                             <ScaleTransform ScaleX="{Binding OrbScale}" ScaleY="{Binding OrbScale}"/>
-                             <TranslateTransform X="{Binding OrbOffsetX}" Y="{Binding OrbOffsetY}"/>
-                         </TransformGroup>
-                     </Image.RenderTransform>
-                 </Image>
+                     <!-- The Image itself 
+                          Always UniformToFill so it covers the hole by default. 
+                          User uses Scale/Offset to adjust placement.
+                     -->
+                     <Image Source="{Binding OrbImagePath, TargetNullValue='pack://siteoforigin:,,,/assets/orb.png', FallbackValue='pack://siteoforigin:,,,/assets/orb.png'}"
+                            Width="154" Height="154"
+                            Stretch="UniformToFill"
+                            RenderTransformOrigin="0.5,0.5">
+                         <Image.RenderTransform>
+                             <TransformGroup>
+                                 <ScaleTransform ScaleX="{Binding OrbScale}" ScaleY="{Binding OrbScale}"/>
+                                 <TranslateTransform X="{Binding OrbOffsetX}" Y="{Binding OrbOffsetY}"/>
+                             </TransformGroup>
+                         </Image.RenderTransform>
+                     </Image>
+                 </Grid>
+
+                 <!-- Orb Radial Buttons (Overlaid on top) -->
+                 <!-- Top -->
+                 <Button Width="28" Height="28" Style="{StaticResource OrbButtonStyle}" 
+                         Command="{Binding UploadOrbImageCommand}" ToolTip="Upload Custom Orb Image"
+                         VerticalAlignment="Top" Margin="0,10,0,0">
+                    <Path Fill="Black" Data="M9,16V10H5L12,3L19,10H15V16H9M5,18H19V20H5V18Z" Width="12" Height="12" Stretch="Uniform"/>
+                 </Button>
+    
+                 <!-- Right -->
+                 <Button Width="28" Height="28" Style="{StaticResource OrbButtonStyle}" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0">
+                    <Path Fill="Black" Data="M3,6H21V8H3V6M3,11H21V13H3V11M3,16H21V18H3V16Z" Width="12" Height="12" Stretch="Uniform"/>
+                 </Button>
+                 
+                 <!-- Left -->
+                 <Button Width="28" Height="28" Style="{StaticResource OrbButtonStyle}" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0">
+                    <Path Fill="Black" Data="M9.5,3A6.5,6.5 0 0,1 16,9.5C16,11.11 15.41,12.59 14.44,13.73L14.71,14H15.5L20.5,19L19,20.5L14,15.5V14.71L13.73,14.44C12.59,15.41 11.11,16 9.5,16A6.5,6.5 0 0,1 3,9.5A6.5,6.5 0 0,1 9.5,3M9.5,5C7,5 5,7 5,9.5C5,12 7,14 9.5,14C12,14 14,12 14,9.5C14,7 12,5 9.5,5Z" Width="12" Height="12" Stretch="Uniform"/>
+                 </Button>
+                 
+                 <!-- Bottom -->
+                 <Button Width="28" Height="28" Style="{StaticResource OrbButtonStyle}" VerticalAlignment="Bottom" Margin="0,0,0,10">
+                    <Path Fill="Black" Data="M19,3H5C3.89,3 3,3.89 3,5V19C3,20.1 3.9,21 5,21H19C20.1,21 21,20.1 21,19V5C21,3.89 20.1,3 19,3M19,5V19H5V5H19Z" Width="12" Height="12" Stretch="Uniform"/>
+                 </Button>
              </Grid>
-             <!-- Orb Text Removed -->
-
-             <!-- Orb Radial Buttons -->
-             <!-- Top -->
-             <Button Width="28" Height="28" Style="{StaticResource OrbButtonStyle}" 
-                     Command="{Binding UploadOrbImageCommand}" ToolTip="Upload Custom Orb Image"
-                     VerticalAlignment="Top" Margin="0,10,0,0">
-                <Path Fill="Black" Data="M9,16V10H5L12,3L19,10H15V16H9M5,18H19V20H5V18Z" Width="12" Height="12" Stretch="Uniform"/>
-             </Button>
-
-             <!-- Right -->
-             <Button Width="28" Height="28" Style="{StaticResource OrbButtonStyle}" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0">
-                <Path Fill="Black" Data="M3,6H21V8H3V6M3,11H21V13H3V11M3,16H21V18H3V16Z" Width="12" Height="12" Stretch="Uniform"/>
-             </Button>
-             
-             <!-- Left -->
-             <Button Width="28" Height="28" Style="{StaticResource OrbButtonStyle}" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0">
-                <Path Fill="Black" Data="M9.5,3A6.5,6.5 0 0,1 16,9.5C16,11.11 15.41,12.59 14.44,13.73L14.71,14H15.5L20.5,19L19,20.5L14,15.5V14.71L13.73,14.44C12.59,15.41 11.11,16 9.5,16A6.5,6.5 0 0,1 3,9.5A6.5,6.5 0 0,1 9.5,3M9.5,5C7,5 5,7 5,9.5C5,12 7,14 9.5,14C12,14 14,12 14,9.5C14,7 12,5 9.5,5Z" Width="12" Height="12" Stretch="Uniform"/>
-             </Button>
-             
-             <!-- Bottom -->
-             <Button Width="28" Height="28" Style="{StaticResource OrbButtonStyle}" VerticalAlignment="Bottom" Margin="0,0,0,10">
-                <Path Fill="Black" Data="M19,3H5C3.89,3 3,3.89 3,5V19C3,20.1 3.9,21 5,21H19C20.1,21 21,20.1 21,19V5C21,3.89 20.1,3 19,3M19,5V19H5V5H19Z" Width="12" Height="12" Stretch="Uniform"/>
-             </Button>
         </Grid>
 
         <!-- =========================================================

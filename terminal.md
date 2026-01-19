@@ -1,45 +1,293 @@
-dotnet watch 🔥 Hot reload enabled. For a list of supported edits, see https://aka.ms/dotnet/hot-reload.
-dotnet watch 💡 Press Ctrl+R to restart.
-dotnet watch 🔨 Building C:\Projects\ccc\ccc.csproj ...
-dotnet watch 🔨 Build succeeded: C:\Projects\ccc\ccc.csproj
-Unhandled exception. System.Windows.Markup.XamlParseException: 'The invocation of the constructor on type 'CefSharp.Wpf.ChromiumWebBrowser' that matches the specified binding constraints threw an exception.' Line number '21' and line position '10'.
- ---> System.IO.FileNotFoundException: Could not load file or assembly 'C:\Projects\ccc\bin\Debug\net10.0-windows\runtimes\win-x64\lib\net6.0\CefSharp.Core.Runtime.dll'. The specified module could not be found.
-File name: 'C:\Projects\ccc\bin\Debug\net10.0-windows\runtimes\win-x64\lib\net6.0\CefSharp.Core.Runtime.dll'
-   at CefSharp.Cef.get_IsInitialized() in C:\projects\cefsharp\CefSharp.Core\Cef.cs:line 60
-   at CefSharp.Cef.get_IsInitialized() in C:\projects\cefsharp\CefSharp.Core\Cef.cs:line 60
-   at CefSharp.Wpf.ChromiumWebBrowser.InitializeCefInternal() in C:\projects\cefsharp\CefSharp\Internals\Partial\ChromiumWebBrowser.Partial.cs:line 522       
-   at CefSharp.Wpf.ChromiumWebBrowser.NoInliningConstructor() in C:\projects\cefsharp\CefSharp.Wpf\ChromiumWebBrowser.cs:line 555
-   at CefSharp.Wpf.ChromiumWebBrowser..ctor() in C:\projects\cefsharp\CefSharp.Wpf\ChromiumWebBrowser.cs:line 491
-   at System.RuntimeType.CreateInstanceDefaultCtor(Boolean publicOnly, Boolean wrapExceptions)
-   --- End of inner exception stack trace ---
-   at System.Windows.Markup.XamlReader.RewrapException(Exception e, IXamlLineInfo lineInfo, Uri baseUri)
-   at System.Windows.Markup.WpfXamlLoader.Load(XamlReader xamlReader, IXamlObjectWriterFactory writerFactory, Boolean skipJournaledProperties, Object rootObject, XamlObjectWriterSettings settings, Uri baseUri)
-   at System.Windows.Markup.WpfXamlLoader.LoadBaml(XamlReader xamlReader, Boolean skipJournaledProperties, Object rootObject, XamlAccessLevel accessLevel, Uri baseUri)
-   at System.Windows.Markup.XamlReader.LoadBaml(Stream stream, ParserContext parserContext, Object parent, Boolean closeStream)
-   at System.Windows.Application.LoadBamlStreamWithSyncInfo(Stream stream, ParserContext pc)
-   at System.Windows.Application.DoStartup()
-   at System.Windows.Application.<.ctor>b__1_0(Object unused)
-   at System.Windows.Threading.ExceptionWrapper.InternalRealCall(Delegate callback, Object args, Int32 numArgs)
-   at System.Windows.Threading.ExceptionWrapper.TryCatchWhen(Object source, Delegate callback, Object args, Int32 numArgs, Delegate catchHandler)
-   at System.Windows.Threading.DispatcherOperation.InvokeImpl()
-   at MS.Internal.CulturePreservingExecutionContext.CallbackWrapper(Object obj)
-   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)
---- End of stack trace from previous location ---
-   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)
-   at MS.Internal.CulturePreservingExecutionContext.Run(CulturePreservingExecutionContext executionContext, ContextCallback callback, Object state)
-   at System.Windows.Threading.DispatcherOperation.Invoke()
-   at System.Windows.Threading.Dispatcher.ProcessQueue()
-   at System.Windows.Threading.Dispatcher.WndProcHook(IntPtr hwnd, Int32 msg, IntPtr wParam, IntPtr lParam, Boolean& handled)
-   at MS.Win32.HwndWrapper.WndProc(IntPtr hwnd, Int32 msg, IntPtr wParam, IntPtr lParam, Boolean& handled)
-   at MS.Win32.HwndSubclass.DispatcherCallbackOperation(Object o)
-   at System.Windows.Threading.ExceptionWrapper.InternalRealCall(Delegate callback, Object args, Int32 numArgs)
-   at System.Windows.Threading.ExceptionWrapper.TryCatchWhen(Object source, Delegate callback, Object args, Int32 numArgs, Delegate catchHandler)
-   at System.Windows.Threading.Dispatcher.LegacyInvokeImpl(DispatcherPriority priority, TimeSpan timeout, Delegate method, Object args, Int32 numArgs)        
-   at System.Windows.Threading.Dispatcher.Invoke(DispatcherPriority priority, Delegate method, Object arg)
-   at MS.Win32.HwndSubclass.SubclassWndProc(IntPtr hwnd, Int32 msg, IntPtr wParam, IntPtr lParam)
-   at MS.Win32.UnsafeNativeMethods.DispatchMessage(MSG& msg)
-   at System.Windows.Threading.Dispatcher.PushFrameImpl(DispatcherFrame frame)
-   at System.Windows.Application.RunDispatcher(Object ignore)
-   at System.Windows.Application.RunInternal(Window window)
-   at ccc.App.Main()
-dotnet watch ❌ [ccc (net10.0-windows)] Exited with error code -532462766
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(247,26): error CS1026: ) expected [E:\git2\ccc\ccc_p0mcl3r1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(247,26): error CS1002: ; expected [E:\git2\ccc\ccc_p0mcl3r1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(249,18): error CS1513: } expected [E:\git2\ccc\ccc_p0mcl3r1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(251,13): error CS1519: Invalid token 'catch' in a member declaration [E:\git2\ccc\ccc_p0mcl3r1_w
+pftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(251,32): error CS8124: Tuple must contain at least two elements. [E:\git2\ccc\ccc_p0mcl3r1_wpftm
+p.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(252,13): error CS1519: Invalid token '{' in a member declaration [E:\git2\ccc\ccc_p0mcl3r1_wpftm
+p.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(253,51): error CS1519: Invalid token '(' in a member declaration [E:\git2\ccc\ccc_p0mcl3r1_wpftm
+p.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(253,52): error CS1031: Type expected [E:\git2\ccc\ccc_p0mcl3r1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(253,52): error CS8124: Tuple must contain at least two elements. [E:\git2\ccc\ccc_p0mcl3r1_wpftm
+p.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(253,52): error CS1026: ) expected [E:\git2\ccc\ccc_p0mcl3r1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(253,52): error CS1519: Invalid token '$"Error loading playlists: {ex.Message}"' in a member decl
+aration [E:\git2\ccc\ccc_p0mcl3r1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(257,59): error CS0116: A namespace cannot directly contain members such as fields, methods or st
+atements [E:\git2\ccc\ccc_p0mcl3r1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(257,89): error CS8124: Tuple must contain at least two elements. [E:\git2\ccc\ccc_p0mcl3r1_wpftm
+p.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(257,90): error CS1022: Type or namespace definition, or end-of-file expected [E:\git2\ccc\ccc_p0
+mcl3r1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(263,9): error CS8803: Top-level statements must precede namespace and type declarations. [E:\git
+2\ccc\ccc_p0mcl3r1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(263,9): error CS0106: The modifier 'private' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r
+1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(291,9): error CS0106: The modifier 'private' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r
+1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(305,9): error CS0106: The modifier 'private' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r
+1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(333,9): error CS0106: The modifier 'private' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r
+1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(336,9): error CS0106: The modifier 'public' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r1
+_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(357,9): error CS0106: The modifier 'private' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r
+1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(369,9): error CS0106: The modifier 'public' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r1
+_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(423,9): error CS0106: The modifier 'private' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r
+1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(488,9): error CS0106: The modifier 'private' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r
+1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(491,9): error CS0106: The modifier 'public' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r1
+_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(612,9): error CS0106: The modifier 'public' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r1
+_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(630,9): error CS0106: The modifier 'public' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r1
+_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(654,9): error CS0106: The modifier 'public' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r1
+_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(674,9): error CS0106: The modifier 'public' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r1
+_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(705,9): error CS0106: The modifier 'private' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r
+1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(710,9): error CS0106: The modifier 'public' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r1
+_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(767,9): error CS0106: The modifier 'public' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r1
+_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(774,9): error CS0106: The modifier 'public' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r1
+_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(781,9): error CS0106: The modifier 'public' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r1
+_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(794,9): error CS0106: The modifier 'private' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r
+1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(797,9): error CS0106: The modifier 'private' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r
+1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(800,9): error CS0106: The modifier 'private' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r
+1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(803,9): error CS0106: The modifier 'private' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r
+1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(806,9): error CS0106: The modifier 'private' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r
+1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(809,9): error CS0106: The modifier 'private' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r
+1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(813,9): error CS0106: The modifier 'public' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r1
+_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(823,9): error CS0106: The modifier 'public' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r1
+_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(833,9): error CS0106: The modifier 'public' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r1
+_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(843,9): error CS0106: The modifier 'public' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r1
+_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(880,9): error CS0106: The modifier 'public' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r1
+_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(894,9): error CS0106: The modifier 'public' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r1
+_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(903,9): error CS0106: The modifier 'private' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r
+1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(918,9): error CS0106: The modifier 'private' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r
+1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(934,9): error CS0106: The modifier 'public' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r1
+_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(958,9): error CS0106: The modifier 'public' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r1
+_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(982,9): error CS0106: The modifier 'public' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r1
+_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(992,9): error CS0106: The modifier 'public' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r1
+_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(1002,9): error CS0106: The modifier 'public' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r
+1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(1013,9): error CS0106: The modifier 'public' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r
+1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(1032,9): error CS0106: The modifier 'public' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r
+1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(1039,9): error CS0106: The modifier 'public' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r
+1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(1057,9): error CS0106: The modifier 'private' is not valid for this item [E:\git2\ccc\ccc_p0mcl3
+r1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(1087,9): error CS0106: The modifier 'public' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r
+1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(1106,9): error CS0106: The modifier 'private' is not valid for this item [E:\git2\ccc\ccc_p0mcl3
+r1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(1135,9): error CS0106: The modifier 'private' is not valid for this item [E:\git2\ccc\ccc_p0mcl3
+r1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(1152,9): error CS0106: The modifier 'private' is not valid for this item [E:\git2\ccc\ccc_p0mcl3
+r1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(1170,9): error CS0106: The modifier 'private' is not valid for this item [E:\git2\ccc\ccc_p0mcl3
+r1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(1173,9): error CS0106: The modifier 'public' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r
+1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(1185,9): error CS0106: The modifier 'public' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r
+1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(1256,9): error CS0106: The modifier 'private' is not valid for this item [E:\git2\ccc\ccc_p0mcl3
+r1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(1259,9): error CS0106: The modifier 'public' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r
+1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(1310,9): error CS0106: The modifier 'private' is not valid for this item [E:\git2\ccc\ccc_p0mcl3
+r1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(1313,9): error CS0106: The modifier 'private' is not valid for this item [E:\git2\ccc\ccc_p0mcl3
+r1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(1316,9): error CS0106: The modifier 'public' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r
+1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(1322,9): error CS0106: The modifier 'public' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r
+1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(1328,9): error CS0106: The modifier 'public' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r
+1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(1492,9): error CS0106: The modifier 'private' is not valid for this item [E:\git2\ccc\ccc_p0mcl3
+r1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(1507,9): error CS0106: The modifier 'private' is not valid for this item [E:\git2\ccc\ccc_p0mcl3
+r1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(1524,5): error CS1022: Type or namespace definition, or end-of-file expected [E:\git2\ccc\ccc_p0
+mcl3r1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(1525,1): error CS1022: Type or namespace definition, or end-of-file expected [E:\git2\ccc\ccc_p0
+mcl3r1_wpftmp.csproj]
+dotnet watch 🔨 
+dotnet watch 🔨 Build FAILED.
+dotnet watch 🔨 
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(247,26): error CS1026: ) expected [E:\git2\ccc\ccc_p0mcl3r1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(247,26): error CS1002: ; expected [E:\git2\ccc\ccc_p0mcl3r1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(249,18): error CS1513: } expected [E:\git2\ccc\ccc_p0mcl3r1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(251,13): error CS1519: Invalid token 'catch' in a member declaration [E:\git2\ccc\ccc_p0mcl3r1_w
+pftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(251,32): error CS8124: Tuple must contain at least two elements. [E:\git2\ccc\ccc_p0mcl3r1_wpftm
+p.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(252,13): error CS1519: Invalid token '{' in a member declaration [E:\git2\ccc\ccc_p0mcl3r1_wpftm
+p.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(253,51): error CS1519: Invalid token '(' in a member declaration [E:\git2\ccc\ccc_p0mcl3r1_wpftm
+p.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(253,52): error CS1031: Type expected [E:\git2\ccc\ccc_p0mcl3r1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(253,52): error CS8124: Tuple must contain at least two elements. [E:\git2\ccc\ccc_p0mcl3r1_wpftm
+p.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(253,52): error CS1026: ) expected [E:\git2\ccc\ccc_p0mcl3r1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(253,52): error CS1519: Invalid token '$"Error loading playlists: {ex.Message}"' in a member decl
+aration [E:\git2\ccc\ccc_p0mcl3r1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(257,59): error CS0116: A namespace cannot directly contain members such as fields, methods or st
+atements [E:\git2\ccc\ccc_p0mcl3r1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(257,89): error CS8124: Tuple must contain at least two elements. [E:\git2\ccc\ccc_p0mcl3r1_wpftm
+p.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(257,90): error CS1022: Type or namespace definition, or end-of-file expected [E:\git2\ccc\ccc_p0
+mcl3r1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(263,9): error CS8803: Top-level statements must precede namespace and type declarations. [E:\git
+2\ccc\ccc_p0mcl3r1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(263,9): error CS0106: The modifier 'private' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r
+1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(291,9): error CS0106: The modifier 'private' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r
+1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(305,9): error CS0106: The modifier 'private' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r
+1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(333,9): error CS0106: The modifier 'private' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r
+1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(336,9): error CS0106: The modifier 'public' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r1
+_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(357,9): error CS0106: The modifier 'private' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r
+1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(369,9): error CS0106: The modifier 'public' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r1
+_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(423,9): error CS0106: The modifier 'private' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r
+1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(488,9): error CS0106: The modifier 'private' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r
+1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(491,9): error CS0106: The modifier 'public' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r1
+_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(612,9): error CS0106: The modifier 'public' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r1
+_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(630,9): error CS0106: The modifier 'public' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r1
+_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(654,9): error CS0106: The modifier 'public' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r1
+_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(674,9): error CS0106: The modifier 'public' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r1
+_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(705,9): error CS0106: The modifier 'private' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r
+1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(710,9): error CS0106: The modifier 'public' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r1
+_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(767,9): error CS0106: The modifier 'public' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r1
+_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(774,9): error CS0106: The modifier 'public' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r1
+_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(781,9): error CS0106: The modifier 'public' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r1
+_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(794,9): error CS0106: The modifier 'private' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r
+1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(797,9): error CS0106: The modifier 'private' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r
+1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(800,9): error CS0106: The modifier 'private' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r
+1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(803,9): error CS0106: The modifier 'private' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r
+1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(806,9): error CS0106: The modifier 'private' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r
+1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(809,9): error CS0106: The modifier 'private' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r
+1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(813,9): error CS0106: The modifier 'public' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r1
+_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(823,9): error CS0106: The modifier 'public' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r1
+_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(833,9): error CS0106: The modifier 'public' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r1
+_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(843,9): error CS0106: The modifier 'public' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r1
+_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(880,9): error CS0106: The modifier 'public' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r1
+_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(894,9): error CS0106: The modifier 'public' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r1
+_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(903,9): error CS0106: The modifier 'private' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r
+1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(918,9): error CS0106: The modifier 'private' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r
+1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(934,9): error CS0106: The modifier 'public' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r1
+_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(958,9): error CS0106: The modifier 'public' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r1
+_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(982,9): error CS0106: The modifier 'public' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r1
+_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(992,9): error CS0106: The modifier 'public' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r1
+_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(1002,9): error CS0106: The modifier 'public' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r
+1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(1013,9): error CS0106: The modifier 'public' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r
+1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(1032,9): error CS0106: The modifier 'public' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r
+1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(1039,9): error CS0106: The modifier 'public' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r
+1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(1057,9): error CS0106: The modifier 'private' is not valid for this item [E:\git2\ccc\ccc_p0mcl3
+r1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(1087,9): error CS0106: The modifier 'public' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r
+1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(1106,9): error CS0106: The modifier 'private' is not valid for this item [E:\git2\ccc\ccc_p0mcl3
+r1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(1135,9): error CS0106: The modifier 'private' is not valid for this item [E:\git2\ccc\ccc_p0mcl3
+r1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(1152,9): error CS0106: The modifier 'private' is not valid for this item [E:\git2\ccc\ccc_p0mcl3
+r1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(1170,9): error CS0106: The modifier 'private' is not valid for this item [E:\git2\ccc\ccc_p0mcl3
+r1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(1173,9): error CS0106: The modifier 'public' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r
+1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(1185,9): error CS0106: The modifier 'public' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r
+1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(1256,9): error CS0106: The modifier 'private' is not valid for this item [E:\git2\ccc\ccc_p0mcl3
+r1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(1259,9): error CS0106: The modifier 'public' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r
+1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(1310,9): error CS0106: The modifier 'private' is not valid for this item [E:\git2\ccc\ccc_p0mcl3
+r1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(1313,9): error CS0106: The modifier 'private' is not valid for this item [E:\git2\ccc\ccc_p0mcl3
+r1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(1316,9): error CS0106: The modifier 'public' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r
+1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(1322,9): error CS0106: The modifier 'public' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r
+1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(1328,9): error CS0106: The modifier 'public' is not valid for this item [E:\git2\ccc\ccc_p0mcl3r
+1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(1492,9): error CS0106: The modifier 'private' is not valid for this item [E:\git2\ccc\ccc_p0mcl3
+r1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(1507,9): error CS0106: The modifier 'private' is not valid for this item [E:\git2\ccc\ccc_p0mcl3
+r1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(1524,5): error CS1022: Type or namespace definition, or end-of-file expected [E:\git2\ccc\ccc_p0
+mcl3r1_wpftmp.csproj]
+dotnet watch ❌ E:\git2\ccc\ViewModels\MainViewModel.cs(1525,1): error CS1022: Type or namespace definition, or end-of-file expected [E:\git2\ccc\ccc_p0
+mcl3r1_wpftmp.csproj]

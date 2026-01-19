@@ -186,6 +186,9 @@ To match the legacy app's flexibility, the Orb now supports deep customization v
     *   **Offset**: X/Y sliders (-100px to +100px) to fine-tune alignment.
 *   **Spillover Effects**:
     *   Users can "break" the circular boundary of the Orb by enabling **Spillover Quadrants**.
-    *   **Mechanism**: A custom `OrbSpillMaskConverter` dynamically generates a `GeometryGroup` mask that combines the base circle with rectangular cutouts for the selected corners (TL, TR, BL, BR).
-    *   **Z-Index**: The Orb grid utilizes `Panel.ZIndex="100"` to ensure expanded images spill *over* the flanking menus rather than being clipped by them.
+    *   **Mechanism**: A custom `OrbSpillMaskConverter` uses a **Normalized Coordinate System (0-1)**. 
+        *   **Master Toggle**: Explicit `IsSpillEnabled` property controls whether spill logic is active.
+        *   **Spill Mode**: When enabled, the mask includes quadrants that extend infinitely beyond the 0-1 bounds (e.g. coordinates `-10` to `11`), allowing the image to spill out of the `154px` container (which has `ClipToBounds=False`).
+        *   **Object Fit**: When Spill is **OFF**, the Image uses `Stretch="UniformToFill"` (Cover) to perfectly fill the circle. When Spill is **ON**, it switches to `Stretch="Uniform"` (Contain), preventing zoom issues and allowing manual scaling.
+    *   **Z-Index**: The Orb grid utilizes natural Z-indexing (Image first, Buttons second) to ensure buttons overlay the spilled image, while the entire controller relies on WindowChrome settings to handle hit-testing.
 

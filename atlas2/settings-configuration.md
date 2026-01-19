@@ -42,6 +42,7 @@ public class AppConfig
     public double OrbScale { get; set; } = 1.0;
     public double OrbOffsetX { get; set; } = 0;
     public double OrbOffsetY { get; set; } = 0;
+    public bool IsSpillEnabled { get; set; } = true;
     public bool SpillTopLeft { get; set; }
     public bool SpillTopRight { get; set; }
     public bool SpillBottomLeft { get; set; }
