@@ -45,11 +45,11 @@ The control uses a 3-column grid to organize its primary sections:
 
 | Column | Width | Element | Dimensions | Alignment |
 | :--- | :--- | :--- | :--- | :--- |
-| **0 (Left)** | `*` | **Playlist Menu** | 340x98px | Right aligned, Vertically Centered |
+| **0 (Left)** | `*` | **Playlist Menu** | 340x102px | Right aligned, Vertically Centered |
 | **1 (Center)** | `Auto` | **The Orb** | 154x154px | Fixed, Vertically Centered |
-| **2 (Right)** | `*` | **Video Menu** | 340x98px | Left aligned, Vertically Centered |
+| **2 (Right)** | `*` | **Video Menu** | 340x102px | Left aligned, Vertically Centered |
 
-This 98px menu height against the 200px container creates significant "breathing room" (approx 50px) above and below each menu, enhancing the floating aesthetic.
+This 102px menu height against the 200px container creates significant "breathing room" (approx 49px) above and below each menu, enhancing the floating aesthetic.
 
 ### 2.3 Banner Background
 To provide a rich visual anchor, the controller now incorporates a scrolling background layer:
@@ -63,6 +63,7 @@ To provide a rich visual anchor, the controller now incorporates a scrolling bac
 
 ### 3.1 Playlist Menu (Left Wing)
 *   **Metadata Area**: Displays `SelectedPlaylist.Name` and video count.
+*   **Priority Pin**: Top-Right corner element (`52x39px`) displaying the active thumbnail with a `#334155` border and `#38BDF8` active ring.
 *   **Orbital Navigation**:
     *   **Layout**: A central circular "Grid" button flanked by two floating chevron arrows.
     *   `<` (Chevron): **Prev Playlist**. Cycle to previous playlist.
@@ -96,31 +97,49 @@ To provide a rich visual anchor, the controller now incorporates a scrolling bac
 
 ---
 
-## 4. Styling & Resources
+## 4. Styling & Resources (Sky Theme)
 
-### 4.1 Button Styles
-All buttons now use **Vector Paths** (SVG Data) instead of font glyphs for perfectly sharp rendering.
+The controller adopts the "Sky Glass" aesthetic from the legacy Rust-Tauri project, utilizing specific light-mode colors with high blur values.
 
-*   **`IconButtonStyle`**: 
-    *   **Shape**: 32x32 Circle (`CornerRadius="16"`).
-    *   **Appearance**: Glassy Background (`#1AFFFFFF`) with a Solid Slate Border (`#FF475569`, 1.5px).
-    *   **Hover**: Border and Icon turn Sky Blue (`#38BDF8`). Background brightens.
+### 4.1 Color Palette & Materials
+*   **Menu Backgrounds**: `#E0F2FE` (Sky 100) at **95% Opacity** with high Blur.
+*   **Control Bar Background**: `#F0F9FF` (Sky 50).
+*   **Orb Background**: `#F0F9FF` (Sky 50) with `backdrop-blur-3xl`.
+*   **Text (Primary)**: `#082F49` (Sky 950) - **Black/Extra Bold**.
+*   **Text (Metadata)**: `#0EA5E9` (Sky 500) - **Bold/Uppercase**.
+*   **Shadows**: `0 25px 50px -12px rgba(0,0,0,0.25)` (Shadow-2XL).
+
+### 4.2 Button Styles
+Buttons primarily use a **White Circle** geometry. All icons use Vector Paths.
+
+*   **`IconButtonStyle`**:
+    *   **Shape**: `32px` Circle (`rounded-full`).
+    *   **Fill**: `#FFFFFF` (White).
+    *   **Border**: `2px` Solid `#334155` (Slate 700).
+    *   **Shadow**: `shadow-sm`.
+    *   **Hover**: Border matches Folder Color or `#475569`.
     *   **Usage**: Primary tools (Grid, Shuffle, Star, Pin, Play).
 
-*   **`ChevronButtonStyle`**: 
-    *   **Shape**: 24x32 Rectangular hit target, minimal.
-    *   **Appearance**: Transparent background, Borderless.
-    *   **Content**: Small 10px Chevron Path.
-    *   **Hover**: Path turns Sky Blue (`#38BDF8`).
+*   **`ChevronButtonStyle`**:
+    *   **Shape**: `24x32` Rectangular hit target.
+    *   **Appearance**: Transparent background, Borderless (Text Only).
+    *   **Icon Color**: `#38BDF8` (Sky 400).
     *   **Usage**: Flanking navigation arrows (Prev/Next).
 
-*   **`OrbButtonStyle`**: 
-    *   **Shape**: 28x28 Circle.
-    *   **Appearance**: White background, Dark text/icon.
-    *   **Hover**: Scale transform (Zoom).
+*   **`OrbButtonStyle`**:
+    *   **Shape**: `28px` Circle.
+    *   **Fill**: `#FFFFFF` (White).
+    *   **Border**: `2px` Solid `#F0F9FF` (Sky 50).
+    *   **Shadow**: `shadow-xl`.
 
-### 4.2 Theme Integration
-*   The controller adheres to the cohesive **Dark Glass** look, using `GlassCardBrush` for the menu panels.
+### 4.3 Typography
+*   **Titles**: `Segoe UI` (System), Weight **Black** (900), Size `~18px`.
+*   **Metadata**: Size `10-11px`, Weight **Bold**, Tracking **Widest**.
+*   **Folder Badges**: `9px`, Black, Uppercase, Tracking `0.15em`.
+
+### 4.4 Theme Integration
+*   **Contrast**: The Light Sky menu bodies provide high contrast against the typically dark video backgrounds/banners.
+*   **Borders**: Critical for separation. Menus use `4px` Solid borders (Default: `#bae6fd` Sky 200).
 
 ---
 
@@ -155,3 +174,18 @@ To prevent the window drag behavior from interfering with these larger buttons:
 1.  **Player Bridge Integration**: Wiring the Play/Pause logic to `WebView2`.
 2.  **Audio Visualizer**: Implement the canvas/rendering logic for the ring around the orb.
 3.  **Real Data Binding**: Ensure all "Author" and "Count" metadata fields are tied to live ViewModel data.
+
+## 8. Customization Features
+
+### 8.1 Orb Image Customization
+To match the legacy app's flexibility, the Orb now supports deep customization via the **Settings Page**:
+
+*   **Custom Image**: Users can upload any image (`.png`, `.jpg`, etc.) via the Top Radial Button on the Orb.
+*   **Scale & Position**:
+    *   **Scale**: Slider (0.5x to 2.0x) to resize the central image.
+    *   **Offset**: X/Y sliders (-100px to +100px) to fine-tune alignment.
+*   **Spillover Effects**:
+    *   Users can "break" the circular boundary of the Orb by enabling **Spillover Quadrants**.
+    *   **Mechanism**: A custom `OrbSpillMaskConverter` dynamically generates a `GeometryGroup` mask that combines the base circle with rectangular cutouts for the selected corners (TL, TR, BL, BR).
+    *   **Z-Index**: The Orb grid utilizes `Panel.ZIndex="100"` to ensure expanded images spill *over* the flanking menus rather than being clipped by them.
+

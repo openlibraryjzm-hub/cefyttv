@@ -36,6 +36,16 @@ public class AppConfig
     // System
     public string DownloadsPath { get; set; } = "";
     public bool HardwareAcceleration { get; set; } = true;
+
+    // Orb Customization
+    public string? CustomOrbImage { get; set; }
+    public double OrbScale { get; set; } = 1.0;
+    public double OrbOffsetX { get; set; } = 0;
+    public double OrbOffsetY { get; set; } = 0;
+    public bool SpillTopLeft { get; set; }
+    public bool SpillTopRight { get; set; }
+    public bool SpillBottomLeft { get; set; }
+    public bool SpillBottomRight { get; set; }
 }
 ```
 

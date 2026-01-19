@@ -150,19 +150,63 @@ namespace ccc.ViewModels
         [ObservableProperty]
         private bool _isLoading;
 
+        [ObservableProperty]
+        private string _orbImagePath;
+
+        [ObservableProperty]
+        private double _orbScale = 1.0;
+        
+        partial void OnOrbScaleChanged(double value) => App.ConfigService.OrbScale = value;
+
+        [ObservableProperty]
+        private double _orbOffsetX = 0;
+
+        partial void OnOrbOffsetXChanged(double value) => App.ConfigService.OrbOffsetX = value;
+
+        [ObservableProperty]
+        private double _orbOffsetY = 0;
+
+        partial void OnOrbOffsetYChanged(double value) => App.ConfigService.OrbOffsetY = value;
+
+        [ObservableProperty]
+        private bool _spillTopLeft;
+        partial void OnSpillTopLeftChanged(bool value) => App.ConfigService.SpillTopLeft = value;
+
+        [ObservableProperty]
+        private bool _spillTopRight;
+        partial void OnSpillTopRightChanged(bool value) => App.ConfigService.SpillTopRight = value;
+
+        [ObservableProperty]
+        private bool _spillBottomLeft;
+        partial void OnSpillBottomLeftChanged(bool value) => App.ConfigService.SpillBottomLeft = value;
+
+        [ObservableProperty]
+        private bool _spillBottomRight;
+        partial void OnSpillBottomRightChanged(bool value) => App.ConfigService.SpillBottomRight = value;
+
          public ObservableCollection<int> Skeletons { get; } = new ObservableCollection<int>(System.Linq.Enumerable.Range(0, 15));
 
         private List<VideoDisplayItem> _allVideosCache = new(); // Flattened playlist items for pagination
 
         public MainViewModel()
         {
+            // Init Defaults
+            _defaultStarColor = App.ConfigService.DefaultAssignColor ?? "red";
+            _orbImagePath = App.ConfigService.CustomOrbImage ?? "pack://siteoforigin:,,,/assets/orb.png";
+            
+            // Orb Config
+            _orbScale = App.ConfigService.OrbScale;
+            _orbOffsetX = App.ConfigService.OrbOffsetX;
+            _orbOffsetY = App.ConfigService.OrbOffsetY;
+            _spillTopLeft = App.ConfigService.SpillTopLeft;
+            _spillTopRight = App.ConfigService.SpillTopRight;
+            _spillBottomLeft = App.ConfigService.SpillBottomLeft;
+            _spillBottomRight = App.ConfigService.SpillBottomRight;
+
             // Load Real Data
             Task.Run(LoadDataAsync);
 
             CurrentView = new PlaylistsView();
-            
-            // Init Defaults
-            _defaultStarColor = App.ConfigService.DefaultAssignColor ?? "red";
         }
 
         private async Task LoadDataAsync()
@@ -799,9 +843,60 @@ namespace ccc.ViewModels
             if (CurrentVideoPage < TotalVideoPages)
             {
                 CurrentVideoPage++;
-                UpdateDisplayedVideos();
+                UpdateDisplayedVideos(); // Simplified for brevity in this specific diff
             }
         }
+
+        [RelayCommand]
+        public void UploadOrbImage()
+        {
+            var dialog = new Microsoft.Win32.OpenFileDialog
+            {
+                Filter = "Image Files|*.png;*.jpg;*.jpeg;*.gif;*.bmp;*.webp",
+                Title = "Select Orb Image"
+            };
+
+            if (dialog.ShowDialog() == true)
+            {
+                try 
+                {
+                    var sourcePath = dialog.FileName;
+                    var appData = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "ccc", "UserAssets");
+                    if (!System.IO.Directory.Exists(appData))
+                        System.IO.Directory.CreateDirectory(appData);
+
+                    var ext = System.IO.Path.GetExtension(sourcePath);
+                    var fileName = $"orb_custom_{DateTime.Now.Ticks}{ext}";
+                    var destPath = System.IO.Path.Combine(appData, fileName);
+
+                    System.IO.File.Copy(sourcePath, destPath, true);
+
+                    // Update Config
+                    App.ConfigService.CustomOrbImage = destPath;
+                    
+                    // Update UI
+                    OrbImagePath = destPath;
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Error uploading orb image: {ex.Message}");
+                }
+            }
+        }
+
+        [RelayCommand]
+        public void ResetOrbConfig()
+        {
+            OrbScale = 1.0;
+            OrbOffsetX = 0;
+            OrbOffsetY = 0;
+            SpillTopLeft = false;
+            SpillTopRight = false;
+            SpillBottomLeft = false;
+            SpillBottomRight = false;
+        }
+        
+
 
         [RelayCommand]
         public void PrevVideoPage()

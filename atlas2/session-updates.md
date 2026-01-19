@@ -2,6 +2,24 @@
 
 # Session Updates
 
+## [Feature] Orb Customization - 2026-01-19
+We have implemented a comprehensive **Orb Customization Suite** on the Settings page, giving users total control over the application's central visual element.
+
+### 🎨 Customization Options
+*   **Image Upload**: Users can replace the default orb with any custom image via a file picker.
+*   **Scale & Position**:
+    *   **Resize**: A slider adjustment from **0.5x to 2.0x**.
+    *   **Offset**: Fine-grain X/Y positioning (-100 to +100 pixels).
+*   **Spillover Effects**:
+    *   Implemented a "Quadrant Masking" system. Users can selectively unmask any of the four corners (Top-Left, Top-Right, etc.).
+    *   **Effect**: This allows the image to "spill out" of the traditional circular boundary, creating dynamic, non-standard shapes.
+    *   **Expansion**: The rendering container was expanded to **500x500px** with `ZIndex=100` to allow massive spillovers to overlap the adjacent menus without clipping.
+
+### 🛠️ Technical Details
+*   **Settings Page**: Completely redesigned the Settings View to feature these new controls, replacing the placeholder content.
+*   **Persistence**: All settings (Scale, Offset, Spills, Path) are persisted to `app_config.json` via `ConfigService` and loaded instantly on startup.
+*   **Rendering**: Created `OrbSpillMaskConverter.cs` (IMultiValueConverter) that constructs a dynamic `GeometryGroup` (Circle + Unions of Rectangles) to drive the `OpacityMask` in real-time.
+
 ## [Feature] Video Autoplay - 2026-01-19
 We have implemented the **Video Autoplay** functionality, ensuring seamless playback continuity within playlists.
 

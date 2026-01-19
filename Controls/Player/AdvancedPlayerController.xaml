@@ -9,11 +9,23 @@
              ClipToBounds="False">
              
     <UserControl.Resources>
+        <visuals:OrbSpillMaskConverter x:Key="OrbSpillMaskConverter"/>
+
+        <!-- Sky Theme Brushes -->
+        <SolidColorBrush x:Key="SkyMenuBg" Color="#F2E0F2FE"/> <!-- 95% Opacity Sky-100 -->
+        <SolidColorBrush x:Key="SkyControlBarBg" Color="#F0F9FF"/> <!-- Sky-50 -->
+        <SolidColorBrush x:Key="SkyBorder" Color="#BAE6FD"/> <!-- Sky-200 -->
+        <SolidColorBrush x:Key="SkyTextPrimary" Color="#082F49"/> <!-- Sky-950 -->
+        <SolidColorBrush x:Key="SkyTextMetadata" Color="#0EA5E9"/> <!-- Sky-500 -->
+        <SolidColorBrush x:Key="SkyAccent" Color="#38BDF8"/> <!-- Sky-400 -->
+        <SolidColorBrush x:Key="SlateBorder" Color="#334155"/> <!-- Slate-700 -->
+        <SolidColorBrush x:Key="SlateIcon" Color="#475569"/> <!-- Slate-600 -->
+
         <Style x:Key="IconButtonStyle" TargetType="Button">
-            <Setter Property="Background" Value="#1AFFFFFF"/> <!-- Glassy Fill -->
-            <Setter Property="Foreground" Value="#94A3B8"/>
-            <Setter Property="BorderBrush" Value="#FF475569"/> <!-- Hard Solid Border (Slate-600) -->
-            <Setter Property="BorderThickness" Value="1.5"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="{StaticResource SlateIcon}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource SlateBorder}"/>
+            <Setter Property="BorderThickness" Value="2"/>
             <Setter Property="Width" Value="32"/>
             <Setter Property="Height" Value="32"/>
             <Setter Property="Margin" Value="4,0"/>
@@ -28,9 +40,8 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Foreground" Value="#38BDF8"/> <!-- Sky-400 -->
-                                <Setter Property="Background" Value="#33FFFFFF"/>
-                                <Setter Property="BorderBrush" Value="#38BDF8"/> <!-- Highlight border too -->
+                                <Setter Property="BorderBrush" Value="{StaticResource SkyTextMetadata}"/>
+                                <Setter Property="Foreground" Value="{StaticResource SkyTextMetadata}"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -40,20 +51,20 @@
 
         <Style x:Key="ChevronButtonStyle" TargetType="Button">
             <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="Foreground" Value="#94A3B8"/>
+            <Setter Property="Foreground" Value="{StaticResource SkyAccent}"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Width" Value="24"/>
-            <Setter Property="Height" Value="32"/> <!-- Match Capsule Height -->
+            <Setter Property="Height" Value="32"/>
             <Setter Property="Margin" Value="0"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
                         <Border Background="{TemplateBinding Background}">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
-                        <ControlTemplate.Triggers>
+                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Foreground" Value="#38BDF8"/> <!-- Sky-400 -->
+                                <Setter Property="Opacity" Value="0.7"/>
                                 <Setter Property="Cursor" Value="Hand"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
@@ -62,13 +73,18 @@
             </Setter>
         </Style>
 
-         <Style x:Key="OrbButtonStyle" TargetType="Button">
+        <Style x:Key="OrbButtonStyle" TargetType="Button">
             <Setter Property="Background" Value="White"/>
             <Setter Property="Foreground" Value="#0F172A"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border Background="{TemplateBinding Background}" CornerRadius="14">
+                        <Border Background="{TemplateBinding Background}" 
+                                BorderBrush="{StaticResource SkyControlBarBg}" BorderThickness="2"
+                                CornerRadius="14">
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="10" ShadowDepth="2" Opacity="0.1"/>
+                            </Border.Effect>
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                          <ControlTemplate.Triggers>
@@ -108,13 +124,16 @@
              LEFT: PLAYLIST MENU
              ========================================================= -->
         <Border Grid.Column="0" 
-                Width="340" Height="98"
+                Width="340" Height="102"
                 HorizontalAlignment="Right"
                 VerticalAlignment="Center"
                 Margin="0,0,20,0"
-                Background="{StaticResource GlassCardBrush}" 
-                BorderBrush="{StaticResource BorderBrush}" BorderThickness="2"
+                Background="{StaticResource SkyMenuBg}" 
+                BorderBrush="{StaticResource SkyBorder}" BorderThickness="4"
                 CornerRadius="16">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="50" ShadowDepth="25" Direction="270" Opacity="0.25"/>
+            </Border.Effect>
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>   <!-- Title Area -->
@@ -122,23 +141,30 @@
                 </Grid.RowDefinitions>
 
                 <!-- 1. Title Area -->
-                <StackPanel Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center">
-                    <TextBlock Text="{Binding SelectedPlaylist.Name, FallbackValue='NO PLAYLIST'}" 
-                               Foreground="{StaticResource TextPrimaryBrush}"
-                               FontWeight="Black"
-                               FontSize="16"
-                               TextAlignment="Center"
-                               TextTrimming="CharacterEllipsis"/>
-                    <!-- Optional Folder Badge Placeholder -->
-                    <Border Background="{StaticResource BgTertiaryBrush}" CornerRadius="4" Padding="6,2" HorizontalAlignment="Center" Margin="0,4,0,0">
-                         <TextBlock Text="{Binding SelectedPlaylist.VideoCountText, FallbackValue=''}" Foreground="{StaticResource TextSecondaryBrush}" FontSize="10" FontWeight="Bold"/>
+                <Grid Grid.Row="0" VerticalAlignment="Center">
+                    <StackPanel HorizontalAlignment="Center">
+                        <TextBlock Text="{Binding SelectedPlaylist.Name, FallbackValue='NO PLAYLIST'}" 
+                                   Foreground="{StaticResource SkyTextPrimary}"
+                                   FontWeight="Black"
+                                   FontSize="18"
+                                   TextAlignment="Center"
+                                   TextTrimming="CharacterEllipsis"/>
+                        <!-- Optional Folder Badge Placeholder -->
+                        <Border Background="{StaticResource SkyMenuBg}" CornerRadius="4" Padding="6,2" HorizontalAlignment="Center" Margin="0,4,0,0">
+                             <TextBlock Text="{Binding SelectedPlaylist.VideoCountText, FallbackValue=''}" Foreground="{StaticResource SlateIcon}" FontSize="9" FontWeight="Black"/>
+                        </Border>
+                    </StackPanel>
+                    
+                    <!-- Priority Pin (Top Right) -->
+                    <Border Width="52" Height="39" BorderBrush="{StaticResource SlateBorder}" BorderThickness="2" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,12,12,0" Visibility="Collapsed">
+                        <!-- Placeholder Content -->
                     </Border>
-                </StackPanel>
+                </Grid>
 
                 <!-- 2. Bottom Bar -->
                 <Border Grid.Row="1" 
-                        Background="{StaticResource BgPrimaryBrush}" 
-                        BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,1,0,0"
+                        Background="{StaticResource SkyControlBarBg}" 
+                        BorderBrush="{StaticResource SkyMenuBg}" BorderThickness="0,1,0,0"
                         CornerRadius="0,0,16,16"
                         Padding="16,0"
                         WindowChrome.IsHitTestVisibleInChrome="True">
@@ -146,9 +172,9 @@
                         <!-- Metadata (Left) -->
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
                             <TextBlock Text="{Binding SelectedVideo.Author, FallbackValue='Unknown', TargetNullValue='Unknown'}" 
-                                       Foreground="{StaticResource AccentPrimaryBrush}" Opacity="0.8" FontSize="11" FontWeight="Bold"/>
-                            <TextBlock Text=" | " Foreground="{StaticResource TextMutedBrush}" FontSize="11" Margin="4,0"/>
-                            <TextBlock Text="{Binding SelectedVideo.MetadataLine}" Foreground="{StaticResource AccentPrimaryBrush}" Opacity="0.8" FontSize="11" FontWeight="Bold"/>
+                                       Foreground="{StaticResource SkyTextMetadata}" Opacity="0.8" FontSize="11" FontWeight="Bold"/>
+                            <TextBlock Text=" | " Foreground="{StaticResource SkyTextMetadata}" FontSize="11" Margin="4,0"/>
+                            <TextBlock Text="{Binding SelectedVideo.MetadataLine}" Foreground="{StaticResource SkyTextMetadata}" Opacity="0.8" FontSize="11" FontWeight="Bold"/>
                         </StackPanel>
 
                         <!-- Navigation Controls (Right) -->
@@ -176,23 +202,48 @@
              ========================================================= -->
         <Grid Grid.Column="1" Width="154" Height="154" VerticalAlignment="Center" Margin="0,0,0,0" WindowChrome.IsHitTestVisibleInChrome="True">
              <!-- Orb Glow/Shadow -->
-             <Ellipse Fill="#00000000" Stroke="{StaticResource AccentPrimaryBrush}" StrokeThickness="0" Width="154" Height="154">
+             <Ellipse Fill="#00000000" StrokeThickness="0" Width="154" Height="154">
                 <Ellipse.Effect>
-                    <DropShadowEffect Color="{StaticResource AccentPrimaryColor}" BlurRadius="40" ShadowDepth="0" Opacity="0.3"/>
+                    <DropShadowEffect Color="Black" BlurRadius="50" ShadowDepth="25" Opacity="0.25"/>
                 </Ellipse.Effect>
              </Ellipse>
 
              <!-- Main Orb Circle -->
-             <Ellipse Width="154" Height="154" Fill="{StaticResource BgPrimaryBrush}" Stroke="{StaticResource AccentPrimaryBrush}" StrokeThickness="2">
+             <Ellipse Width="154" Height="154" Fill="{StaticResource SkyControlBarBg}" Stroke="{StaticResource SkyBorder}" StrokeThickness="0">
              </Ellipse>
              
-             <!-- Image Placeholder -->
-             <Ellipse Width="150" Height="150" Fill="{StaticResource BgSecondaryBrush}" Margin="2"/>
-             <TextBlock Text="ORB" Foreground="{StaticResource AccentPrimaryBrush}" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+             <!-- Image Container with Spill Mask (Expanded to 500x500 for massive spill) -->
+             <Grid Width="500" Height="500" Margin="0" HorizontalAlignment="Center" VerticalAlignment="Center">
+                 
+                 <!-- The Mask (Circle + Quadrants) -->
+                 <Grid.OpacityMask>
+                     <MultiBinding Converter="{StaticResource OrbSpillMaskConverter}">
+                         <Binding Path="SpillTopLeft"/>
+                         <Binding Path="SpillTopRight"/>
+                         <Binding Path="SpillBottomLeft"/>
+                         <Binding Path="SpillBottomRight"/>
+                     </MultiBinding>
+                 </Grid.OpacityMask>
+
+                 <!-- The Image itself -->
+                 <Image Source="{Binding OrbImagePath, TargetNullValue='pack://siteoforigin:,,,/assets/orb.png', FallbackValue='pack://siteoforigin:,,,/assets/orb.png'}"
+                        Stretch="UniformToFill"
+                        RenderTransformOrigin="0.5,0.5">
+                     <Image.RenderTransform>
+                         <TransformGroup>
+                             <ScaleTransform ScaleX="{Binding OrbScale}" ScaleY="{Binding OrbScale}"/>
+                             <TranslateTransform X="{Binding OrbOffsetX}" Y="{Binding OrbOffsetY}"/>
+                         </TransformGroup>
+                     </Image.RenderTransform>
+                 </Image>
+             </Grid>
+             <!-- Orb Text Removed -->
 
              <!-- Orb Radial Buttons -->
              <!-- Top -->
-             <Button Width="28" Height="28" Style="{StaticResource OrbButtonStyle}"  VerticalAlignment="Top" Margin="0,10,0,0">
+             <Button Width="28" Height="28" Style="{StaticResource OrbButtonStyle}" 
+                     Command="{Binding UploadOrbImageCommand}" ToolTip="Upload Custom Orb Image"
+                     VerticalAlignment="Top" Margin="0,10,0,0">
                 <Path Fill="Black" Data="M9,16V10H5L12,3L19,10H15V16H9M5,18H19V20H5V18Z" Width="12" Height="12" Stretch="Uniform"/>
              </Button>
 
@@ -216,13 +267,16 @@
              RIGHT: VIDEO MENU
              ========================================================= -->
         <Border Grid.Column="2" 
-                Width="340" Height="98"
+                Width="340" Height="102"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Center"
                 Margin="20,0,0,0"
-                Background="{StaticResource GlassCardBrush}" 
-                BorderBrush="{StaticResource BorderBrush}" BorderThickness="2"
+                Background="{StaticResource SkyMenuBg}" 
+                BorderBrush="{StaticResource SkyBorder}" BorderThickness="4"
                 CornerRadius="16">
+             <Border.Effect>
+                <DropShadowEffect BlurRadius="50" ShadowDepth="25" Direction="270" Opacity="0.25"/>
+            </Border.Effect>
             <Grid>
                  <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>   <!-- Title Area -->
@@ -232,17 +286,17 @@
                 <!-- 1. Title Area -->
                  <StackPanel Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center">
                     <TextBlock Text="{Binding SelectedVideo.Title, FallbackValue='NO VIDEO'}" 
-                               Foreground="{StaticResource TextPrimaryBrush}"
+                               Foreground="{StaticResource SkyTextPrimary}"
                                FontWeight="Black"
-                               FontSize="16"
+                               FontSize="18"
                                TextAlignment="Center"
                                TextTrimming="CharacterEllipsis"/>
                 </StackPanel>
 
                 <!-- 2. Bottom Bar -->
                 <Border Grid.Row="1" 
-                        Background="{StaticResource BgPrimaryBrush}" 
-                        BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,1,0,0"
+                        Background="{StaticResource SkyControlBarBg}" 
+                        BorderBrush="{StaticResource SkyMenuBg}" BorderThickness="0,1,0,0"
                         CornerRadius="0,0,16,16"
                         Padding="8,0"
                         WindowChrome.IsHitTestVisibleInChrome="True">

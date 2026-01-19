@@ -34,47 +34,117 @@
                 </Grid>
 
                 <!-- Content -->
-                <StackPanel Margin="20,20,20,0" HorizontalAlignment="Stretch">
-                     <StackPanel HorizontalAlignment="Left" MaxWidth="850">
-                        <!-- Theme Section -->
-                        <TextBlock Text="Appearance" FontSize="20" FontWeight="Bold" Foreground="White" Margin="0,0,0,20"/>
-                        
-                        <StackPanel Margin="0,0,0,30">
-                            <TextBlock Text="Theme Engine" Foreground="#CCC" Margin="0,0,0,8"/>
-                            <ComboBox Width="200" HorizontalAlignment="Left" SelectedIndex="0">
-                                <ComboBoxItem Content="Default (Blue)"/>
-                                <ComboBoxItem Content="Dark Mode"/>
-                                <ComboBoxItem Content="Light Mode"/>
-                            </ComboBox>
-                        </StackPanel>
-        
-                        <StackPanel Margin="0,0,0,30">
-                            <TextBlock Text="Background Pattern" Foreground="#CCC" Margin="0,0,0,8"/>
-                            <StackPanel Orientation="Horizontal">
-                                <RadioButton GroupName="Pattern" Content="Diagonal" Foreground="White" Margin="0,0,16,0" IsChecked="True"/>
-                                <RadioButton GroupName="Pattern" Content="Dots" Foreground="White" Margin="0,0,16,0"/>
-                                <RadioButton GroupName="Pattern" Content="Mesh" Foreground="White" Margin="0,0,16,0"/>
-                            </StackPanel>
-                        </StackPanel>
-        
-                        <!-- Library Section -->
-                        <TextBlock Text="Library" FontSize="20" FontWeight="Bold" Foreground="White" Margin="0,0,0,20"/>
-                        
-                        <StackPanel Margin="0,0,0,30">
-                            <TextBlock Text="Library Path" Foreground="#CCC" Margin="0,0,0,8"/>
+                <StackPanel Margin="0,32,0,0" HorizontalAlignment="Center" Width="800">
+                    
+                    <!-- ORB CUSTOMIZATION -->
+                    <Border Background="#1e293b" CornerRadius="16" Padding="24" Margin="0,0,0,32">
+                        <StackPanel>
+                            <TextBlock Text="Orb Customization" FontSize="20" FontWeight="Bold" Foreground="White" Margin="0,0,0,24"/>
+                            
                             <Grid>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="2*"/>
+                                    <ColumnDefinition Width="3*"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBox Text="E:\Videos\Library" Padding="8" Background="#1A1A1A" Foreground="White" BorderBrush="#333"/>
-                                <Button Grid.Column="1" Content="Browse" Padding="12,8" Margin="8,0,0,0"/>
+                                
+                                <!-- LEFT: CONTROLS -->
+                                <StackPanel Grid.Column="0" Margin="0,0,32,0">
+                                    
+                                    <!-- Scale -->
+                                    <TextBlock Text="Size / Scale" Foreground="#94a3b8" FontSize="14" FontWeight="SemiBold" Margin="0,0,0,8"/>
+                                    <Grid Margin="0,0,0,24">
+                                        <Grid.ColumnDefinitions>
+                                           <ColumnDefinition Width="*"/>
+                                           <ColumnDefinition Width="50"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Slider Minimum="0.5" Maximum="2.0" Value="{Binding OrbScale}" TickFrequency="0.1" IsSnapToTickEnabled="True" VerticalAlignment="Center"/>
+                                        <TextBlock Grid.Column="1" Text="{Binding OrbScale, StringFormat=N1}" Foreground="White" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                    </Grid>
+
+                                    <!-- Offset X -->
+                                    <TextBlock Text="Horizontal Offset (X)" Foreground="#94a3b8" FontSize="14" FontWeight="SemiBold" Margin="0,0,0,8"/>
+                                    <Grid Margin="0,0,0,24">
+                                        <Grid.ColumnDefinitions>
+                                           <ColumnDefinition Width="*"/>
+                                           <ColumnDefinition Width="50"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Slider Minimum="-100" Maximum="100" Value="{Binding OrbOffsetX}" TickFrequency="1" IsSnapToTickEnabled="True" VerticalAlignment="Center"/>
+                                        <TextBlock Grid.Column="1" Text="{Binding OrbOffsetX, StringFormat=N0}" Foreground="White" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                    </Grid>
+
+                                    <!-- Offset Y -->
+                                    <TextBlock Text="Vertical Offset (Y)" Foreground="#94a3b8" FontSize="14" FontWeight="SemiBold" Margin="0,0,0,8"/>
+                                     <Grid Margin="0,0,0,24">
+                                        <Grid.ColumnDefinitions>
+                                           <ColumnDefinition Width="*"/>
+                                           <ColumnDefinition Width="50"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Slider Minimum="-100" Maximum="100" Value="{Binding OrbOffsetY}" TickFrequency="1" IsSnapToTickEnabled="True" VerticalAlignment="Center"/>
+                                        <TextBlock Grid.Column="1" Text="{Binding OrbOffsetY, StringFormat=N0}" Foreground="White" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                    </Grid>
+                                    
+                                    <Button Command="{Binding ResetOrbConfigCommand}" Content="Reset to Default" Width="120" HorizontalAlignment="Left" Padding="8,4" Background="Transparent" Foreground="#ef4444" BorderBrush="#ef4444" BorderThickness="1"/>
+
+                                </StackPanel>
+
+                                <!-- RIGHT: SPILLOVER & PREVIEW (Conceptual) -->
+                                <StackPanel Grid.Column="1">
+                                    <TextBlock Text="Spillover Quadrants" Foreground="#94a3b8" FontSize="14" FontWeight="SemiBold" Margin="0,0,0,16"/>
+                                    <TextBlock Text="Select corners to un-mask (allow image to spill):" Foreground="#64748b" FontSize="12" Margin="0,0,0,16"/>
+
+                                    <!-- Quadrant Selector -->
+                                    <Border BorderBrush="#334155" BorderThickness="2" CornerRadius="12" Width="200" Height="200" HorizontalAlignment="Left">
+                                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="*"/>
+                                                <RowDefinition Height="*"/>
+                                            </Grid.RowDefinitions>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            
+                                            <!-- TL -->
+                                            <CheckBox Grid.Row="0" Grid.Column="0" IsChecked="{Binding SpillTopLeft}" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                <CheckBox.LayoutTransform>
+                                                    <ScaleTransform ScaleX="2" ScaleY="2"/>
+                                                </CheckBox.LayoutTransform>
+                                            </CheckBox>
+                                            
+                                            <!-- TR -->
+                                            <CheckBox Grid.Row="0" Grid.Column="1" IsChecked="{Binding SpillTopRight}" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                <CheckBox.LayoutTransform>
+                                                    <ScaleTransform ScaleX="2" ScaleY="2"/>
+                                                </CheckBox.LayoutTransform>
+                                            </CheckBox>
+
+                                            <!-- BL -->
+                                            <CheckBox Grid.Row="1" Grid.Column="0" IsChecked="{Binding SpillBottomLeft}" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                 <CheckBox.LayoutTransform>
+                                                    <ScaleTransform ScaleX="2" ScaleY="2"/>
+                                                </CheckBox.LayoutTransform>
+                                            </CheckBox>
+
+                                            <!-- BR -->
+                                            <CheckBox Grid.Row="1" Grid.Column="1" IsChecked="{Binding SpillBottomRight}" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                 <CheckBox.LayoutTransform>
+                                                    <ScaleTransform ScaleX="2" ScaleY="2"/>
+                                                </CheckBox.LayoutTransform>
+                                            </CheckBox>
+                                            
+                                            <!-- Crosshairs -->
+                                            <Border Grid.Row="0" Grid.ColumnSpan="2" BorderBrush="#334155" BorderThickness="0,0,0,1" VerticalAlignment="Bottom"/>
+                                            <Border Grid.Column="0" Grid.RowSpan="2" BorderBrush="#334155" BorderThickness="0,0,1,0" HorizontalAlignment="Right"/>
+                                        </Grid>
+                                    </Border>
+                                    
+                                    <Button Command="{Binding UploadOrbImageCommand}" Content="Change Orb Image" Margin="0,24,0,0" Padding="16,8" Background="#334155" Foreground="White" BorderThickness="0" HorizontalAlignment="Left" Width="200"/>
+
+                                </StackPanel>
                             </Grid>
                         </StackPanel>
-        
-                        <CheckBox Content="Scan subfolders recursively" Foreground="White" Margin="0,0,0,30" IsChecked="True"/>
-        
-                    </StackPanel>
+                    </Border>
+
                 </StackPanel>
             </StackPanel>
         </ScrollViewer>

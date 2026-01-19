@@ -77,6 +77,53 @@ namespace ccc.Services
             set { _config.DefaultAssignColor = value; _ = SaveAsync(); }
         }
 
+        public string? CustomOrbImage
+        {
+            get => _config.CustomOrbImage;
+            set 
+            { 
+                 _config.CustomOrbImage = value; 
+                 _ = SaveAsync(); 
+            }
+        }
+
+        public double OrbScale
+        {
+            get => _config.OrbScale;
+            set { _config.OrbScale = value; _ = SaveAsync(); }
+        }
+        public double OrbOffsetX
+        {
+            get => _config.OrbOffsetX;
+            set { _config.OrbOffsetX = value; _ = SaveAsync(); }
+        }
+        public double OrbOffsetY
+        {
+            get => _config.OrbOffsetY;
+            set { _config.OrbOffsetY = value; _ = SaveAsync(); }
+        }
+
+        public bool SpillTopLeft
+        {
+            get => _config.SpillTopLeft;
+            set { _config.SpillTopLeft = value; _ = SaveAsync(); }
+        }
+        public bool SpillTopRight
+        {
+            get => _config.SpillTopRight;
+            set { _config.SpillTopRight = value; _ = SaveAsync(); }
+        }
+        public bool SpillBottomLeft
+        {
+            get => _config.SpillBottomLeft;
+            set { _config.SpillBottomLeft = value; _ = SaveAsync(); }
+        }
+        public bool SpillBottomRight
+        {
+            get => _config.SpillBottomRight;
+            set { _config.SpillBottomRight = value; _ = SaveAsync(); }
+        }
+
         // Add other properties as needed from configStore
     }
 
@@ -90,5 +137,15 @@ namespace ccc.Services
         public string? CustomPageBannerImage { get; set; }
         public bool IsSpillEnabled { get; set; } = true;
         public string? DefaultAssignColor { get; set; } = "red"; // Default to red
+        
+        // Orb Customization
+        public double OrbScale { get; set; } = 1.0;
+        public double OrbOffsetX { get; set; } = 0;
+        public double OrbOffsetY { get; set; } = 0;
+        
+        public bool SpillTopLeft { get; set; } = false;
+        public bool SpillTopRight { get; set; } = false;
+        public bool SpillBottomLeft { get; set; } = false;
+        public bool SpillBottomRight { get; set; } = false;
     }
 }
