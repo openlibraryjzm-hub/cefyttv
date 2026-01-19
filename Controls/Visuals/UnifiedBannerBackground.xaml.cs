@@ -12,6 +12,8 @@ namespace ccc.Controls.Visuals
         public UnifiedBannerBackground()
         {
             InitializeComponent();
+            Loaded += (s, e) => CompositionTarget.Rendering += OnRendering;
+            Unloaded += (s, e) => CompositionTarget.Rendering -= OnRendering;
         }
 
         public static readonly DependencyProperty ImageSourceProperty =
@@ -52,6 +54,7 @@ namespace ccc.Controls.Visuals
             
             // Re-setup animation when image changes/loads
             ctrl.SetupAnimation();
+            ctrl.UpdateLayoutPositions();
         }
 
         private static void OnLayoutParamChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -95,21 +98,28 @@ namespace ccc.Controls.Visuals
             StartScrolling(width);
         }
 
+        // Global reference time for synchronized scrolling across pages
+        private static readonly DateTime _globalStartTime = DateTime.Now;
+        private double _scrollWidth;
+
+        private void OnRendering(object sender, EventArgs e)
+        {
+            if (_scrollWidth <= 0 || ScrollTransform == null) return;
+
+            // Speed: Width / 60 seconds
+            double speed = _scrollWidth / 60.0;
+            double elapsed = (DateTime.Now - _globalStartTime).TotalSeconds;
+            
+            // Calculate modulo position (always between 0 and width)
+            // We want it to move LEFT, so negative X.
+            double offset = (elapsed * speed) % _scrollWidth;
+            
+            ScrollTransform.X = -offset;
+        }
+
         private void StartScrolling(double width)
         {
-            // Stop existing
-            ScrollTransform.BeginAnimation(TranslateTransform.XProperty, null);
-
-            var animation = new DoubleAnimation
-            {
-                From = 0,
-                To = -width,
-                Duration = TimeSpan.FromSeconds(60), // Configurable?
-                RepeatBehavior = RepeatBehavior.Forever
-            };
-
-            // Using pure Animation on Transform
-            ScrollTransform.BeginAnimation(TranslateTransform.XProperty, animation);
+            _scrollWidth = width;
         }
     }
 }

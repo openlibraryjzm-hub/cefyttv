@@ -63,7 +63,7 @@
                                 <Border Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=Grid}}"
                                         Height="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=Grid}}"
                                         Background="Black"
-                                        CornerRadius="12,12,0,0"/>
+                                        CornerRadius="12"/>
                             </VisualBrush.Visual>
                         </VisualBrush>
                     </Grid.OpacityMask>
@@ -128,7 +128,7 @@
                 Width="884"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Top"
-                CornerRadius="12"
+                CornerRadius="0,0,12,12"
                 Background="#BAE6FD" 
                 Padding="16,12" 
                 BorderBrush="#333" 

@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:visuals="clr-namespace:ccc.Controls.Visuals"
              xmlns:cards="clr-namespace:ccc.Controls.Cards"
+             xmlns:converters="clr-namespace:ccc.Converters"
              mc:Ignorable="d" 
              d:DesignHeight="720" d:DesignWidth="1000"
              Background="#E0F2FE">
@@ -62,7 +63,7 @@
                                 <Border Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=Grid}}"
                                         Height="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=Grid}}"
                                         Background="Black"
-                                        CornerRadius="12,12,0,0"/>
+                                        CornerRadius="12"/>
                             </VisualBrush.Visual>
                         </VisualBrush>
                     </Grid.OpacityMask>
@@ -80,24 +81,48 @@
 
                 <!-- 3. Video Grid -->
                 <!-- Margin top 10 separates videos from toolbar -->
-                <ItemsControl ItemsSource="{Binding Videos}" Margin="0,10,0,0">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <WrapPanel Orientation="Horizontal" ItemWidth="300" ItemHeight="260"/>
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <cards:VideoCard Margin="8">
-                                <cards:VideoCard.InputBindings>
-                                    <MouseBinding MouseAction="LeftClick" 
-                                                  Command="{Binding DataContext.PlayVideoCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                                  CommandParameter="{Binding VideoId}"/>
-                                </cards:VideoCard.InputBindings>
-                            </cards:VideoCard>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
+                <!-- 3. Video Grid & Skeletons -->
+                <!-- Margin top 10 separates videos from toolbar -->
+                <Grid Margin="0,10,0,0">
+                    <Grid.Resources>
+                        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+                        <converters:InverseBooleanToVisibilityConverter x:Key="InverseBoolToVis"/>
+                    </Grid.Resources>
+
+                    <!-- Loading State: Skeletons -->
+                    <ItemsControl ItemsSource="{Binding Skeletons}" Visibility="{Binding IsLoading, Converter={StaticResource BoolToVis}}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel Orientation="Horizontal" ItemWidth="300" ItemHeight="260"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <cards:VideoCardSkeleton Margin="8"/>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <!-- Real Data -->
+                    <ItemsControl ItemsSource="{Binding Videos}" Visibility="{Binding IsLoading, Converter={StaticResource InverseBoolToVis}}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel Orientation="Horizontal" ItemWidth="300" ItemHeight="260"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <cards:VideoCard Margin="8">
+                                    <cards:VideoCard.InputBindings>
+                                        <MouseBinding MouseAction="LeftClick" 
+                                                      Command="{Binding DataContext.PlayVideoCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                      CommandParameter="{Binding VideoId}"/>
+                                    </cards:VideoCard.InputBindings>
+                                </cards:VideoCard>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </Grid>
 
                 <!-- 4. Pagination Footer -->
                 <Border Padding="20" Background="#0F172A" Margin="0,20,0,0" CornerRadius="8">
@@ -126,7 +151,7 @@
                 Width="884"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Top"
-                CornerRadius="12"
+                CornerRadius="0,0,12,12"
                 Background="#CCBAE6FD" 
                 Padding="16,12" 
                 BorderBrush="#1AFFFFFF" 

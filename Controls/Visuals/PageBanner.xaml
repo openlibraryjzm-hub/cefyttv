@@ -5,24 +5,16 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:ccc.Controls.Visuals"
              mc:Ignorable="d" 
-             d:DesignHeight="220" d:DesignWidth="800">
-    <Grid Height="220" ClipToBounds="True">
+             d:DesignHeight="300" d:DesignWidth="800">
+    <Grid Height="300" ClipToBounds="True">
         <!-- Unified Background (Top Slice) -->
         <local:UnifiedBannerBackground 
             ImageSource="{Binding BannerImage, RelativeSource={RelativeSource AncestorType=UserControl}}"
-            BannerTotalHeight="280" 
+            BannerTotalHeight="300" 
             VerticalOffset="0"/>
         
         <!-- Gradient Overlay for Contrast -->
-        <Border>
-            <Border.Background>
-                <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5">
-                    <GradientStop Color="#CC0F172A" Offset="0"/>
-                    <GradientStop Color="#660F172A" Offset="0.6"/>
-                    <GradientStop Color="Transparent" Offset="1"/>
-                </LinearGradientBrush>
-            </Border.Background>
-        </Border>
+
 
         <Grid Margin="24">
             <Grid.ColumnDefinitions>

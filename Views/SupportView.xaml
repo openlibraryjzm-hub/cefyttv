@@ -8,28 +8,43 @@
              d:DesignHeight="720" d:DesignWidth="1000">
 
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
+        <ScrollViewer x:Name="MainScrollViewer" 
+                      VerticalScrollBarVisibility="Auto" 
+                      Padding="0,0,0,20">
+            
+            <StackPanel Width="900" HorizontalAlignment="Center" Margin="0,24,0,0">
+                <!-- Banner -->
+                <Grid Margin="8,0">
+                    <Grid.OpacityMask>
+                        <VisualBrush>
+                            <VisualBrush.Visual>
+                                <Border Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=Grid}}"
+                                        Height="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=Grid}}"
+                                        Background="Black"
+                                        CornerRadius="12"/>
+                            </VisualBrush.Visual>
+                        </VisualBrush>
+                    </Grid.OpacityMask>
+                    
+                    <visuals:PageBanner Title="Support" 
+                                        Description="Help and documentation."
+                                        AvatarAscii="🐱"
+                                        VideoCountText="Atlas Wiki"
+                                        BannerImage="pack://siteoforigin:,,,/assets/banner.PNG"/>
+                </Grid>
 
-        <visuals:PageBanner Grid.Row="0" 
-                            Title="Support" 
-                            Description="Help and documentation."
-                            AvatarAscii="🐱"
-                            VideoCountText="Atlas Wiki"
-                            BannerImage="pack://siteoforigin:,,,/assets/banner.PNG"/>
-
-        <ScrollViewer Grid.Row="1" Padding="40">
-            <StackPanel MaxWidth="800" HorizontalAlignment="Left">
-                <TextBlock Text="About Atlas 2.0" FontSize="20" FontWeight="Bold" Foreground="White" Margin="0,0,0,20"/>
-                <TextBlock Text="Atlas is an advanced local video library manager built with WPF, WebView2, and MPV." Foreground="#CCC" TextWrapping="Wrap" Margin="0,0,0,30"/>
-
-                <TextBlock Text="Links" FontSize="20" FontWeight="Bold" Foreground="White" Margin="0,0,0,20"/>
-                <Button Content="Open Documentation" HorizontalAlignment="Left" Padding="16,12" Margin="0,0,0,10"/>
-                <Button Content="Report a Bug" HorizontalAlignment="Left" Padding="16,12" Margin="0,0,0,10"/>
-                <Button Content="Github Repository" HorizontalAlignment="Left" Padding="16,12" Margin="0,0,0,10"/>
-
+                <!-- Content -->
+                <StackPanel Margin="20,20,20,0" HorizontalAlignment="Stretch">
+                     <StackPanel HorizontalAlignment="Left" MaxWidth="850">
+                        <TextBlock Text="About Atlas 2.0" FontSize="20" FontWeight="Bold" Foreground="White" Margin="0,0,0,20"/>
+                        <TextBlock Text="Atlas is an advanced local video library manager built with WPF, WebView2, and MPV." Foreground="#CCC" TextWrapping="Wrap" Margin="0,0,0,30"/>
+        
+                        <TextBlock Text="Links" FontSize="20" FontWeight="Bold" Foreground="White" Margin="0,0,0,20"/>
+                        <Button Content="Open Documentation" HorizontalAlignment="Left" Padding="16,12" Margin="0,0,0,10"/>
+                        <Button Content="Report a Bug" HorizontalAlignment="Left" Padding="16,12" Margin="0,0,0,10"/>
+                        <Button Content="Github Repository" HorizontalAlignment="Left" Padding="16,12" Margin="0,0,0,10"/>
+                    </StackPanel>
+                </StackPanel>
             </StackPanel>
         </ScrollViewer>
     </Grid>

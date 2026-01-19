@@ -147,6 +147,11 @@ namespace ccc.ViewModels
         [ObservableProperty]
         private string _activeNavTab = "playlists";
 
+        [ObservableProperty]
+        private bool _isLoading;
+
+         public ObservableCollection<int> Skeletons { get; } = new ObservableCollection<int>(System.Linq.Enumerable.Range(0, 15));
+
         private List<VideoDisplayItem> _allVideosCache = new(); // Flattened playlist items for pagination
 
         public MainViewModel()
@@ -359,16 +364,22 @@ namespace ccc.ViewModels
                     PageTitle = playlist.Name;
                 }
 
-                await LoadPlaylistVideos(playlistId);
-
-                // 3. Navigate
+                // 2. Navigate Immediately (Skeleton Mode)
+                IsLoading = true;
                 System.Windows.Application.Current.Dispatcher.Invoke(() =>
                 {
                      Navigate("Videos");
                 });
+
+                // 3. Load Data
+                await LoadPlaylistVideos(playlistId);
+                
+                // Done
+                IsLoading = false;
             }
             catch (Exception ex)
             {
+                IsLoading = false;
                 System.Diagnostics.Debug.WriteLine($"Error opening playlist: {ex.Message}");
             }
         }

@@ -8,58 +8,74 @@
              d:DesignHeight="720" d:DesignWidth="1000">
 
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
+        <ScrollViewer x:Name="MainScrollViewer" 
+                      VerticalScrollBarVisibility="Auto" 
+                      Padding="0,0,0,20">
+            
+            <StackPanel Width="900" HorizontalAlignment="Center" Margin="0,24,0,0">
+                <!-- Banner -->
+                <Grid Margin="8,0">
+                    <Grid.OpacityMask>
+                        <VisualBrush>
+                            <VisualBrush.Visual>
+                                <Border Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=Grid}}"
+                                        Height="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=Grid}}"
+                                        Background="Black"
+                                        CornerRadius="12"/>
+                            </VisualBrush.Visual>
+                        </VisualBrush>
+                    </Grid.OpacityMask>
+                    
+                    <visuals:PageBanner Title="Settings" 
+                                        Description="Customize your experience."
+                                        AvatarAscii="⚙️"
+                                        VideoCountText="v2.0.0"
+                                        BannerImage="pack://siteoforigin:,,,/assets/banner.PNG"/>
+                </Grid>
 
-        <visuals:PageBanner Grid.Row="0" 
-                            Title="Settings" 
-                            Description="Customize your experience."
-                            AvatarAscii="⚙️"
-                            VideoCountText="v2.0.0"
-                            BannerImage="pack://siteoforigin:,,,/assets/banner.PNG"/>
-
-        <ScrollViewer Grid.Row="1" Padding="40">
-            <StackPanel MaxWidth="800" HorizontalAlignment="Left">
-                <!-- Theme Section -->
-                <TextBlock Text="Appearance" FontSize="20" FontWeight="Bold" Foreground="White" Margin="0,0,0,20"/>
-                
-                <StackPanel Margin="0,0,0,30">
-                    <TextBlock Text="Theme Engine" Foreground="#CCC" Margin="0,0,0,8"/>
-                    <ComboBox Width="200" HorizontalAlignment="Left" SelectedIndex="0">
-                        <ComboBoxItem Content="Default (Blue)"/>
-                        <ComboBoxItem Content="Dark Mode"/>
-                        <ComboBoxItem Content="Light Mode"/>
-                    </ComboBox>
-                </StackPanel>
-
-                <StackPanel Margin="0,0,0,30">
-                    <TextBlock Text="Background Pattern" Foreground="#CCC" Margin="0,0,0,8"/>
-                    <StackPanel Orientation="Horizontal">
-                        <RadioButton GroupName="Pattern" Content="Diagonal" Foreground="White" Margin="0,0,16,0" IsChecked="True"/>
-                        <RadioButton GroupName="Pattern" Content="Dots" Foreground="White" Margin="0,0,16,0"/>
-                        <RadioButton GroupName="Pattern" Content="Mesh" Foreground="White" Margin="0,0,16,0"/>
+                <!-- Content -->
+                <StackPanel Margin="20,20,20,0" HorizontalAlignment="Stretch">
+                     <StackPanel HorizontalAlignment="Left" MaxWidth="850">
+                        <!-- Theme Section -->
+                        <TextBlock Text="Appearance" FontSize="20" FontWeight="Bold" Foreground="White" Margin="0,0,0,20"/>
+                        
+                        <StackPanel Margin="0,0,0,30">
+                            <TextBlock Text="Theme Engine" Foreground="#CCC" Margin="0,0,0,8"/>
+                            <ComboBox Width="200" HorizontalAlignment="Left" SelectedIndex="0">
+                                <ComboBoxItem Content="Default (Blue)"/>
+                                <ComboBoxItem Content="Dark Mode"/>
+                                <ComboBoxItem Content="Light Mode"/>
+                            </ComboBox>
+                        </StackPanel>
+        
+                        <StackPanel Margin="0,0,0,30">
+                            <TextBlock Text="Background Pattern" Foreground="#CCC" Margin="0,0,0,8"/>
+                            <StackPanel Orientation="Horizontal">
+                                <RadioButton GroupName="Pattern" Content="Diagonal" Foreground="White" Margin="0,0,16,0" IsChecked="True"/>
+                                <RadioButton GroupName="Pattern" Content="Dots" Foreground="White" Margin="0,0,16,0"/>
+                                <RadioButton GroupName="Pattern" Content="Mesh" Foreground="White" Margin="0,0,16,0"/>
+                            </StackPanel>
+                        </StackPanel>
+        
+                        <!-- Library Section -->
+                        <TextBlock Text="Library" FontSize="20" FontWeight="Bold" Foreground="White" Margin="0,0,0,20"/>
+                        
+                        <StackPanel Margin="0,0,0,30">
+                            <TextBlock Text="Library Path" Foreground="#CCC" Margin="0,0,0,8"/>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBox Text="E:\Videos\Library" Padding="8" Background="#1A1A1A" Foreground="White" BorderBrush="#333"/>
+                                <Button Grid.Column="1" Content="Browse" Padding="12,8" Margin="8,0,0,0"/>
+                            </Grid>
+                        </StackPanel>
+        
+                        <CheckBox Content="Scan subfolders recursively" Foreground="White" Margin="0,0,0,30" IsChecked="True"/>
+        
                     </StackPanel>
                 </StackPanel>
-
-                <!-- Library Section -->
-                <TextBlock Text="Library" FontSize="20" FontWeight="Bold" Foreground="White" Margin="0,0,0,20"/>
-                
-                <StackPanel Margin="0,0,0,30">
-                    <TextBlock Text="Library Path" Foreground="#CCC" Margin="0,0,0,8"/>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBox Text="E:\Videos\Library" Padding="8" Background="#1A1A1A" Foreground="White" BorderBrush="#333"/>
-                        <Button Grid.Column="1" Content="Browse" Padding="12,8" Margin="8,0,0,0"/>
-                    </Grid>
-                </StackPanel>
-
-                <CheckBox Content="Scan subfolders recursively" Foreground="White" Margin="0,0,0,30" IsChecked="True"/>
-
             </StackPanel>
         </ScrollViewer>
     </Grid>

@@ -19,10 +19,10 @@ namespace ccc.Views
 
             // Compute new top margin. 
             // Margin clamps at 0 so it sticks to the top.
-            double newTop = System.Math.Max(0, bannerHeight - e.VerticalOffset);
+            double newTop = System.Math.Max(0, (bannerHeight - 21) - e.VerticalOffset);
 
             // Left/Right margin 0, relied on HorizontalAlignment="Center" in XAML
-            StickyToolbar.Margin = new System.Windows.Thickness(0, newTop, 0, 0);
+            StickyToolbar.Margin = new System.Windows.Thickness(0, newTop, 18, 0);
         }
     }
 }

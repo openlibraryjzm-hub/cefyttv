@@ -26,10 +26,10 @@ namespace ccc.Views
             // Formula: StartTop (BannerHeight) - ScrollOffset. 
             // Clamp at 0 so it never goes above the top edge.
             
-            double newTop = Math.Max(0, bannerHeight - e.VerticalOffset);
+            double newTop = Math.Max(0, (bannerHeight - 21) - e.VerticalOffset);
 
             // Left/Right margin 0, relied on HorizontalAlignment="Center" in XAML
-            StickyToolbar.Margin = new Thickness(0, newTop, 0, 0);
+            StickyToolbar.Margin = new Thickness(0, newTop, 18, 0);
         }
     }
 }
