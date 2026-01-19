@@ -90,6 +90,7 @@ namespace ccc.ViewModels
         private object? _currentView;
 
         [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(IsLibraryVisible))]
         private bool _isBrowserVisible;
 
         public bool IsLibraryVisible => !IsBrowserVisible;
@@ -744,6 +745,10 @@ namespace ccc.ViewModels
             ActiveNavTab = destLower;
 
             PageTitle = destination; // Fallback title
+
+            // Handle Browser Visibility
+            IsBrowserVisible = (destLower == "browser");
+
             switch (destLower)
             {
                 case "playlists":
@@ -781,10 +786,9 @@ namespace ccc.ViewModels
                     PageTitle = "Support";
                     break;
                 case "browser":
-                    CurrentView = new BrowserView();
+                    // Browser logic is handled by IsBrowserVisible = true
+                    // We simply hide the library view and show the persistent BrowserView
                     PageTitle = "Web Browser";
-                    IsBrowserVisible = true;
-                    OnPropertyChanged(nameof(IsLibraryVisible));
                     break;
                 default:
                     break;

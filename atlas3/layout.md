@@ -1,7 +1,7 @@
 # Application Layout Strategy
 
 ## Overview
-Project CCC uses a **"Shell" Architecture** where the main window acts as a persistent container for various layers (Media, UI, Navigation). This ensures that heavy components (like 3 different browser engines) remain stable while the user navigates lightweight XAML views.
+Project CCC uses a **"Shell" Architecture** where the main window acts as a persistent container for various layers (Media, UI, Navigation). This ensures that heavy components (like 2 different browser usage modes and native player) remain stable while the user navigates lightweight XAML views.
 
 ## 1. The Shell Grid (`MainWindow.xaml`)
 The root layout is a `Grid` with clearly defined Zones.
@@ -11,11 +11,11 @@ The root layout is a `Grid` with clearly defined Zones.
 *   **Row 1 (Star `*`)**: **The Content Zone**. Contains the primary viewport for Players, Browsers, and Libraries.
 
 ### Z-Index Layering
-To manage the "Triple Engine" composition, we use strict Z-Index rules:
+To manage the "Dual Engine" composition, we use strict Z-Index rules:
 1.  **Bottom (Index 0)**: `UnifiedBannerBackground` (Parallax Image).
 2.  **Low (Index 10)**: `WebViewYouTubeControls` / `WinFormsHost(MPV)`.
 3.  **Medium (Index 50)**: `Grid` (The "Library" View: Playlists/Videos).
-4.  **High (Index 90)**: `BrowserView` (CefSharp Overlay).
+4.  **High (Index 90)**: `BrowserView` (WebView2 Overlay).
 5.  **Top (Index 100)**: `AdvancedPlayerController` (Floating HUD).
 
 ## 2. Split Screen vs. Full Screen logic

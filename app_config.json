@@ -2,16 +2,16 @@
   "CurrentThemeId": "nebula",
   "UserName": "Boss",
   "UserAvatar": "( \u0361\u00B0 \u035C\u0296 \u0361\u00B0)",
-  "CustomOrbImage": "C:\\Users\\GGPC\\AppData\\Local\\ccc\\UserAssets\\orb_custom_639044811047110914.jpg",
+  "CustomOrbImage": "C:\\Users\\GGPC\\AppData\\Local\\ccc\\UserAssets\\orb_custom_639044815898016474.png",
   "CustomBannerImage": null,
   "CustomPageBannerImage": null,
   "IsSpillEnabled": true,
   "DefaultAssignColor": "red",
   "OrbScale": 1.3,
-  "OrbOffsetX": 19,
-  "OrbOffsetY": 0,
-  "SpillTopLeft": false,
-  "SpillTopRight": false,
-  "SpillBottomLeft": true,
-  "SpillBottomRight": true
+  "OrbOffsetX": -2,
+  "OrbOffsetY": -9,
+  "SpillTopLeft": true,
+  "SpillTopRight": true,
+  "SpillBottomLeft": false,
+  "SpillBottomRight": false
 }

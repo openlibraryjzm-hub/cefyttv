@@ -1,8 +1,6 @@
 ﻿using System.Configuration;
 using System.Data;
 using System.Windows;
-using CefSharp;
-using CefSharp.Wpf;
 using Microsoft.EntityFrameworkCore;
 
 namespace ccc;
@@ -40,18 +38,10 @@ public partial class App : System.Windows.Application
         await TabService.LoadConfigAsync();
 
         // Initialize CefSharp settings
-        var settings = new CefSharp.Wpf.CefSettings();
-        // Save cookies/cache to %LocalAppData%/ccc/Cache
-        settings.CachePath = System.IO.Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "ccc",
-            "Cache"
-        );
-
-        // Optimize performance
-        settings.CefCommandLineArgs.Add("disable-gpu-shader-disk-cache", "1");
-
-        CefSharp.Cef.Initialize(settings);
+        
+        // Launch Window NOW that services are ready
+        base.OnStartup(e);
+        new MainWindow().Show();
         
         // Launch Window NOW that services are ready
         base.OnStartup(e);

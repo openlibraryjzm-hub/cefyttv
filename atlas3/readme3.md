@@ -10,7 +10,7 @@
 ---
 
 ## ⚡ The Golden Rules
-1.  **Triple Engine Law**: The application runs 3 engines (WebView2, CefSharp, MPV) simultaneously. You **MUST** respect the Z-Index layering defined in `layout.md`. Never assume standard WPF layering applies to the Airspace of these engines.
+1.  **Dual Engine Law**: The application runs 2 engines (WebView2, MPV) simultaneously. You **MUST** respect the Z-Index layering defined in `layout.md`. Never assume standard WPF layering applies to the Airspace of these engines.
 2.  **State is Singleton**: All application state lives in `MainViewModel`. Do not store page-specific state in `UserControl` code-behind if it needs to persist across navigation.
 3.  **UI is "Glass"**: We use semi-transparent panels over a global Parallax Banner (`Index 0`). Avoid solid opaque backgrounds for main containers; use `BackdropBlur` and opacity where possible.
 4.  **Database is Truth**: We use SQLite via EF Core. The `playlists.db` file is the system of record.
@@ -24,17 +24,13 @@
 
 ## 🌟 The Hybrid Hub Concept
 
-**Project CCC** is a Windows Desktop application that solves the "Browser Performance vs Native Control" dilemma by adopting a **Triple Engine Architecture**:
+**Project CCC** is a Windows Desktop application that solves the "Browser Performance vs Native Control" dilemma by adopting a **Dual Hybrid Engine Architecture**:
 
 1.  **WebView2 (Edge/Chromium)**:
-    *   **Role**: *The Protected Web*.
-    *   **Use Case**: YouTube Embedded Player.
-    *   **Reasoning**: Handles rigorous DRM, codec complexities, and anti-scraping measures of modern video platforms effortlessly.
-2.  **CefSharp (CEF/Chromium)**:
-    *   **Role**: *The Controlled Web*.
-    *   **Use Case**: Persistent browsing, Tab management, AdBlocking, and Request Interception.
-    *   **Reasoning**: Provides the deep hooks (ResourceHandler, CookieManager) that WebView2 hides, allowing for a "Power User" browser experience.
-3.  **MPV (Native/FFmpeg)**:
+    *   **Role**: *The Unified Web*.
+    *   **Use Case**: Both **YouTube Embedded Player** AND **Full Browser Mode**.
+    *   **Reasoning**: Provides rigorous DRM/Codec support (Netflix, X.com, H.264), persistent user logins, and native OS integrations (Downloads).
+2.  **MPV (Native/FFmpeg)**:
     *   **Role**: *The Native Power*.
     *   **Use Case**: Local video playback and high-bitrate content.
     *   **Reasoning**: Zero-latency, hardware-accelerated playback without the memory overhead of a browser engine.
@@ -111,7 +107,7 @@ ccc/
 │   ├── VideosView.xaml         # Video Grid (Generic)
 │   ├── HistoryView.xaml        # Watch History Timeline
 │   ├── LikesView.xaml          # Favorites Collection
-│   └── BrowserView.xaml        # CefSharp "Full Browser" Mode
+│   └── BrowserView.xaml        # WebView2 "Full Browser" Mode
 │
 └── atlas3/                     # 📘 Documentation System (Current)
     ├── advplayercontroller.md  # 🎛️ HUD: The Orb, Menus, and 3-Wing layout

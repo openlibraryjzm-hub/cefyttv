@@ -14,12 +14,7 @@ The application initialization sequence is complex due to the need to coordinate
     3.  `PlaylistService`, `FolderService`, `TabService`: Initialized with valid dependencies.
 *   **Wait**: The application `await`s these tasks `OnStartup` before proceeding.
 
-### 2. CefSharp Initialization (Phase 1)
-*   **Timing**: MUST occur before the first Window is created but after critical config runs.
-*   **Action**: `Cef.Initialize(settings)`.
-*   **Config**: Sets CachePath and GPU optimization flags.
-
-### 3. MainWindow Launch (Phase 2)
+### 2. MainWindow Launch (Phase 1)
 *   **Action**: `base.OnStartup(e)` allows the Application base to settle.
 *   **Explicit Show**: `new MainWindow().Show()` is called manually.
 *   **ViewModel**: `MainViewModel` is constructed. Since services are pre-warmed, it can safely access `App.ConfigService` immediately.

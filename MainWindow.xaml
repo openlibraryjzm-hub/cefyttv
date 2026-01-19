@@ -102,7 +102,10 @@
                                 ActivePage="{Binding ActiveNavTab}"/>
 
                 <!-- Dynamic View Injection -->
-                <ContentControl Grid.Row="1" Content="{Binding CurrentView}"/>
+                <Grid Grid.Row="1">
+                    <ContentControl Content="{Binding CurrentView}" Visibility="{Binding IsLibraryVisible, Converter={StaticResource BoolToVis}}"/>
+                    <views:BrowserView Visibility="{Binding IsBrowserVisible, Converter={StaticResource BoolToVis}}"/>
+                </Grid>
             </Grid>
             <!-- Modals Overlay (Right Side Only to avoid WebView2 Airspace issues) -->
             <modals:ImportVideosModal Visibility="{Binding IsImportModalOpen, Converter={StaticResource BoolToVis}}"

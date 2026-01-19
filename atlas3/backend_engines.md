@@ -5,17 +5,15 @@ Project CCC is defined by its hybrid architecture, simultaneously running three 
 
 ## The Engines
 
-### 1. WebView2 (The Protected Web)
+### 1. WebView2 (The Unified Web)
 *   **Tech**: Edge/Chromium.
-*   **Role**: **YouTube Embedded Player**.
-*   **Reasoning**: Best compatibility with DRM, Codecs, and anti-scraping scripts. Light enough for just video.
+*   **Role A**: **YouTube Embedded Player** ("Protected Web").
+    *   **Reasoning**: Best compatibility with DRM, Codecs, and anti-scraping scripts.
+*   **Role B**: **Full Browser Mode** ("Tabbed Web").
+    *   **Reasoning**: Replaced CefSharp to provide full H.264 video support, persistent logins, and native downloads.
+    *   **Features**: Auto-downloads to "Downloads" folder, "Quick Download" context menu, and Tab/Popup management.
 
-### 2. CefSharp (The Controlled Web)
-*   **Tech**: CEF (Chromium Embedded Framework).
-*   **Role**: **Full Browser Mode**.
-*   **Reasoning**: Provides deep access to the networking stack (`ResourceHandler`) for AdBlocking, proxying, and tab management that WebView2 restricts.
-
-### 3. MPV (The Native Power)
+### 2. MPV (The Native Power)
 *   **Tech**: FFmpeg / `libmpv`.
 *   **Role**: **Local Video Playback**.
 *   **Reasoning**: Zero-latency, hardware-accelerated playback of local files (`.mp4`, `.mkv`) without browser overhead.

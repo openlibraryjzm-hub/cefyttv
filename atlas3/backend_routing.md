@@ -9,7 +9,7 @@ Unlike web apps with URL-based routing, Project CCC uses **WPF Content Switching
 *   **Logic**: A simple switch statement instantiates the requested UserControl (e.g., `new VideosView()`) and assigns it to `CurrentView`.
 
 ## Engine Toggling (The Layer Switch)
-Navigation also involves switching between the **WPF Layer** (Library) and the **CefSharp Layer** (Browser).
+Navigation also involves switching between the **WPF Layer** (Library) and the **Browser Layer** (WebView2 mode).
 *   **Property**: `MainViewModel.IsBrowserVisible` (bool).
 *   **Behavior**:
     *   `True`: The Browser Grid `Visibility` is set to `Visible`, covering the WPF Library.
