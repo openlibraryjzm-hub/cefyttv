@@ -7,7 +7,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="100" d:DesignWidth="600">
     
-    <Border Style="{StaticResource CardBaseStyle}" Padding="0" Margin="0,4" Height="100">
+    <Border Background="Transparent" Padding="0" Margin="0,4" Height="100">
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="178"/> <!-- 16:9 Approx for height 100 -->
@@ -15,15 +15,18 @@
             </Grid.ColumnDefinitions>
 
             <!-- Thumbnail -->
-            <local:CardThumbnail Grid.Column="0" 
-                                 Source="{Binding ThumbnailUrl}"
-                                 HasProgress="True"
-                                 Progress="{Binding ProgressPercentage}" 
-                                 CornerRadius="12,0,0,12"/>
+            <!-- Using Border to match VideoCard rounded border style -->
+            <Border Grid.Column="0" Height="100" CornerRadius="8" BorderBrush="Black" BorderThickness="3" Background="Black">
+                <local:CardThumbnail Source="{Binding ThumbnailUrl}"
+                                     HasProgress="True"
+                                     Progress="{Binding ProgressPercentage}" 
+                                     CornerRadius="5"
+                                     ImageStretch="Uniform"/>
+            </Border>
 
             <!-- Content -->
             <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="16,0">
-                <TextBlock Text="{Binding Title}" FontSize="16" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}" TextTrimming="CharacterEllipsis"/>
+                <TextBlock Text="{Binding Title}" FontSize="16" FontWeight="Bold" Foreground="#052F4A" TextTrimming="CharacterEllipsis"/>
                 <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
                     <TextBlock Text="🕒" Foreground="{StaticResource TextSecondaryBrush}" FontSize="12" Margin="0,0,6,0"/>
                     <TextBlock Text="{Binding RelativeTime}" Foreground="{StaticResource TextSecondaryBrush}" FontSize="12"/>

@@ -7,42 +7,30 @@
              mc:Ignorable="d" 
              d:DesignHeight="260" d:DesignWidth="320">
     
-    <Border x:Name="ContainerBorder" Style="{StaticResource CardBaseStyle}" Padding="0">
+    <Border x:Name="ContainerBorder" CornerRadius="8" BorderThickness="0" Background="Transparent">
         <Border.Resources>
-            <Style x:Key="RoundIconBtn" TargetType="Button">
-                <Setter Property="Background" Value="#99000000"/>
-                <Setter Property="BorderThickness" Value="0"/>
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="Button">
-                            <Border Background="{TemplateBinding Background}" CornerRadius="14">
-                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                            </Border>
-                            <ControlTemplate.Triggers>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Background" Value="#CC000000"/>
-                                    <Setter Property="Cursor" Value="Hand"/>
-                                </Trigger>
-                            </ControlTemplate.Triggers>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
+             <!-- Style resources... -->
         </Border.Resources>
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/> <!-- Thumbnail (Aspect Ratio handled by Image or Width) -->
-                <RowDefinition Height="*"/>    <!-- Content -->
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <!-- Thumbnail Area -->
-            <local:CardThumbnail Grid.Row="0" Height="180"
-                                 Source="{Binding ThumbnailUrl}"
-                                 Progress="{Binding ProgressPercentage}"
-                                 HasProgress="{Binding HasProgress}"
-                                 IsPlaying="{Binding IsPlaying}"
-                                 IsWatched="{Binding IsWatched}"
-                                 CornerRadius="12,12,0,0"/>
+            <!-- Thumbnail Area with Thick Border -->
+            <Border Grid.Row="0" Height="160" VerticalAlignment="Top"
+                    CornerRadius="8" BorderBrush="Black" BorderThickness="4" Background="Black">
+                <local:CardThumbnail Source="{Binding ThumbnailUrl}"
+                                     Progress="{Binding ProgressPercentage}"
+                                     HasProgress="{Binding HasProgress}"
+                                     IsPlaying="{Binding IsPlaying}"
+                                     IsWatched="{Binding IsWatched}"
+                                     CornerRadius="4"
+                                     ImageStretch="Uniform"/>
+            </Border>
+
+            <!-- ... Overlays (Bulk Tag, Pins, etc) ... -->
+
 
             <!-- Bulk Tag Overlay -->
             <Grid Grid.Row="0" Panel.ZIndex="10">
@@ -365,16 +353,11 @@
             <!-- Content Area -->
             <StackPanel Grid.Row="1" Margin="12,8">
                 <!-- Title -->
+                <!-- Assuming a Light Text Color since Background is #1E293B (Dark) -->
                 <TextBlock Text="{Binding Title}" 
-                           FontSize="14" FontWeight="SemiBold"
+                           FontSize="14" FontWeight="SemiBold" Foreground="#052F4A"
                            TextTrimming="CharacterEllipsis" 
                            MaxHeight="40" TextWrapping="Wrap"/>
-                
-                <!-- Subtitle / ID -->
-                <TextBlock Text="{Binding VideoId}" 
-                           FontSize="11" Foreground="{StaticResource TextSecondaryBrush}"
-                           Margin="0,4,0,0"
-                           Visibility="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource BooleanToVisibilityConverter}}"/>
             </StackPanel>
 
             <!-- Controls (Pin / Star / Menu) -->
@@ -383,16 +366,21 @@
              <Grid Grid.Row="0" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="8"
                    Visibility="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource BooleanToVisibilityConverter}}">
                  <StackPanel Orientation="Horizontal">
-                     <!-- Pin Button -->
-                     <Button Style="{StaticResource RoundIconBtn}"
-                             Command="{Binding DataContext.TogglePinCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                     <!-- Pin Button (Ref 3A: Unpinned: Bg rgba(0,0,0,0.7) Icon #94A3B8) -->
+                     <Button Command="{Binding DataContext.TogglePinCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                              CommandParameter="{Binding}"
                              ToolTip="Pin Video"
                              Width="28" Height="28" Margin="0,0,4,0">
-                         <Path Fill="White" Data="M16,12V4H17V2H7V4H8V12L6,14V16H11.2V22H12.8V16H18V14L16,12Z" Width="12" Height="12" Stretch="Uniform"/>
+                         <Button.Template>
+                             <ControlTemplate TargetType="Button">
+                                 <Border Background="#B3000000" CornerRadius="4">
+                                     <Path Fill="#94A3B8" Data="M16,12V4H17V2H7V4H8V12L6,14V16H11.2V22H12.8V16H18V14L16,12Z" Width="12" Height="12" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                 </Border>
+                             </ControlTemplate>
+                         </Button.Template>
                      </Button>
-                     <!-- Star Button -->
-                     <Button Style="{StaticResource InvisibleBtn}" Width="24" Height="24"
+                     <!-- Star Button (Ref 3B: Bg rgba(0,0,0,0.7) Rounded Square) -->
+                     <Button Width="28" Height="28"
                              Command="{Binding DataContext.ToggleStarCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                              CommandParameter="{Binding}"
                              ToolTip="Assign to Default Folder (Right-Click to Set)">
@@ -401,7 +389,13 @@
                                              Command="{Binding DataContext.ToggleQuickMenuCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                              CommandParameter="{Binding}"/>
                           </Button.InputBindings>
-                          <TextBlock Text="⭐" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                          <Button.Template>
+                              <ControlTemplate TargetType="Button">
+                                  <Border Background="#B3000000" CornerRadius="4">
+                                      <TextBlock Text="⭐" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="14"/>
+                                  </Border>
+                              </ControlTemplate>
+                          </Button.Template>
                      </Button>
                  </StackPanel>
              </Grid>
