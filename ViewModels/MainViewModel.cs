@@ -144,6 +144,9 @@ namespace ccc.ViewModels
         [ObservableProperty]
         private ObservableCollection<HistoryDisplayItem> _historyItems = new();
 
+        [ObservableProperty]
+        private string _activeNavTab = "playlists";
+
         private List<VideoDisplayItem> _allVideosCache = new(); // Flattened playlist items for pagination
 
         public MainViewModel()
@@ -661,9 +664,12 @@ namespace ccc.ViewModels
         {
             // Always exit fullscreen when navigating explicitly
             IsFullScreen = false;
+            
+            var destLower = destination.ToLower();
+            ActiveNavTab = destLower;
 
             PageTitle = destination; // Fallback title
-            switch (destination.ToLower())
+            switch (destLower)
             {
                 case "playlists":
                     if (CurrentView is not PlaylistsView) 

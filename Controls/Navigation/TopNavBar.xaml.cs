@@ -38,5 +38,14 @@ namespace ccc.Controls.Navigation
             get { return (ICommand)GetValue(CloseCommandProperty); }
             set { SetValue(CloseCommandProperty, value); }
         }
+
+        public static readonly DependencyProperty ActivePageProperty =
+            DependencyProperty.Register("ActivePage", typeof(string), typeof(TopNavBar), new PropertyMetadata("playlists"));
+
+        public string ActivePage
+        {
+            get { return (string)GetValue(ActivePageProperty); }
+            set { SetValue(ActivePageProperty, value); }
+        }
     }
 }

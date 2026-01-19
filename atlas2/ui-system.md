@@ -1,6 +1,6 @@
 # UI Design System
 
-**Last Updated:** 2026-01-18
+**Last Updated:** 2026-01-19
 **Status:** Planned / Partial Implementation
 **Parent:** [README.md](README.md)
 
@@ -134,3 +134,26 @@ Defined in `Resources/Styles.xaml`.
     *   Footer Bar in `PlaylistsView` / `VideosView`.
     *   Controls: Prev (`<`), Next (`>`), Status Text (`Page X of Y`).
 
+
+## 7. Navigation Bar (Top Design)
+
+### 7.1 Layout & Container
+*   **Structure**: 3-Column Grid (Left Scroll Placeholder, Center Tabs, Right Actions).
+*   **Background**: Light Blue Tint (`#E0F2FE`) with a Bottom Border (`#38BDF8`, 1px).
+*   **Shadow**: None (Flat, clean design).
+
+### 7.2 Button Style (`NavBtnStyle`)
+*   **Philosophy**: High-Contrast, Robust Vector Icons (SVG Paths), Explicit State Colors.
+*   **States**:
+    *   **Default**: White Background, Slate-700 Border (`#334155`, 2px), **Black** Foreground.
+    *   **Hover**: Slate-50 Background (`#F8FAFC`).
+    *   **Active**: Sky-500 Border (`#0EA5E9`), Sky-600 Foreground (`#0284C7`), Scale 1.05x.
+*   **Tabs**:
+    *   **Text**: Fixed Width `110px`, Bold, Segoe UI. ("PLAYLISTS", "VIDEOS").
+    *   **Icon**: Fixed Width `36px`, SVG Path Icon (32x32 hit area).
+    *   **Icons**: History (Clock), Likes (Heart), Pins (Pin), Settings (Gear), Support (Cat/Help), Browser (Globe).
+
+### 7.3 Action Area (Right)
+*   **Back Button**: Circular Arrow Path (Black), White Background.
+*   **Divider**: Vertical Slate Line (`#7DD3FC` opacity 0.5).
+*   **Close Button**: Red Rounded Square (Rose-500), White X Path.

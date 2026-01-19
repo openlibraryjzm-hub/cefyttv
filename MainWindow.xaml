@@ -98,7 +98,8 @@
                 <nav:TopNavBar Grid.Row="0" 
                                 NavigateCommand="{Binding NavigateCommand}"
                                 BackCommand="{Binding GoBackCommand}"
-                                CloseCommand="{Binding CloseSidebarCommand}"/>
+                                CloseCommand="{Binding CloseSidebarCommand}"
+                                ActivePage="{Binding ActiveNavTab}"/>
 
                 <!-- Dynamic View Injection -->
                 <ContentControl Grid.Row="1" Content="{Binding CurrentView}"/>

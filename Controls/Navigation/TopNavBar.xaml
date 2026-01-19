@@ -4,63 +4,201 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:ccc.Controls.Navigation"
-             xmlns:btns="clr-namespace:ccc.Controls.Buttons"
+             xmlns:conv="clr-namespace:ccc.Converters"
              mc:Ignorable="d" 
-             d:DesignHeight="50" d:DesignWidth="800">
+             d:DesignHeight="70" d:DesignWidth="1000">
+
     <UserControl.Resources>
-        <!-- Tab Button Style -->
-        <Style x:Key="NavTabBtn" TargetType="Button" BasedOn="{StaticResource InvisibleBtn}">
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}"/>
+        <conv:EqualityConverter x:Key="EqualityConverter"/>
+
+        <!-- NEW ROBUST BUTTON STYLE -->
+        <Style x:Key="NavBtnStyle" TargetType="Button">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#334155"/> <!-- Slate 700 -->
+            <Setter Property="Foreground" Value="Black"/>    <!-- Default Text/Icon Color -->
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="Padding" Value="0"/>
             <Setter Property="Margin" Value="4,0"/>
-            <Setter Property="Padding" Value="12,6"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <!-- Add Triggers for Active State (Selection) via DataTrigger later or VisualState -->
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
-                    <Setter Property="Background" Value="{StaticResource BgTertiaryBrush}"/> 
-                </Trigger>
-            </Style.Triggers>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="18"
+                                UseLayoutRounding="True" SnapsToDevicePixels="True">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#F8FAFC"/>
+                                <Setter Property="Cursor" Value="Hand"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="#E2E8F0"/>
+                            </Trigger>
+                            
+                            <!-- ACTIVE STATE -->
+                            <DataTrigger Value="True">
+                                <DataTrigger.Binding>
+                                    <MultiBinding Converter="{StaticResource EqualityConverter}">
+                                        <Binding Path="ActivePage" RelativeSource="{RelativeSource AncestorType=local:TopNavBar}"/>
+                                        <Binding Path="CommandParameter" RelativeSource="{RelativeSource Self}"/>
+                                    </MultiBinding>
+                                </DataTrigger.Binding>
+                                <Setter Property="BorderBrush" Value="#0EA5E9"/> <!-- Sky 500 -->
+                                <Setter Property="Foreground" Value="#0284C7"/>  <!-- Sky 600 -->
+                                <Setter TargetName="border" Property="BorderThickness" Value="2"/>
+                                <!-- Optional: Scale Transform -->
+                                <Setter Property="RenderTransform">
+                                    <Setter.Value>
+                                        <ScaleTransform ScaleX="1.05" ScaleY="1.05" CenterX="18" CenterY="18"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </DataTrigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
+
     </UserControl.Resources>
 
-    <Grid Background="Transparent">
-        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="12,0">
-            
-            <!-- Scroll Controls -->
-            <local:SideScrollButtons x:Name="ScrollControls" Margin="0,0,12,0"/>
+    <!-- Main Container - Improved visibility -->
+    <Border Background="#E0F2FE" 
+            BorderBrush="#38BDF8" 
+            BorderThickness="0,0,0,1" 
+            Padding="10">
+        
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/> <!-- Scroll/Left -->
+                <ColumnDefinition Width="*"/>    <!-- Tabs -->
+                <ColumnDefinition Width="Auto"/> <!-- Right Actions -->
+            </Grid.ColumnDefinitions>
 
-            <!-- Back Button -->
-            <Button Style="{StaticResource InvisibleBtn}" Width="32" Height="32" 
-                    Command="{Binding BackCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                    ToolTip="Go Back" Margin="0,0,8,0">
-                <TextBlock Text="◀" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}"/>
-            </Button>
-
-            <!-- Tabs -->
-            <StackPanel Orientation="Horizontal">
-                <!-- Text Tabs -->
-                <Button Content="Playlists" Style="{StaticResource NavTabBtn}" Command="{Binding NavigateCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="playlists"/>
-                <Button Content="Videos" Style="{StaticResource NavTabBtn}" Command="{Binding NavigateCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="videos"/>
-                
-                <!-- Icon Tabs -->
-                <Button Content="🕒" ToolTip="History" Style="{StaticResource NavTabBtn}" Width="40" Padding="0" Command="{Binding NavigateCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="history"/>
-                <Button Content="♥" ToolTip="Likes" Style="{StaticResource NavTabBtn}" Width="40" Padding="0" Command="{Binding NavigateCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="likes"/>
-                <Button Content="📌" ToolTip="Pins" Style="{StaticResource NavTabBtn}" Width="40" Padding="0" Command="{Binding NavigateCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="pins"/>
-                <Button Content="⚙" ToolTip="Settings" Style="{StaticResource NavTabBtn}" Width="40" Padding="0" Command="{Binding NavigateCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="settings"/>
-                <Button Content="🐱" ToolTip="Support" Style="{StaticResource NavTabBtn}" Width="40" Padding="0" Command="{Binding NavigateCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="support"/>
-                <Button Content="🌐" ToolTip="Browser Mode" Style="{StaticResource NavTabBtn}" Width="40" Padding="0" Command="{Binding NavigateCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="browser"/>
+            <!-- 1. Left Controls (Hidden for now) -->
+            <StackPanel Grid.Column="0" Orientation="Horizontal" Visibility="Collapsed">
+                 <!-- Scroll Buttons Placeholder -->
             </StackPanel>
-            
-        </StackPanel>
 
-        <!-- Use DockPanel or Grid to push Close Button to Far Right -->
-        <btns:SidebarToggle HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,12,0"
-                            IsOpen="True"
-                            ToggleCommand="{Binding CloseCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" 
-                            ToolTip="Close Side Menu"/>
-        <!-- Note: Binding CloseDataCommand is placeholder, ViewModel will bind -->
+            <!-- 2. Center Tabs -->
+            <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Left">
+                
+                <!-- TEXT TABS -->
+                <Button Style="{StaticResource NavBtnStyle}" Width="110" Height="36"
+                        Command="{Binding NavigateCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="playlists">
+                    <TextBlock Text="PLAYLISTS" FontWeight="Bold" FontSize="12" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"/>
+                </Button>
 
-    </Grid>
+                <Button Style="{StaticResource NavBtnStyle}" Width="110" Height="36"
+                        Command="{Binding NavigateCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="videos">
+                    <TextBlock Text="VIDEOS" FontWeight="Bold" FontSize="12" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"/>
+                </Button>
+
+                <!-- SPACER -->
+                <Rectangle Width="12"/>
+
+                <!-- ICON TABS using PATHS for 100% Reliability -->
+                
+                <!-- History (Clock) -->
+                <Button Style="{StaticResource NavBtnStyle}" Width="36" Height="36" ToolTip="History"
+                        Command="{Binding NavigateCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="history">
+                    <Path Data="M12,2A10,10 0 1,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 1,1 4,12A8,8 0 0,1 12,4M11,7V13L16.2,16.1L17,14.9L12.5,12.2V7H11Z" 
+                          Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" Stretch="Uniform" Width="16" Height="16"/>
+                </Button>
+
+                <!-- Likes (Heart) -->
+                <Button Style="{StaticResource NavBtnStyle}" Width="36" Height="36" ToolTip="Likes"
+                        Command="{Binding NavigateCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="likes">
+                    <Path Data="M12,21.35L10.55,20.03C5.4,15.36 2,12.27 2,8.5C2,5.41 4.42,3 7.5,3C9.24,3 10.91,3.81 12,5.08C13.09,3.81 14.76,3 16.5,3C19.58,3 22,5.41 22,8.5C22,12.27 18.6,15.36 13.45,20.03L12,21.35Z" 
+                          Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" Stretch="Uniform" Width="16" Height="16"/>
+                </Button>
+
+                <!-- Pins (Pin) -->
+                <Button Style="{StaticResource NavBtnStyle}" Width="36" Height="36" ToolTip="Pins"
+                        Command="{Binding NavigateCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="pins">
+                    <Path Data="M16,12V4H17V2H7V4H8V12L6,14V16H11.2V22H12.8V16H18V14L16,12Z" 
+                          Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" Stretch="Uniform" Width="16" Height="16"/>
+                </Button>
+
+                <!-- Settings (Gear) -->
+                <Button Style="{StaticResource NavBtnStyle}" Width="36" Height="36" ToolTip="Settings"
+                        Command="{Binding NavigateCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="settings">
+                    <Path Data="M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.21,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.21,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.33 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.67 16.04,18.33 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z" 
+                          Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" Stretch="Uniform" Width="16" Height="16"/>
+                </Button>
+
+                <!-- Support (Cat Face / Help) -->
+                <Button Style="{StaticResource NavBtnStyle}" Width="36" Height="36" ToolTip="Support"
+                        Command="{Binding NavigateCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="support">
+                    <Path Data="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M7,9.5C7,8.7 7.7,8 8.5,8C9.3,8 10,8.7 10,9.5C10,10.3 9.3,11 8.5,11C7.7,11 7,10.3 7,9.5M12,17.23C10.25,17.23 8.71,16.5 7.81,15.42L9.23,14C9.68,14.72 10.75,15.23 12,15.23C13.25,15.23 14.32,14.72 14.77,14L16.19,15.42C15.29,16.5 13.75,17.23 12,17.23M15.5,11C14.7,11 14,10.3 14,9.5C14,8.7 14.7,8 15.5,8C16.3,8 17,8.7 17,9.5C17,10.3 16.3,11 15.5,11Z"
+                          Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" Stretch="Uniform" Width="16" Height="16"/>
+                </Button>
+
+                <!-- Browser (Globe) -->
+                <Button Style="{StaticResource NavBtnStyle}" Width="36" Height="36" ToolTip="Browser Mode"
+                        Command="{Binding NavigateCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="browser">
+                    <Path Data="M17.9,17.39C17.64,16.59 16.89,16 16,16H15V13A1,1 0 0,0 14,12H8V10H10A1,1 0 0,0 11,9V7H13A2,2 0 0,0 15,5V4.59C17.93,5.77 20,8.64 20,12C20,14.08 19.2,15.97 17.9,17.39M11,19.93C7.05,19.44 4,16.08 4,12C4,11.38 4.08,10.78 4.21,10.21L9,15V16A2,2 0 0,0 11,18M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z" 
+                          Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" Stretch="Uniform" Width="16" Height="16"/>
+                </Button>
+
+            </StackPanel>
+
+            <!-- 3. Right Action Area -->
+            <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,10,0">
+                
+                <!-- Back Button -->
+                <Button Command="{Binding BackCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                        ToolTip="Go Back" Margin="0,0,12,0"
+                        Width="32" Height="32">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border Background="White" BorderBrush="#334155" BorderThickness="2" CornerRadius="16">
+                                <Path Data="M20,11V13H8L13.5,18.5L12.08,19.92L4.16,12L12.08,4.08L13.5,5.5L8,11H20Z" 
+                                      Fill="Black" Stretch="Uniform" Width="14" Height="14" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Cursor" Value="Hand"/>
+                                    <Setter Property="RenderTransform">
+                                        <Setter.Value> 
+                                            <ScaleTransform ScaleX="1.1" ScaleY="1.1" CenterX="16" CenterY="16"/>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+
+                <!-- Divider -->
+                <Border Width="1" Height="24" Background="#7DD3FC" Opacity="0.5" Margin="0,0,16,0"/>
+
+                <!-- Close Button -->
+                <Button Command="{Binding CloseCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" 
+                        ToolTip="Close Sidebar"
+                        Width="32" Height="32">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="bd" Background="#F43F5E" BorderBrush="#FB7185" BorderThickness="1" CornerRadius="8">
+                                <Path Data="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" 
+                                      Fill="White" Stretch="Uniform" Width="14" Height="14" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="bd" Property="Background" Value="#E11D48"/>
+                                    <Setter Property="Cursor" Value="Hand"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+
+            </StackPanel>
+
+        </Grid>
+    </Border>
+
 </UserControl>
