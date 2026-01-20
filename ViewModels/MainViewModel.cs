@@ -189,6 +189,16 @@ namespace ccc.ViewModels
         private bool _spillBottomRight;
         partial void OnSpillBottomRightChanged(bool value) => App.ConfigService.SpillBottomRight = value;
 
+        [ObservableProperty]
+        private bool _isVisualizerEnabled;
+        
+        partial void OnIsVisualizerEnabledChanged(bool value)
+        {
+            App.ConfigService.IsVisualizerEnabled = value;
+            if (value) App.AudioVisualizerService.Start();
+            else App.AudioVisualizerService.Stop();
+        }
+
          public ObservableCollection<int> Skeletons { get; } = new ObservableCollection<int>(System.Linq.Enumerable.Range(0, 15));
 
         private List<VideoDisplayItem> _allVideosCache = new(); // Flattened playlist items for pagination
@@ -198,6 +208,7 @@ namespace ccc.ViewModels
         public MainViewModel()
         {
             // Init Defaults
+            System.Console.WriteLine("[MainViewModel] Initializing...");
             _defaultStarColor = App.ConfigService.DefaultAssignColor ?? "red";
             _orbImagePath = App.ConfigService.CustomOrbImage ?? "pack://siteoforigin:,,,/assets/orb.png";
             
@@ -210,6 +221,12 @@ namespace ccc.ViewModels
             _spillTopRight = App.ConfigService.SpillTopRight;
             _spillBottomLeft = App.ConfigService.SpillBottomLeft;
             _spillBottomRight = App.ConfigService.SpillBottomRight;
+
+            _spillBottomRight = App.ConfigService.SpillBottomRight;
+
+            // Visualizer
+            IsVisualizerEnabled = App.ConfigService.IsVisualizerEnabled; 
+            if (IsVisualizerEnabled) App.AudioVisualizerService.Start();
 
             // Load Real Data
             Task.Run(LoadDataAsync);

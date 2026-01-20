@@ -129,6 +129,12 @@ namespace ccc.Services
             set { _config.SpillBottomRight = value; _ = SaveAsync(); }
         }
 
+        public bool IsVisualizerEnabled
+        {
+            get => _config.IsVisualizerEnabled;
+            set { _config.IsVisualizerEnabled = value; _ = SaveAsync(); }
+        }
+
         // Add other properties as needed from configStore
     }
 
@@ -152,5 +158,7 @@ namespace ccc.Services
         public bool SpillTopRight { get; set; } = false;
         public bool SpillBottomLeft { get; set; } = false;
         public bool SpillBottomRight { get; set; } = false;
+        
+        public bool IsVisualizerEnabled { get; set; } = false;
     }
 }

@@ -10,6 +10,7 @@
              ClipToBounds="False">
              
     <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
         <converters:OrbSpillGeometryConverter x:Key="OrbSpillGeometryConverter"/>
 
 
@@ -202,7 +203,13 @@
         <!-- =========================================================
              CENTER: THE ORB (154x154)
              ========================================================= -->
-        <Grid Grid.Column="1" Width="154" Height="154" VerticalAlignment="Center" Margin="0,0,0,0" WindowChrome.IsHitTestVisibleInChrome="True">
+     <Grid Grid.Column="1" Width="154" Height="154" VerticalAlignment="Center" Margin="0,0,0,0" WindowChrome.IsHitTestVisibleInChrome="True" ClipToBounds="False">
+             <!-- Visualizer (Underlay) -->
+             <!-- We use a zero-dimension canvas to prevent expanding the Auto column width -->
+             <Canvas HorizontalAlignment="Center" VerticalAlignment="Center" Width="0" Height="0" Panel.ZIndex="-1">
+                 <visuals:AudioVisualizer Width="300" Height="300" Margin="-150,-150,0,0" IsHitTestVisible="False"/>
+             </Canvas>
+
              <!-- Orb Glow/Shadow -->
              <Ellipse Fill="#00000000" StrokeThickness="0" Width="154" Height="154">
                 <Ellipse.Effect>
@@ -376,6 +383,26 @@
                             </Button>
                              <!-- More -->
                             <Button Style="{StaticResource IconButtonStyle}" ToolTip="More Actions">
+                                <Button.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="Toggle Audio Visualizer" IsCheckable="True" 
+                                                  IsChecked="{Binding PlacementTarget.DataContext.IsVisualizerEnabled, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                        <MenuItem Header="Orb Settings" 
+                                                  Command="{Binding PlacementTarget.DataContext.NavigateCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" 
+                                                  CommandParameter="settings"/>
+                                    </ContextMenu>
+                                </Button.ContextMenu>
+                                <Button.Triggers>
+                                    <EventTrigger RoutedEvent="Button.Click">
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <BooleanAnimationUsingKeyFrames Storyboard.TargetProperty="(Button.ContextMenu).IsOpen">
+                                                    <DiscreteBooleanKeyFrame KeyTime="0:0:0" Value="True"/>
+                                                </BooleanAnimationUsingKeyFrames>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger>
+                                </Button.Triggers>
                                 <Path Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}" Data="M16,12A2,2 0 0,1 18,10A2,2 0 0,1 20,12A2,2 0 0,1 18,14A2,2 0 0,1 16,12M10,12A2,2 0 0,1 12,10A2,2 0 0,1 14,12A2,2 0 0,1 12,14A2,2 0 0,1 10,12M4,12A2,2 0 0,1 6,10A2,2 0 0,1 8,12A2,2 0 0,1 6,14A2,2 0 0,1 4,12Z" Width="12" Height="12" Stretch="Uniform"/>
                             </Button>
                         </StackPanel>

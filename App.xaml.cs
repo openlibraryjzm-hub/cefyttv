@@ -21,6 +21,7 @@ public partial class App : System.Windows.Application
     public static Services.NavigationService NavigationService { get; private set; } = null!;
     public static Services.FolderService FolderService { get; private set; } = null!;
     public static Services.TabService TabService { get; private set; } = null!;
+    public static Services.Audio.AudioVisualizerService AudioVisualizerService { get; private set; } = null!;
 
     public static Microsoft.Web.WebView2.Core.CoreWebView2Environment? WebEnv { get; private set; }
 
@@ -49,6 +50,8 @@ public partial class App : System.Windows.Application
         FolderService = new Services.FolderService(SqliteService, ConfigService);
         TabService = new Services.TabService();
         await TabService.LoadConfigAsync();
+
+        AudioVisualizerService = new Services.Audio.AudioVisualizerService();
         
         // Warm up WebView2 Env
         await EnsureWebViewEnvironmentAsync();
