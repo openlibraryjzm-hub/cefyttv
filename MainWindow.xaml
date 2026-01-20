@@ -42,12 +42,16 @@
             <RowDefinition Height="200"/> <!-- Advanced Player Controller (200px) -->
             <RowDefinition Height="*"/>    <!-- Main Content Area -->
         </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
 
         <!-- Top Strip: Advanced Player Controller -->
-        <player:AdvancedPlayerController Grid.Row="0" Panel.ZIndex="100"/>
+        <player:AdvancedPlayerController Grid.Row="0" Grid.ColumnSpan="2" Panel.ZIndex="100"/>
         
         <!-- Window Controls (Overlay) -->
-        <StackPanel Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Top" Panel.ZIndex="200"
+        <StackPanel Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Top" Panel.ZIndex="200"
                     Margin="0,0,8,0" WindowChrome.IsHitTestVisibleInChrome="True">
                 <chrome:WindowCaptionControls MinimizeCommand="{x:Static SystemCommands.MinimizeWindowCommand}"
                                             MaximizeCommand="{x:Static SystemCommands.MaximizeWindowCommand}"
@@ -55,7 +59,8 @@
         </StackPanel>
 
         <!-- Main Content Area: Split View -->
-        <Grid Grid.Row="1">
+        <!-- We flatten the split view logic slightly to allow BrowserView to live at root -->
+        <Grid Grid.Row="1" Grid.ColumnSpan="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/> <!-- Left Half: Player Placeholder -->
                 <ColumnDefinition Width="*"/> <!-- Right Half: App Shell -->
@@ -69,8 +74,13 @@
                 <player:WebViewYouTubeControls.Style>
                     <Style TargetType="UserControl">
                         <Style.Triggers>
+                            <!-- Existing Player FullScreen Logic -->
                             <DataTrigger Binding="{Binding IsFullScreen}" Value="True">
                                 <Setter Property="Grid.ColumnSpan" Value="2"/>
+                            </DataTrigger>
+                            <!-- NEW: Hide Player when Browser is Full Screen to prevent Airspace bleeding -->
+                            <DataTrigger Binding="{Binding BrowserVm.IsFullScreen}" Value="True">
+                                <Setter Property="Visibility" Value="Collapsed"/>
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
@@ -101,18 +111,57 @@
                                 CloseCommand="{Binding CloseSidebarCommand}"
                                 ActivePage="{Binding ActiveNavTab}"/>
 
-                <!-- Dynamic View Injection -->
-                <Grid Grid.Row="1">
-                    <ContentControl Content="{Binding CurrentView}" Visibility="{Binding IsLibraryVisible, Converter={StaticResource BoolToVis}}"/>
-                    <views:BrowserView Visibility="{Binding IsBrowserVisible, Converter={StaticResource BoolToVis}}"/>
-                </Grid>
+                <!-- Dynamic View Injection: Normal Pages -->
+                <ContentControl Grid.Row="1" Content="{Binding CurrentView}" Visibility="{Binding IsLibraryVisible, Converter={StaticResource BoolToVis}}"/>
             </Grid>
-            <!-- Modals Overlay (Right Side Only to avoid WebView2 Airspace issues) -->
+            <!-- Modals Overlay -->
             <modals:ImportVideosModal Visibility="{Binding IsImportModalOpen, Converter={StaticResource BoolToVis}}"
                                       Panel.ZIndex="500"
                                       Grid.Column="1"
-                                      Grid.Row="0" Grid.RowSpan="2"/> <!-- Span rows if needed, or just occupy space. Since inner grid has no rows, RowSpan irrelevant but harmless. Wait, inner grid DOES NOT have rows. -->
+                                      Grid.Row="0" Grid.RowSpan="2"/>
         </Grid>
+
+        <!-- Browser View: Moved to Root to allow covering Player (Row 0) -->
+        <views:BrowserView Visibility="{Binding IsBrowserVisible, Converter={StaticResource BoolToVis}}"
+                           Panel.ZIndex="300">
+            <views:BrowserView.Style>
+                <Style TargetType="views:BrowserView">
+                    <!-- Default Placement: Row 1, Col 1 (Inside the Shell Area conceptually) -->
+                    <!-- Since we are in Root Grid (2 rows), we need to be in Row 1. -->
+                    <!-- But Root Grid doesn't have 2 columns. The INNER grid does. -->
+                    <!-- We must align to right half manually or use a specialized Grid at root. -->
+                    <!-- Solution: Use Grid.Column="0" of Root, but Margin/Width? No. -->
+                    <!-- Better: Use a Root Grid with 2 Columns always. Re-structuring surrounding Grid... -->
+                    <!-- Wait, if we change the Root Layout, we affect everything. -->
+                    <!-- Alternative: Put BrowserView in Row 1, but make it span. -->
+                    <!-- If we are in Row 1, we are just 'below' the player. -->
+                    <!-- To cover the player, we need Row 0. -->
+                    <Setter Property="Grid.Row" Value="1"/>
+                    <Setter Property="HorizontalAlignment" Value="Stretch"/>
+
+                    <!-- TopNavBar Compensation: Start 55px down by default so TopNav is visible above -->
+                    <Setter Property="Margin" Value="0,55,0,0"/>
+                    
+                    <!-- Hack: To match 50/50 split of inner grid without defining cols in root -->
+                    <!-- We can bind Width to 50%? No. -->
+                    <!-- Let's just define columns in Root Grid. -->
+                     <Setter Property="Grid.Column" Value="1"/> 
+                     <!-- This assumes Root Grid HAS columns. We must add them. -->
+
+                    <Style.Triggers>
+                        <!-- Full Screen Mode: Cover Everything -->
+                        <DataTrigger Binding="{Binding BrowserVm.IsFullScreen}" Value="True">
+                            <Setter Property="Grid.Row" Value="0"/>
+                            <Setter Property="Grid.RowSpan" Value="2"/>
+                            <Setter Property="Grid.Column" Value="0"/>
+                            <Setter Property="Grid.ColumnSpan" Value="2"/>
+                            <Setter Property="Margin" Value="0"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </views:BrowserView.Style>
+        </views:BrowserView>
+
     </Grid>
 
     <!-- Note: TripleEngineTestView is removed for now as per user request to test UI Shell. 

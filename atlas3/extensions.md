@@ -44,8 +44,9 @@ The first custom extension built for this system is the **Quick Download** tool.
 3.  **C# Host Handling (`BrowserView.xaml.cs`)**:
     *   Listens to `CoreWebView2.DownloadStarting`.
     *   **Intercepts**: Sets `e.Handled = true` to suppress the native dialog.
-    *   **Routing**: Forces the path to `UserProfile/Downloads/[OriginalFileName]`.
-    *   *Note*: The C# layer trusts the browser/extension to provide the correct filename via headers, falling back to a timestamped `.tmp` file only if absolutely no name is provided.
+    *   **Routing**: Automatically creates and uses subfolders based on the current domain (e.g., `Downloads/reddit.com/file.jpg` or `Downloads/x.com/image.png`) using `WebView.Source.Host`.
+    *   **Persistence**: Folders are reused if they exist.
+    *   **Conflict Resolution**: Sequentially renames duplicate files (e.g., `image (1).jpg`).
 
 ## How to Add New Extensions
 1.  Create a folder in `.../ccc/Extensions/[MyExtensionName]`.

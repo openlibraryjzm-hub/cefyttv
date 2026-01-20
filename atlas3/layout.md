@@ -15,8 +15,8 @@ To manage the "Dual Engine" composition, we use strict Z-Index rules:
 1.  **Bottom (Index 0)**: `UnifiedBannerBackground` (Parallax Image).
 2.  **Low (Index 10)**: `WebViewYouTubeControls` / `WinFormsHost(MPV)`.
 3.  **Medium (Index 50)**: `Grid` (The "Library" View: Playlists/Videos).
-4.  **High (Index 90)**: `BrowserView` (WebView2 Overlay).
-5.  **Top (Index 100)**: `AdvancedPlayerController` (Floating HUD).
+4.  **Top (Index 100)**: `AdvancedPlayerController` (Floating HUD).
+5.  **Overlay (Index 300)**: `BrowserView` (Full Screen Browser Overlay).
 
 ## 2. Split Screen vs. Full Screen logic
 The application supports dynamic resizing of the "Player" vs "Library" areas.

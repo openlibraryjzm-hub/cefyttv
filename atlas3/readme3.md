@@ -67,6 +67,7 @@ This entire stack is orchestrated by **WPF (Windows Presentation Foundation)**, 
 *   [likespage.md](likespage.md): Favorites collection.
 *   [pinspage.md](pinspage.md): Quick-access "Stuck" items.
 *   [settingspage.md](settingspage.md): Configuration & Customization.
+*   [browser.md](browser.md): **(New)** Full WebView2 Browser & Tab System.
 
 ### 5. Features & Systems
 *   [extensions.md](extensions.md): **(New)** Chrome Extensions support & Shared WebView2 Environment.

@@ -4,27 +4,229 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
+             xmlns:vm="clr-namespace:ccc.ViewModels"
              mc:Ignorable="d" 
-             d:DesignHeight="720" d:DesignWidth="600">
-    <Grid>
+             d:DesignHeight="720" d:DesignWidth="1024">
+    
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+        
+        <Style x:Key="TabButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#2d2d2d"/>
+            <Setter Property="Foreground" Value="#cccccc"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Margin" Value="1,0,0,0"/>
+            <Setter Property="Padding" Value="15,8"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                CornerRadius="8,8,0,0" 
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#3d3d3d"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <DataTemplate x:Key="TabHeaderTemplate" DataType="{x:Type vm:BrowserTabViewModel}">
+            <Button Command="{Binding DataContext.BrowserVm.SelectTabCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" 
+                    CommandParameter="{Binding}"
+                    Style="{StaticResource TabButtonStyle}">
+                <Button.Template>
+                     <ControlTemplate TargetType="Button">
+                        <Border x:Name="TabBorder" 
+                                Background="{TemplateBinding Background}" 
+                                CornerRadius="8,8,0,0" 
+                                Padding="{TemplateBinding Padding}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                
+                                <TextBlock x:Name="TabTitle"
+                                           Text="{Binding Title}" 
+                                           MaxWidth="150" 
+                                           TextTrimming="CharacterEllipsis" 
+                                           Foreground="{TemplateBinding Foreground}"
+                                           VerticalAlignment="Center"
+                                           Margin="0,0,8,0"/>
+                                
+                                <Button Grid.Column="1" 
+                                        Content="✕" 
+                                        Command="{Binding DataContext.BrowserVm.CloseTabCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" 
+                                        CommandParameter="{Binding}"
+                                        Background="Transparent"
+                                        BorderThickness="0"
+                                        Foreground="#888"
+                                        FontWeight="Bold"
+                                        FontSize="10"
+                                        Padding="2"
+                                        VerticalAlignment="Center"/>
+                            </Grid>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                <Setter TargetName="TabBorder" Property="Background" Value="#f0f0f0"/>
+                                <Setter TargetName="TabTitle" Property="Foreground" Value="#111"/>
+                            </DataTrigger>
+                             <DataTrigger Binding="{Binding IsSelected}" Value="False">
+                                <Setter TargetName="TabBorder" Property="Background" Value="#2d2d2d"/>
+                                <Setter TargetName="TabTitle" Property="Foreground" Value="#ccc"/>
+                            </DataTrigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+        </DataTemplate>
+        
+    </UserControl.Resources>
+
+    <Grid Background="#1e1e1e">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/> <!-- Tab Strip -->
+            <RowDefinition Height="Auto"/> <!-- Address Bar -->
+            <RowDefinition Height="*"/>    <!-- Browser Content -->
         </Grid.RowDefinitions>
 
-        <!-- Browser Toolbar -->
-        <Border Grid.Row="0" Background="#f0f0f0" Padding="5">
-            <StackPanel Orientation="Horizontal">
-                <Button Content=" + New Tab " Click="NewTab_Click" Padding="10,2" Margin="0,0,5,0"/>
-                <TextBlock Text="WebView2 Browser" VerticalAlignment="Center" Margin="10,0" Foreground="#555"/>
-            </StackPanel>
+        <!-- Row 0: Tab Strip -->
+        <Border Grid.Row="0" Background="#121212" Padding="10,5,10,0"
+                xmlns:chrome="clr-namespace:ccc.Controls.Chrome"
+                WindowChrome.IsHitTestVisibleInChrome="True">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/> <!-- Browser Fullscreen Toggle -->
+                    <ColumnDefinition Width="*"/>    <!-- Tabs -->
+                    <ColumnDefinition Width="Auto"/> <!-- Close Browser Button -->
+                </Grid.ColumnDefinitions>
+                
+                <!-- Browser Fullscreen Toggle (Minimize/Maximize) -->
+                <Button Grid.Column="0"
+                        Command="{Binding BrowserVm.ToggleFullScreenCommand}"
+                        Background="Transparent"
+                        Foreground="#888"
+                        BorderThickness="0"
+                        Margin="0,0,10,0"
+                        Padding="5"
+                        ToolTip="Start/End Browser Fullscreen">
+                    <TextBlock Text="⛶" FontSize="14"/>
+                </Button>
+
+                <!-- Scrollable Tabs + New Tab Button -->
+                <ScrollViewer Grid.Column="1" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" PanningMode="HorizontalOnly">
+                    <StackPanel Orientation="Horizontal">
+                        <ItemsControl ItemsSource="{Binding BrowserVm.Tabs}" ItemTemplate="{StaticResource TabHeaderTemplate}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Horizontal"/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                        </ItemsControl>
+                        
+                        <!-- New Tab Button -->
+                        <Button Content="+" 
+                                Command="{Binding BrowserVm.AddNewTabCommand}"
+                                Background="Transparent"
+                                Foreground="White"
+                                FontSize="18"
+                                FontWeight="Bold"
+                                Margin="5,0,0,0"
+                                Padding="10,2"
+                                BorderThickness="0"
+                                VerticalAlignment="Center"/>
+                    </StackPanel>
+                </ScrollViewer>
+                
+                <!-- Close Browser Button (Terminates to Video Player) -->
+                <Button Grid.Column="2" 
+                        Command="{Binding CloseBrowserCommand}"
+                        Background="Transparent"
+                        Foreground="Red"
+                        BorderThickness="0"
+                        Margin="10,0,0,0"
+                        Padding="5"
+                        ToolTip="Close Browser">
+                    <TextBlock Text="❌" FontSize="14" FontWeight="Bold"/>
+                </Button>
+                
+            </Grid>
         </Border>
 
-        <!-- Tabs -->
-        <TabControl x:Name="BrowserTabs" Grid.Row="1" BorderThickness="0">
-            <TabItem Header="Google">
-                <wv2:WebView2 x:Name="MainWebView"/>
-            </TabItem>
-        </TabControl>
+        <!-- Row 1: Address Bar -->
+        <Border Grid.Row="1" Background="#2d2d2d" Padding="10" WindowChrome.IsHitTestVisibleInChrome="True">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                
+                <!-- Nav Controls -->
+                <StackPanel Orientation="Horizontal" Margin="0,0,10,0">
+                    <Button Content="WhyWeCreate" Command="{Binding BrowserVm.SelectedTab.GoBackCommand}" Foreground="White" Background="Transparent" BorderThickness="0" Margin="0,0,5,0" Visibility="Collapsed"/> <!-- TODO: Bind specific commands -->
+                </StackPanel>
+
+                <!-- Url Input -->
+                <Border Grid.Column="1" Background="#1e1e1e" CornerRadius="15" Padding="10,5">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="🔒" Foreground="#4caf50" VerticalAlignment="Center" Margin="5,0,10,0"/>
+                        <TextBox Grid.Column="1" 
+                                 Text="{Binding BrowserVm.AddressBarText, UpdateSourceTrigger=PropertyChanged}"
+                                 Foreground="White"
+                                 Background="Transparent"
+                                 BorderThickness="0"
+                                 VerticalAlignment="Center">
+                            <TextBox.InputBindings>
+                                <KeyBinding Key="Enter" Command="{Binding BrowserVm.NavigateCommand}"/>
+                            </TextBox.InputBindings>
+                        </TextBox>
+                    </Grid>
+                </Border>
+                
+                <!-- Go Button -->
+                <Button Grid.Column="2" 
+                        Content="Go" 
+                        Command="{Binding BrowserVm.NavigateCommand}"
+                        Margin="10,0,0,0"
+                        Padding="15,5"
+                        Background="#3a6ea5"
+                        Foreground="White"
+                        BorderThickness="0">
+                    <Button.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="15"/>
+                        </Style>
+                    </Button.Resources>
+                </Button>
+            </Grid>
+        </Border>
+
+        <!-- Row 2: Content Area (All WebViews live here, stacked) -->
+        <ItemsControl Grid.Row="2" ItemsSource="{Binding BrowserVm.Tabs}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Grid/> <!-- Stack them all on top of each other -->
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <!-- IMPORTANT: Loaded event handles the initialization and binding -->
+                    <wv2:WebView2 Loaded="WebView_Loaded"
+                                  Visibility="{Binding IsSelected, Converter={StaticResource BoolToVis}}"/>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
     </Grid>
 </UserControl>

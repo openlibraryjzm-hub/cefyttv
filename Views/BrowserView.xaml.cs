@@ -1,6 +1,8 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Linq;
+using ccc.ViewModels;
+using Microsoft.Web.WebView2.Core;
 
 namespace ccc.Views
 {
@@ -9,112 +11,215 @@ namespace ccc.Views
         public BrowserView()
         {
             InitializeComponent();
-            this.Loaded += BrowserView_Loaded;
         }
 
-        private async void BrowserView_Loaded(object sender, RoutedEventArgs e)
-        {
-            await InitializeWebView(MainWebView);
-            MainWebView.Source = new System.Uri("https://www.google.com");
-        }
-
-        private void NewTab_Click(object sender, RoutedEventArgs e)
-        {
-            OpenNewTab("https://www.bing.com");
-        }
-
-        public async void OpenNewTab(string url)
-        {
-            var webView = new Microsoft.Web.WebView2.Wpf.WebView2();
-            // Do not set Source here, init first
-            
-            await InitializeWebView(webView);
-            webView.Source = new System.Uri(url);
-
-            var tab = new TabItem
-            {
-                Header = "New Tab", 
-                Content = webView
-            };
-
-            BrowserTabs.Items.Add(tab);
-            BrowserTabs.SelectedItem = tab;
-        }
-
-        // Flag to prevent redundant extension loading calls
+        // Flag to prevent redundant extension loading calls (Static across all instances)
         private static bool _extensionsLoaded = false;
 
-        private async System.Threading.Tasks.Task InitializeWebView(Microsoft.Web.WebView2.Wpf.WebView2 webView)
+        private async void WebView_Loaded(object sender, RoutedEventArgs e)
         {
-            try 
+            var webView = sender as Microsoft.Web.WebView2.Wpf.WebView2;
+            if (webView == null) return;
+
+            // Wait for DataContext
+            if (webView.DataContext is not BrowserTabViewModel tabVm) return;
+
+            try
             {
-                // Ensure Global Env is ready
+                // 1. Ensure Global Env is ready
                 await App.EnsureWebViewEnvironmentAsync();
-                
-                // Init Core with shared env
+
+                // 2. Init Core with shared env
                 await webView.EnsureCoreWebView2Async(App.WebEnv);
 
-                // 2. Load Custom Extensions (Only once per session)
+                // 3. Load Extensions (Once per session profile)
                 if (!_extensionsLoaded)
                 {
-                    // We check multiple locations to be safe across Dev/Release builds
-                    string[] possiblePaths = new string[] 
-                    {
-                        System.IO.Path.Combine(System.Environment.CurrentDirectory, "Extensions"),
-                        System.IO.Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "Extensions"),
-                        System.IO.Path.Combine(System.IO.Path.GetFullPath("."), "Extensions")
-                    };
-
-                    string? validPath = possiblePaths.FirstOrDefault(p => System.IO.Directory.Exists(p));
-
-                    if (validPath != null)
-                    {
-                        foreach (var dir in System.IO.Directory.GetDirectories(validPath))
-                        {
-                            try 
-                            {
-                                await webView.CoreWebView2.Profile.AddBrowserExtensionAsync(dir);
-                            }
-                            catch { /* Ignore duplicate loading errors */ }
-                        }
-                    }
+                    await LoadExtensions(webView);
                     _extensionsLoaded = true;
                 }
+
+                // 4. Initial Navigation
+                if (!string.IsNullOrEmpty(tabVm.Url))
+                {
+                    webView.CoreWebView2.Navigate(tabVm.Url);
+                }
+
+                // 5. Setup Event Bindings (Two-Way)
+                
+                // VM -> View (Navigation request)
+                System.ComponentModel.PropertyChangedEventHandler vmHandler = (s, args) =>
+                {
+                    if (args.PropertyName == nameof(BrowserTabViewModel.Url))
+                    {
+                        if (webView.CoreWebView2 != null && webView.Source.ToString() != tabVm.Url)
+                        {
+                            try 
+                            { 
+                                webView.CoreWebView2.Navigate(tabVm.Url); 
+                            } 
+                            catch { /* Ignore nav errors */ }
+                        }
+                    }
+                };
+                tabVm.PropertyChanged += vmHandler;
+
+                // View -> VM (Update Address Bar & Title)
+                webView.CoreWebView2.SourceChanged += (s, args) =>
+                {
+                    // Update VM without triggering the listener loop 
+                    // (The VM setter typically triggers NotifyPropertyChanged, 
+                    // so we rely on the check `webView.Source != tabVm.Url` above to break loop)
+                    tabVm.Url = webView.Source.ToString();
+                    
+                    // Also update main address bar if this is the selected tab (Handled by BrowserViewModel)
+                };
+
+                webView.CoreWebView2.DocumentTitleChanged += (s, args) =>
+                {
+                    tabVm.Title = webView.CoreWebView2.DocumentTitle;
+                };
+
+                // 6. Cleanup on Unload
+                webView.Unloaded += (s, args) =>
+                {
+                    tabVm.PropertyChanged -= vmHandler;
+                    webView.Dispose(); // Important for resource release
+                };
+
+                // 7. Popup Handling
+                webView.CoreWebView2.NewWindowRequested += (s, args) =>
+                {
+                    args.Handled = true;
+                    // Logic to open in new tab?
+                    // Accessing the parent VM is hard here. 
+                    // For now, navigate in place or try to find parent.
+                    webView.CoreWebView2.Navigate(args.Uri);
+                };
+
+                // 8. Download Handling
+                webView.CoreWebView2.DownloadStarting += (s, args) =>
+                {
+                    args.Handled = true; // Suppress default dialog
+                    
+                    // 1. Determine Domain Folder
+                    string domain = "Misc";
+                    string rawSource = "";
+
+                    try
+                    {
+                        // Prefer the Page Source (Context of where the user is)
+                        rawSource = webView.CoreWebView2.Source;
+                        
+                        // Fallback: If page source is about:blank or empty, use the DL link host
+                        if (string.IsNullOrEmpty(rawSource) || rawSource == "about:blank")
+                        {
+                            rawSource = args.DownloadOperation.Uri;
+                        }
+
+                        if (Uri.TryCreate(rawSource, UriKind.Absolute, out var uri))
+                        {
+                            domain = uri.Host.ToLower();
+                            if (domain.StartsWith("www.")) domain = domain.Substring(4);
+                        }
+                    }
+                    catch { /* Keep default "Misc" */ }
+
+                    // Sanitize Domain for Filesystem
+                    try
+                    {
+                        foreach (char c in System.IO.Path.GetInvalidFileNameChars())
+                        {
+                            domain = domain.Replace(c, '_');
+                        }
+                        // Explicitly remove common unsafe chars just in case
+                        domain = domain.Trim();
+                        if (string.IsNullOrEmpty(domain)) domain = "Misc";
+                    }
+                    catch { domain = "Misc"; }
+
+
+                    // 2. Prepare Directory
+                    var baseDownloads = System.IO.Path.Combine(
+                        System.Environment.GetFolderPath(System.Environment.SpecialFolder.UserProfile), 
+                        "Downloads");
+                    
+                    var targetFolder = System.IO.Path.Combine(baseDownloads, domain);
+
+                    try 
+                    {
+                        if (!System.IO.Directory.Exists(targetFolder))
+                            System.IO.Directory.CreateDirectory(targetFolder);
+                    }
+                    catch 
+                    {
+                        // Fallback to root if folder creation fails (e.g. permissions)
+                        targetFolder = baseDownloads;
+                    }
+
+                    // 3. Prepare Filename
+                    string fileName = System.IO.Path.GetFileName(args.ResultFilePath);
+                    
+                    if (string.IsNullOrWhiteSpace(fileName)) 
+                        fileName = $"file_{System.DateTime.Now.Ticks}.tmp";
+
+                    // 4. Unique Filename Logic
+                    var fullPath = System.IO.Path.Combine(targetFolder, fileName);
+                    
+                    try
+                    {
+                        if (System.IO.File.Exists(fullPath))
+                        {
+                            string nameWithoutExt = System.IO.Path.GetFileNameWithoutExtension(fileName);
+                            string ext = System.IO.Path.GetExtension(fileName);
+                            int count = 1;
+                            
+                            while(System.IO.File.Exists(fullPath) && count < 100)
+                            {
+                                fullPath = System.IO.Path.Combine(targetFolder, $"{nameWithoutExt} ({count}){ext}");
+                                count++;
+                            }
+                        }
+                    }
+                    catch 
+                    {
+                        // Fallback unique name if logic fails
+                         fullPath = System.IO.Path.Combine(targetFolder, $"{System.Guid.NewGuid()}_{fileName}");
+                    }
+
+                    args.ResultFilePath = fullPath;
+                };
+
             }
             catch (System.Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"WebView Init Error: {ex.Message}");
             }
-            
-            // 3. Popup Handling (Keep in Tab logic)
-            webView.CoreWebView2.NewWindowRequested += (s, e) =>
-            {
-                e.Handled = true; 
-                webView.Source = new System.Uri(e.Uri);
-            };
-
-            // 4. Download Handling
-            webView.CoreWebView2.DownloadStarting += (s, e) =>
-            {
-                e.Handled = true; // Suppress default dialog
-                
-                string fileName = System.IO.Path.GetFileName(e.ResultFilePath);
-                
-                // Fallback only if totally empty
-                if (string.IsNullOrWhiteSpace(fileName)) 
-                {
-                    fileName = "download_" + System.DateTime.Now.Ticks + ".tmp";
-                }
-
-                var downloadPath = System.IO.Path.Combine(
-                    System.Environment.GetFolderPath(System.Environment.SpecialFolder.UserProfile), 
-                    "Downloads", 
-                    fileName);
-
-                e.ResultFilePath = downloadPath;
-            };
         }
 
+        private async System.Threading.Tasks.Task LoadExtensions(Microsoft.Web.WebView2.Wpf.WebView2 webView)
+        {
+             // We check multiple locations to be safe across Dev/Release builds
+            string[] possiblePaths = new string[] 
+            {
+                System.IO.Path.Combine(System.Environment.CurrentDirectory, "Extensions"),
+                System.IO.Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "Extensions"),
+                System.IO.Path.Combine(System.IO.Path.GetFullPath("."), "Extensions")
+            };
 
+            string? validPath = possiblePaths.FirstOrDefault(p => System.IO.Directory.Exists(p));
+
+            if (validPath != null)
+            {
+                foreach (var dir in System.IO.Directory.GetDirectories(validPath))
+                {
+                    try 
+                    {
+                        await webView.CoreWebView2.Profile.AddBrowserExtensionAsync(dir);
+                    }
+                    catch { /* Ignore duplicate loading errors */ }
+                }
+            }
+        }
     }
 }

@@ -193,6 +193,8 @@ namespace ccc.ViewModels
 
         private List<VideoDisplayItem> _allVideosCache = new(); // Flattened playlist items for pagination
 
+        public BrowserViewModel BrowserVm { get; } = new BrowserViewModel();
+
         public MainViewModel()
         {
             // Init Defaults
@@ -816,6 +818,19 @@ namespace ccc.ViewModels
             IsBrowserVisible = true;
             IsFullScreen = false; // Ensure UI is normal
             OnPropertyChanged(nameof(IsLibraryVisible));
+        }
+
+        [RelayCommand]
+        public void CloseBrowser()
+        {
+            // close browser window entirely...
+            IsBrowserVisible = false;
+            
+            // ...and having fullscreen youtube player take its place
+            IsFullScreen = true; 
+            
+            // Also reset browser's internal fullscreen state so it starts normal next time
+            if (BrowserVm != null) BrowserVm.IsFullScreen = false;
         }
 
         // Pagination State
