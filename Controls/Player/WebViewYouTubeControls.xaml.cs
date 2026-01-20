@@ -47,8 +47,9 @@ namespace ccc.Controls.Player
 
         private async void InitializeWebView()
         {
-            // Ensure Runtime is ready
-            await PlayerWebView.EnsureCoreWebView2Async();
+            // Use Global Environment (Shared/Extensions enabled)
+            await App.EnsureWebViewEnvironmentAsync();
+            await PlayerWebView.EnsureCoreWebView2Async(App.WebEnv);
 
             // Subscribe to messages from JS
             PlayerWebView.CoreWebView2.WebMessageReceived += CoreWebView2_WebMessageReceived;

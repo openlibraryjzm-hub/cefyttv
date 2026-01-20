@@ -22,6 +22,19 @@ public partial class App : System.Windows.Application
     public static Services.FolderService FolderService { get; private set; } = null!;
     public static Services.TabService TabService { get; private set; } = null!;
 
+    public static Microsoft.Web.WebView2.Core.CoreWebView2Environment? WebEnv { get; private set; }
+
+    public static async System.Threading.Tasks.Task EnsureWebViewEnvironmentAsync()
+    {
+        if (WebEnv != null) return;
+
+        var userDataFolder = System.IO.Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData), "CCC_WebView_Profile");
+        var options = new Microsoft.Web.WebView2.Core.CoreWebView2EnvironmentOptions();
+        options.AreBrowserExtensionsEnabled = true;
+
+        WebEnv = await Microsoft.Web.WebView2.Core.CoreWebView2Environment.CreateAsync(null, userDataFolder, options);
+    }
+
     protected override async void OnStartup(StartupEventArgs e)
     {
         // Initialize Services (MUST be done before base.OnStartup loads MainWindow)
@@ -36,13 +49,10 @@ public partial class App : System.Windows.Application
         FolderService = new Services.FolderService(SqliteService, ConfigService);
         TabService = new Services.TabService();
         await TabService.LoadConfigAsync();
+        
+        // Warm up WebView2 Env
+        await EnsureWebViewEnvironmentAsync();
 
-        // Initialize CefSharp settings
-        
-        // Launch Window NOW that services are ready
-        base.OnStartup(e);
-        new MainWindow().Show();
-        
         // Launch Window NOW that services are ready
         base.OnStartup(e);
         new MainWindow().Show();

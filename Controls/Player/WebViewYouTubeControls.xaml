@@ -8,7 +8,7 @@
              d:DesignHeight="400" d:DesignWidth="600">
     <Grid>
         <!-- WebView2 Control -->
-        <wv2:WebView2 x:Name="PlayerWebView" Source="about:blank"/>
+        <wv2:WebView2 x:Name="PlayerWebView"/>
         
         <!-- Optional Overlay Controls if needed later -->
         <TextBlock x:Name="OverlayText" Text="Select a video to play" Foreground="#555" 

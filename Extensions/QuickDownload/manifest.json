@@ -1,0 +1,13 @@
+{
+    "manifest_version": 3,
+    "name": "Quick Download",
+    "version": "1.0",
+    "description": "Right click to download immediately",
+    "permissions": [
+        "contextMenus",
+        "downloads"
+    ],
+    "background": {
+        "service_worker": "background.js"
+    }
+}

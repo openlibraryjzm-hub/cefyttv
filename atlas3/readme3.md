@@ -69,6 +69,7 @@ This entire stack is orchestrated by **WPF (Windows Presentation Foundation)**, 
 *   [settingspage.md](settingspage.md): Configuration & Customization.
 
 ### 5. Features & Systems
+*   [extensions.md](extensions.md): **(New)** Chrome Extensions support & Shared WebView2 Environment.
 *   [importexport.md](importexport.md): YouTube API integration & "Add" Modal.
 *   [audiovisualizer.md](audiovisualizer.md) *: (Placeholder) Future Audio Reactivity.*
 *   [supportpage.md](supportpage.md) *: (Placeholder) Help docs.*

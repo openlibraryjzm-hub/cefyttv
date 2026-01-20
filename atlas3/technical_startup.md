@@ -12,6 +12,7 @@ The application initialization sequence is complex due to the need to coordinate
     1.  `ConfigService`: Loads user preferences (JSON).
     2.  `SqliteService`: Connects to DB, runs migrations.
     3.  `PlaylistService`, `FolderService`, `TabService`: Initialized with valid dependencies.
+    4.  **WebView2**: `App.EnsureWebViewEnvironmentAsync()` is called to create the Singleton Environment (with Extensions enabled) before any UI loads.
 *   **Wait**: The application `await`s these tasks `OnStartup` before proceeding.
 
 ### 2. MainWindow Launch (Phase 1)

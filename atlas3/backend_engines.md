@@ -11,7 +11,8 @@ Project CCC is defined by its hybrid architecture, simultaneously running three 
     *   **Reasoning**: Best compatibility with DRM, Codecs, and anti-scraping scripts.
 *   **Role B**: **Full Browser Mode** ("Tabbed Web").
     *   **Reasoning**: Replaced CefSharp to provide full H.264 video support, persistent logins, and native downloads.
-    *   **Features**: Auto-downloads to "Downloads" folder, "Quick Download" context menu, and Tab/Popup management.
+    *   **Features**: Auto-downloads to "Downloads" folder, [Extensions Support](extensions.md) (Context Menu tools), and Tab/Popup management.
+    *   **Infrastructure**: Runs on a **Shared Singleton Environment** (`App.WebEnv`) to ensure cookies and sessions are shared with the YouTube Player.
 
 ### 2. MPV (The Native Power)
 *   **Tech**: FFmpeg / `libmpv`.

@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Controls;
+using System.Linq;
 
 namespace ccc.Views
 {
@@ -8,6 +9,13 @@ namespace ccc.Views
         public BrowserView()
         {
             InitializeComponent();
+            this.Loaded += BrowserView_Loaded;
+        }
+
+        private async void BrowserView_Loaded(object sender, RoutedEventArgs e)
+        {
+            await InitializeWebView(MainWebView);
+            MainWebView.Source = new System.Uri("https://www.google.com");
         }
 
         private void NewTab_Click(object sender, RoutedEventArgs e)
@@ -15,12 +23,13 @@ namespace ccc.Views
             OpenNewTab("https://www.bing.com");
         }
 
-        public void OpenNewTab(string url)
+        public async void OpenNewTab(string url)
         {
             var webView = new Microsoft.Web.WebView2.Wpf.WebView2();
+            // Do not set Source here, init first
+            
+            await InitializeWebView(webView);
             webView.Source = new System.Uri(url);
-
-            InitializeWebView(webView);
 
             var tab = new TabItem
             {
@@ -32,55 +41,80 @@ namespace ccc.Views
             BrowserTabs.SelectedItem = tab;
         }
 
-        private async void InitializeWebView(Microsoft.Web.WebView2.Wpf.WebView2 webView)
+        // Flag to prevent redundant extension loading calls
+        private static bool _extensionsLoaded = false;
+
+        private async System.Threading.Tasks.Task InitializeWebView(Microsoft.Web.WebView2.Wpf.WebView2 webView)
         {
-            await webView.EnsureCoreWebView2Async();
+            try 
+            {
+                // Ensure Global Env is ready
+                await App.EnsureWebViewEnvironmentAsync();
+                
+                // Init Core with shared env
+                await webView.EnsureCoreWebView2Async(App.WebEnv);
+
+                // 2. Load Custom Extensions (Only once per session)
+                if (!_extensionsLoaded)
+                {
+                    // We check multiple locations to be safe across Dev/Release builds
+                    string[] possiblePaths = new string[] 
+                    {
+                        System.IO.Path.Combine(System.Environment.CurrentDirectory, "Extensions"),
+                        System.IO.Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "Extensions"),
+                        System.IO.Path.Combine(System.IO.Path.GetFullPath("."), "Extensions")
+                    };
+
+                    string? validPath = possiblePaths.FirstOrDefault(p => System.IO.Directory.Exists(p));
+
+                    if (validPath != null)
+                    {
+                        foreach (var dir in System.IO.Directory.GetDirectories(validPath))
+                        {
+                            try 
+                            {
+                                await webView.CoreWebView2.Profile.AddBrowserExtensionAsync(dir);
+                            }
+                            catch { /* Ignore duplicate loading errors */ }
+                        }
+                    }
+                    _extensionsLoaded = true;
+                }
+            }
+            catch (System.Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"WebView Init Error: {ex.Message}");
+            }
             
-            // 1. Popup Handling (Keep in Tab)
+            // 3. Popup Handling (Keep in Tab logic)
             webView.CoreWebView2.NewWindowRequested += (s, e) =>
             {
                 e.Handled = true; 
                 webView.Source = new System.Uri(e.Uri);
             };
 
-            // 2. Download Handling
+            // 4. Download Handling
             webView.CoreWebView2.DownloadStarting += (s, e) =>
             {
-                // Auto-Download to Downloads folder without prompt
                 e.Handled = true; // Suppress default dialog
                 
+                string fileName = System.IO.Path.GetFileName(e.ResultFilePath);
+                
+                // Fallback only if totally empty
+                if (string.IsNullOrWhiteSpace(fileName)) 
+                {
+                    fileName = "download_" + System.DateTime.Now.Ticks + ".tmp";
+                }
+
                 var downloadPath = System.IO.Path.Combine(
-                    Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), 
+                    System.Environment.GetFolderPath(System.Environment.SpecialFolder.UserProfile), 
                     "Downloads", 
-                    System.IO.Path.GetFileName(e.ResultFilePath));
+                    fileName);
 
                 e.ResultFilePath = downloadPath;
             };
-
-            // 3. Custom Context Menu "Quick Download"
-            // Note: This API requires newer WebView2, checking availability strictly isn't always possible in hot-reload, 
-            // but standard runtime supports it.
-            // 3. Custom Context Menu "Quick Download"
-            webView.CoreWebView2.ContextMenuRequested += (s, e) => 
-            {
-                // Only act if it is a link
-                if (!string.IsNullOrEmpty(e.ContextMenuTarget.LinkUri))
-                {
-                     // Create the item using the Environment from the sender
-                     var menuItem = webView.CoreWebView2.Environment.CreateContextMenuItem(
-                        "⚡ Quick Download Link", null, Microsoft.Web.WebView2.Core.CoreWebView2ContextMenuItemKind.Command);
-                
-                    menuItem.CustomItemSelected += (send, args) =>
-                    {
-                        string linkUrl = e.ContextMenuTarget.LinkUri;
-                        // Trigger navigation to force download
-                        webView.CoreWebView2.ExecuteScriptAsync($"window.location.href = '{linkUrl}'"); 
-                    };
-
-                    // Insert at the VERY TOP of the menu
-                    e.MenuItems.Insert(0, menuItem);
-                }
-            };
         }
+
+
     }
 }
